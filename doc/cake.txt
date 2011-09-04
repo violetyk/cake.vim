@@ -1,0 +1,296 @@
+*cake.txt*  Utility for CakePHP developpers.
+
+Version: 1.2.0
+Author: Yuhei Kagaya <yuhei.kagaya@gmail.com>
+English Documentation Author: Takahiro Jinno <takahiro.jinno@gmail.com>
+Repository: https://github.com/violetyk/cake.vim
+License: This file is placed in the public domain.
+
+
+==============================================================================
+CONTENTS							*cake-contents*
+
+Introduction		|cake-introduction|
+Install			|cake-install|
+Commands		|cake-commands|
+    Initial setup	|:Cakephp|
+    Jump to Model	|:Cmodel|
+			|:Cmodelsp|
+			|:Cmodelvsp|
+			|:Cmodeltab|
+    Jump to Controller	|:Ccontroller|
+			|:Ccontrollersp|
+			|:Ccontrollervsp|
+			|:Ccontrollertab|
+    Jump to View	|:Cview|
+			|:Cviewsp|
+			|:Cviewvsp|
+			|:Cviewtab|
+			|:Ccontrollerview|
+			|:Ccontrollerviewsp|
+			|:Ccontrollerviewvsp|
+			|:Ccontrollerviewtab|
+    Jump to Config	|:Cconfig|
+			|:Cconfigsp|
+			|:Cconfigvsp|
+			|:Cconfigtab|
+    Jump to Component	|:Ccomponent|
+			|:Ccomponentsp|
+			|:Ccomponentvsp|
+			|:Ccomponenttab|
+    Jump to Shell	|:Cshell|
+			|:Cshellsp|
+			|:Cshellvsp|
+			|:Cshelltab|
+    Jump to Task	|:Ctask|
+			|:Ctasksp|
+			|:Ctaskvsp|
+			|:Ctasktab|
+    Open the Log	|:CLog|
+    
+	
+Bugs			|cake-bugs|
+Changelog		|cake-changelog|
+
+
+==============================================================================
+INTRODUCTION							*cake-introduction*
+
+*cake* is for easy jumping between Controller, Model and View files when developing in CakePHP.
+
+Requirements:
+- Vim ver.7.0 or heigher
+- CakePHP ver.1.3 or heigher
+
+
+==============================================================================
+INSTALL								*cake-install*
+
+1: Extract the file and Put files in your Vim directory
+   (usually ~/.vim/).
+2: Execute |:Cakephp| <Space> /path/to/cakephp_app/ command or
+let g:cakephp_auto_set_project = 1
+let g:cakephp_app = "/path/to/cakephp_app/"
+in your .vimrc.
+
+
+And if you would like to use divided view themed such as "front" and "admin",
+let g:cakephp_use_theme = "admin"
+add the comment in your .vimrc.
+
+
+MySQL and Apache logs to see the log quickly, and write the following.
+>
+    let g:cakephp_log = {
+          \ 'query' : '/var/log/mysqld-query.log',
+          \ 'access': '/usr/local/apache2/logs/access_log'
+          \ }
+<
+
+Sorry, this plugin will not work well for windows at this time.
+
+
+More comfortable to use cake.vim, if you write key-mappings in your .vimrc. 
+Here is recommended key-mappings.
+>
+    " Recommended  key-mappings.
+    nnoremap <Space>cc :Ccontroller 
+    nnoremap <Space>cm :Cmodel 
+    nnoremap <Space>cv :Cview 
+    nnoremap <Space>cl :Clog 
+<
+
+
+==============================================================================
+COMMANDS							*cake-commands*
+
+
+{model-name},{view-name},{controller-name},{theme-name},{shell-name},{task-name},
+{config-name},{component-name}, {log-name} is entered, you can complete with <TAB>.
+
+
+Initial setup
+-------------
+:Cakephp {cakephp-app}						*:Cakephp*
+		At the first, specified the app directory of your CakePHP.
+		When you run this command, it will be cached controller and
+		model name internally.
+		If you write the following key-mappings in your .vimrc, it will
+		perform automatically at startup.
+
+>
+    let g:cakephp_auto_set_project = 1
+    let g:cakephp_app = "/path/to/cakephp_app/"
+<
+
+
+Jump to Model
+-------------
+
+:Cmodel [{model-name}]						*:Cmodel*
+:Cmodelsp [{model-name}]					*:Cmodelsp*
+:Cmodelvsp [{model-name}]					*:Cmodelvsp*
+:Cmodeltab [{model-name}]					*:Cmodeltab*
+		Edit the specified or guess the model when current buffer is
+		controller.
+		If you do not specify {model-name} deduced from the open files.
+		Also you can make a new file if there is no file.
+		You can split editing using |:Cmodelsp|.
+		You can split editing vertically using |:Cmodelvsp|.
+		You can open new tab editing, using |:Cmodeltab|.
+
+
+Jump to Controller
+------------------
+
+:Ccontroller [{controller-name}]				*:Ccontroller*
+:Ccontrollersp [{controller-name}]				*:Ccontrollersp*
+:Ccontrollervsp [{controller-name}]				*:Ccontrollervsp*
+:Ccontrollertab [{controller-name}]				*:Ccontrollertab*
+		Edit the specified or current controller when current buffer is model.
+		Also you can make a new file if there is no file.
+		You can split editing using |:Ccontrollersp|.
+		You can split editing vertically using |:Ccontrollervsp|.
+		You can open new tab editing, using |:Ccontrollertab|.
+
+
+Jump to View
+------------
+
+:Cview [{view-name}] [{theme-name}]				*:Cview*
+:Cviewsp [{view-name}] [{theme-name}]				*:Cviewsp*
+:Cviewvsp [{view-name}] [{theme-name}]				*:Cviewvsp*
+:Cviewtab [{view-name}] [{theme-name}]				*:Cviewtab* 
+		Edit the specified or current controller's view.
+
+		{theme-name} is option.
+		When you always use the admin theme, it is not necessary to
+		appoint it if you write it to your .vimrc as follow
+>
+    let g:cakephp_use_theme = "admin"
+<
+		Also you can make a new file if there is no file.
+		You can split editing using |:Cviewsp|.
+		You can split editing vertically using |:Cviewvsp|.
+		You can open new tab editing, using |:Cviewtab|.
+
+
+Jump to Config
+--------------
+
+:Cconfig [{config-name}]					*:Cconfig*
+:Cconfigsp [{config-name}]					*:Cconfigsp*
+:Cconfigvsp [{config-name}]					*:Cconfigvsp*
+:Cconfigtab [{config-name}]					*:Cconfigtab*
+		Edit the specified config file.
+		Also you can make a new file if there is no file.
+		You can split editing using |:Cconfigsp|.
+		You can split editing vertically using |:Cconfigvsp|.
+		You can open new tab editing, using |:Cconfigtab|.
+
+
+Jump to Component
+-----------------
+
+:Ccomponent [{component-name}]					*:Ccomponent*
+:Ccomponentsp [{component-name}]				*:Ccomponentsp*
+:Ccomponentvsp [{component-name}]				*:Ccomponentvsp*
+:Ccomponenttab [{component-name}]				*:Ccomponenttab*
+		Edit the specified component file.
+		Also you can make a new file if there is no file.
+		You can split editing using |:Ccomponentsp|.
+		You can split editing vertically using |:Ccomponentvsp|.
+		You can open new tab editing, using |:Ccomponenttab|.
+
+
+Jump to Shell
+-----------------
+
+:Cshell [{shell-name}]						*:Cshell*
+:Cshellsp [{shell-name}]					*:Cshellsp*
+:Cshellvsp [{shell-name}]					*:Cshellvsp*
+:Cshelltab [{shell-name}]					*:Cshelltab*
+		Edit the specified shell file.
+		Also you can make a new file if there is no file.
+		You can split editing using |:Cshellsp|.
+		You can split editing vertically using |:Cshellvsp|.
+		You can open new tab editing, using |:Cshelltab|.
+
+
+
+Jump to Task
+-----------------
+
+:Ctask [{task-name}]						*:Ctask*
+:Ctasksp [{task-name}]						*:Ctasksp*
+:Ctaskvsp [{task-name}]						*:Ctaskvsp*
+:Ctasktab [{task-name}]						*:Ctasktab*
+		Edit the specified task file.
+		Also you can make a new file if there is no file.
+		You can split editing using |:Ctasksp|.
+		You can split editing vertically using |:Ctaskvsp|.
+		You can open new tab editing, using |:Ctasktab|.
+
+
+Open the Log
+-----------------
+
+:Clog [{log-name}]						*:Clog*
+		Open up the log that I appointed like "tail -f" command quickly.
+		MySQL and Apache logs to see the log quickly, and write the following.
+>
+    let g:cakephp_log = {
+	  \ 'query' : '/var/log/mysqld-query.log',
+	  \ 'access': '/usr/local/apache2/logs/access_log'
+	  \ }
+
+
+
+==============================================================================
+BUGS								*cake-bugs*
+
+    Currently there is no known issue.
+    Welcome your feedback.
+
+
+==============================================================================
+CHANGE LOG							*cake-changelog*
+
+1.2.0	2011-06-07
+     - Fix a few bugs.
+     - g:cakephp_root was removed. g:cakephp_app was added instead. 
+       Thanks to Valentina Rossi.
+     - Add Commands, thanks to Valentina Rossi.
+       |:Ccontrollerview|
+       |:Ccontrollerviewsp|
+       |:Ccontrollerviewvsp|
+       |:Ccontrollerviewtab|
+       |:Config|
+       |:Configsp|
+       |:Configvsp|
+       |:Configtab|
+       |:Ccomponent|
+       |:Ccomponentsp|
+       |:Ccomponentvsp|
+       |:Ccomponenttab|
+       |:Cshell|
+       |:Cshellsp|
+       |:Cshellvsp|
+       |:Cshelltab|
+       |:Ctask|
+       |:Ctasksp|
+       |:Ctaskvsp|
+       |:Ctasktab|
+       |:Clog|
+
+1.1.0	2011-05-09
+     - Add Commands, thanks to Kenichi Kimura.
+       |:Cmodeltab|
+       |:Cviewtab|
+       |:Ccontrollertab|
+
+1.0.0	2011-05-07
+     - Initial version.
+
+==============================================================================
+vim:tw=78:ts=8:ft=help:norl:noet:fen:fdl=0:noet:
