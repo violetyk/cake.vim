@@ -3,7 +3,7 @@ cake.vim is for easy jumping between Controller, Model and View files when devel
 
 Requirements:
 - Vim ver.7.0 or heigher
-- CakePHP ver.1.3 or heigher
+- CakePHP ver.1.3.x
 
 Easy to use:
 
@@ -54,6 +54,20 @@ Edit the specified task.
 
 Edit the debug.log.
 :Clog debug
+
+Edit the specified est case.
+:Ctestmodel hoge
+:Ctestbehavior hoge
+:Ctestcomponent hoge
+:Ctestcontroller hoge
+:Ctesthelper hoge
+
+when current buffer is model or behavior or component,
+ or controller or helper or fixture.
+:Ctest
+
+Edit the specified fixture.
+:Cfixture hoge
 
 
 << install details >>
