@@ -52,13 +52,9 @@ let g:cakephp_log_window_size = 15
 " }}}
 " SECTION: Script Variables {{{
 " ============================================================
-let s:cake_vim_version = '1.2.1'
+let s:cake_vim_version = '1.3.0'
 let s:message_prefix = '[cake.vim] '
 let s:paths = {}
-let s:configs = {}
-let s:components = {}
-let s:shells = {}
-let s:tasks = {}
 let s:log_buffers = {}
 " }}}
 
@@ -95,51 +91,135 @@ function! s:initialize(path)
     let g:cakephp_log['error'] = s:paths.app . "tmp/logs/error.log"
   endif
 
-  call s:cache_configs()
-  call s:cache_components()
-  call s:cache_shells()
-  call s:cache_tasks()
+endfunction
+" }}}
+
+" Function: s:get_controllers() {{{
+" ============================================================
+function! s:get_controllers()
+
+  let controllers = {}
+
+  for path in split(globpath(s:paths.app, "**/*_controller.php"), "\n")
+    let name = s:path_to_name_controller(path)
+    let controllers[name] = path
+  endfor
+
+  return controllers
 
 endfunction
 " }}}
 
-" Function: s:cache_configs() {{{
+" Function: s:get_models() {{{
 " ============================================================
-function! s:cache_configs()
+function! s:get_models()
 
-  for config_path in split(globpath(s:paths.configs, "*.php"), "\n")
-    let s:configs[s:path_to_name_config(config_path)] = config_path
+  let models = {}
+
+  for path in split(globpath(s:paths.models, "*.php"), "\n")
+    let models[s:path_to_name_model(path)] = path
   endfor
+
+  for path in split(globpath(s:paths.app, "*_model.php"), "\n")
+    let name = substitute(s:path_to_name_model(path), "_model$", "", "")
+    let models[name] = path
+  endfor
+
+  return models
 
 endfunction
 " }}}
-" Function: s:cache_components() {{{
+" Function: s:get_views() {{{
 " ============================================================
-function! s:cache_components()
+function! s:get_views(controller_name)
 
-  for component_path in split(globpath(s:paths.components, "*.php"), "\n")
-    let s:components[s:path_to_name_component(component_path)] = component_path
+  let views = []
+
+  " Extracting the function name.
+  let cmd = 'grep -E "^\s*function\s*\w+\s*\(" ' . s:name_to_path_controller(a:controller_name)
+  for line in split(system(cmd), "\n")
+
+    let s = matchend(line, "\s*function\s*.")
+    let e = match(line, "(")
+    let func_name = strpart(line, s, e-s)
+
+    " Callback functions are not eligible.
+    if func_name !~ "^_" && func_name !=? "beforeFilter" && func_name !=? "beforeRender" && func_name !=? "afterFilter"
+      let views = add(views , func_name)
+    endif
   endfor
+
+  return views
 
 endfunction
 " }}}
-" Function: s:cache_shells() {{{
+" Function: s:get_themes() {{{
 " ============================================================
-function! s:cache_shells()
+function! s:get_themes()
 
-  for shell_path in split(globpath(s:paths.shells, "*.php"), "\n")
-    let s:shells[s:path_to_name_shell(shell_path)] = shell_path
+  let themes = {}
+
+  for path in split(globpath(s:paths.themes, "*/"), "\n")
+    let themes[s:path_to_name_theme(path)] = path
   endfor
+
+  return themes
 
 endfunction
 " }}}
-" Function: s:cache_tasks() {{{
+" Function: s:get_configs() {{{
 " ============================================================
-function! s:cache_tasks()
+function! s:get_configs()
 
-  for task_path in split(globpath(s:paths.tasks, "*.php"), "\n")
-    let s:tasks[s:path_to_name_task(task_path)] = task_path
+  let configs = {}
+
+  for path in split(globpath(s:paths.configs, "*.php"), "\n")
+    let configs[s:path_to_name_config(path)] = path
   endfor
+
+  return configs
+
+endfunction
+" }}}
+" Function: s:get_components() {{{
+" ============================================================
+function! s:get_components()
+
+  let components = {}
+
+  for path in split(globpath(s:paths.components, "*.php"), "\n")
+    let components[s:path_to_name_component(path)] = path
+  endfor
+
+  return components
+
+endfunction
+" }}}
+" Function: s:get_shells() {{{
+" ============================================================
+function! s:get_shells()
+
+  let shells = {}
+
+  for path in split(globpath(s:paths.shells, "*.php"), "\n")
+    let shells[s:path_to_name_shell(path)] = path
+  endfor
+
+  return shells
+
+endfunction
+" }}}
+" Function: s:get_tasks() {{{
+" ============================================================
+function! s:get_tasks()
+
+  let tasks = {}
+
+  for path in split(globpath(s:paths.tasks, "*.php"), "\n")
+    let tasks[s:path_to_name_task(path)] = path
+  endfor
+
+  return tasks
 
 endfunction
 " }}}
@@ -307,14 +387,12 @@ function! s:jump_config(...)
 
   let split_option = a:1
   let target = a:2
+  let configs = s:get_configs()
 
-  if !has_key(s:configs, target)
-    " Perhaps that file exists? Challenge again.
+  if !has_key(configs, target)
     " If the file does not exist, ask whether to create a new file.
-    if filewritable(s:name_to_path_config(target))
-      let s:configs[target] = s:name_to_path_config(target)
-    elseif s:confirm_create_file(s:name_to_path_config(target))
-      let s:configs[target] = s:name_to_path_config(target)
+    if s:confirm_create_file(s:name_to_path_config(target))
+      let configs[target] = s:name_to_path_config(target)
     else
       call s:echo_warning(target . " is not found.")
       return
@@ -322,7 +400,7 @@ function! s:jump_config(...)
   endif
 
   let line = 0
-  call s:open_file(s:configs[target], split_option, line)
+  call s:open_file(configs[target], split_option, line)
 
 endfunction
 "}}}
@@ -332,14 +410,12 @@ function! s:jump_component(...)
 
   let split_option = a:1
   let target = a:2
+  let components = s:get_components()
 
-  if !has_key(s:components, target)
-    " Perhaps that file exists? Challenge again.
+  if !has_key(components, target)
     " If the file does not exist, ask whether to create a new file.
-    if filewritable(s:name_to_path_component(target))
-      let s:components[target] = s:name_to_path_component(target)
-    elseif s:confirm_create_file(s:name_to_path_component(target))
-      let s:components[target] = s:name_to_path_component(target)
+    if s:confirm_create_file(s:name_to_path_component(target))
+      let components[target] = s:name_to_path_component(target)
     else
       call s:echo_warning(target . " is not found.")
       return
@@ -347,7 +423,7 @@ function! s:jump_component(...)
   endif
 
   let line = 0
-  call s:open_file(s:components[target], split_option, line)
+  call s:open_file(components[target], split_option, line)
 
 endfunction
 "}}}
@@ -357,14 +433,12 @@ function! s:jump_shell(...)
 
   let split_option = a:1
   let target = a:2
+  let shells = s:get_shells()
 
-  if !has_key(s:shells, target)
-    " Perhaps that file exists? Challenge again.
+  if !has_key(shells, target)
     " If the file does not exist, ask whether to create a new file.
-    if filewritable(s:name_to_path_shell(target))
-      let s:shells[target] = s:name_to_path_shell(target)
-    elseif s:confirm_create_file(s:name_to_path_shell(target))
-      let s:shells[target] = s:name_to_path_shell(target)
+    if s:confirm_create_file(s:name_to_path_shell(target))
+      let shells[target] = s:name_to_path_shell(target)
     else
       call s:echo_warning(target . " is not found.")
       return
@@ -372,7 +446,7 @@ function! s:jump_shell(...)
   endif
 
   let line = 0
-  call s:open_file(s:shells[target], split_option, line)
+  call s:open_file(shells[target], split_option, line)
 
 endfunction
 "}}}
@@ -382,14 +456,12 @@ function! s:jump_task(...)
 
   let split_option = a:1
   let target = a:2
+  let tasks = s:get_tasks()
 
-  if !has_key(s:tasks, target)
-    " Perhaps that file exists? Challenge again.
+  if !has_key(tasks, target)
     " If the file does not exist, ask whether to create a new file.
-    if filewritable(s:name_to_path_task(target))
-      let s:tasks[target] = s:name_to_path_task(target)
-    elseif s:confirm_create_file(s:name_to_path_task(target))
-      let s:tasks[target] = s:name_to_path_task(target)
+    if s:confirm_create_file(s:name_to_path_task(target))
+      let tasks[target] = s:name_to_path_task(target)
     else
       call s:echo_warning(target . " is not found.")
       return
@@ -397,7 +469,7 @@ function! s:jump_task(...)
   endif
 
   let line = 0
-  call s:open_file(s:tasks[target], split_option, line)
+  call s:open_file(tasks[target], split_option, line)
 
 endfunction
 "}}}
@@ -492,79 +564,6 @@ function! s:name_to_path_task(task_name)
 endfunction
 " }}}
 
-" Function: s:get_controllers() {{{
-" ============================================================
-function! s:get_controllers()
-
-  let controllers = {}
-
-  for path in split(globpath(s:paths.app, "**/*_controller.php"), "\n")
-    let name = s:path_to_name_controller(path)
-    let controllers[name] = path
-  endfor
-
-  return controllers
-
-endfunction
-" }}}
-
-" Function: s:get_models() {{{
-" ============================================================
-function! s:get_models()
-
-  let models = {}
-
-  for path in split(globpath(s:paths.models, "*.php"), "\n")
-    let models[s:path_to_name_model(path)] = path
-  endfor
-
-  for path in split(globpath(s:paths.app, "*_model.php"), "\n")
-    let name = substitute(s:path_to_name_model(path), "_model$", "", "")
-    let models[name] = path
-  endfor
-
-  return models
-
-endfunction
-" }}}
-" Function: s:get_views() {{{
-" ============================================================
-function! s:get_views(controller_name)
-
-  let views = []
-
-  " Extracting the function name.
-  let cmd = 'grep -E "^\s*function\s*\w+\s*\(" ' . s:name_to_path_controller(a:controller_name)
-  for line in split(system(cmd), "\n")
-
-    let s = matchend(line, "\s*function\s*.")
-    let e = match(line, "(")
-    let func_name = strpart(line, s, e-s)
-
-    " Callback functions are not eligible.
-    if func_name !~ "^_" && func_name !=? "beforeFilter" && func_name !=? "beforeRender" && func_name !=? "afterFilter"
-      let views = add(views , func_name)
-    endif
-  endfor
-
-  return views
-
-endfunction
-" }}}
-" Function: s:get_themes() {{{
-" ============================================================
-function! s:get_themes()
-
-  let themes = {}
-
-  for path in split(globpath(s:paths.themes, "*/"), "\n")
-    let themes[s:path_to_name_theme(path)] = path
-  endfor
-
-  return themes
-
-endfunction
-" }}}
 
 " Function: s:is_view() {{{
 " ============================================================
@@ -710,28 +709,32 @@ endfunction
 " Function: s:get_complelist_config() {{{
 " ============================================================
 function! s:get_complelist_config(ArgLead, CmdLine, CursorPos)
-  let list = sort(keys(s:configs))
+  let configs = s:get_configs()
+  let list = sort(keys(configs))
   return filter(sort(list), 'v:val =~ "^'. fnameescape(a:ArgLead) . '"')
 endfunction
 " }}}
 " Function: s:get_complelist_component() {{{
 " ============================================================
 function! s:get_complelist_component(ArgLead, CmdLine, CursorPos)
-  let list = sort(keys(s:components))
+  let components = s:get_components()
+  let list = sort(keys(components))
   return filter(sort(list), 'v:val =~ "^'. fnameescape(a:ArgLead) . '"')
 endfunction
 " }}}
 " Function: s:get_complelist_shell() {{{
 " ============================================================
 function! s:get_complelist_shell(ArgLead, CmdLine, CursorPos)
-  let list = sort(keys(s:shells))
+  let shells = s:get_shells()
+  let list = sort(keys(shells))
   return filter(sort(list), 'v:val =~ "^'. fnameescape(a:ArgLead) . '"')
 endfunction
 " }}}
 " Function: s:get_complelist_task() {{{
 " ============================================================
 function! s:get_complelist_task(ArgLead, CmdLine, CursorPos)
-  let list = sort(keys(s:tasks))
+  let tasks = s:get_tasks()
+  let list = sort(keys(tasks))
   return filter(sort(list), 'v:val =~ "^'. fnameescape(a:ArgLead) . '"')
 endfunction
 " }}}
