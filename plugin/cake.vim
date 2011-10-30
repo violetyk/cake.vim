@@ -1,25 +1,11 @@
 " cake.vim - Utility for CakePHP developpers.
 " Maintainer:  Yuhei Kagaya <yuhei.kagaya@gmail.com>
 " License:     This file is placed in the public domain.
-" Last Change: 2011/10/29
+" Last Change: 2011/10/31
 
 
-" -----------------------------------------------
-command! -n=0 Test :call s:test()
-function! s:test()
-  echo s:get_themes()
-  " exec "!cake"
-
-  " let hoge = 'php -r "'
-  " let hoge = hoge . 'echo 123;'  . '"'
-  " echo hoge
-  " echo \"hogehoge\";'"
-  " let result = system( hoge )
-  " echo result
-endfunction
-" -----------------------------------------------
 if exists('g:loaded_cake_vim')
-  " finish
+  finish
 endif
 if v:version < 700
   echoerr "[cake.vim] this plugin requires vim >= 7. Thank you for trying to use this plugin."
@@ -74,17 +60,24 @@ function! s:initialize(path)
     return
   endif
 
-  let s:paths.controllers = s:paths.app . "controllers/"
-  let s:paths.models      = s:paths.app . "models/"
-  let s:paths.behaviors   = s:paths.models . "behaviors/"
-  let s:paths.views       = s:paths.app . "views/"
-  let s:paths.helpers     = s:paths.views . "helpers/"
-  let s:paths.themes      = s:paths.views . "themed/"
-  let s:paths.configs     = s:paths.app . "config/"
-  let s:paths.components  = s:paths.app . "controllers/components/"
-  let s:paths.shells      = s:paths.app . "vendors/shells/"
-  let s:paths.tasks       = s:paths.shells . "tasks/"
-  let s:paths.behaviors   = s:paths.models . "behaviors/"
+  let s:paths.controllers      = s:paths.app . "controllers/"
+  let s:paths.models           = s:paths.app . "models/"
+  let s:paths.behaviors        = s:paths.models . "behaviors/"
+  let s:paths.views            = s:paths.app . "views/"
+  let s:paths.helpers          = s:paths.views . "helpers/"
+  let s:paths.themes           = s:paths.views . "themed/"
+  let s:paths.configs          = s:paths.app . "config/"
+  let s:paths.components       = s:paths.app . "controllers/components/"
+  let s:paths.shells           = s:paths.app . "vendors/shells/"
+  let s:paths.tasks            = s:paths.shells . "tasks/"
+  let s:paths.behaviors        = s:paths.models . "behaviors/"
+  let s:paths.test             = s:paths.app . "tests/cases/"
+  let s:paths.testmodels       = s:paths.test . "models/"
+  let s:paths.testbehaviors    = s:paths.test . "behaviors/"
+  let s:paths.testcomponents   = s:paths.test . "components/"
+  let s:paths.testcontrollers  = s:paths.test . "controllers/"
+  let s:paths.testhelpers      = s:paths.test . "helpers/"
+  let s:paths.fixtures         = s:paths.app  . "tests/fixtures/"
 
   if !has_key(g:cakephp_log, 'debug') || g:cakephp_log['debug'] == ''
     let g:cakephp_log['debug'] = s:paths.app . "tmp/logs/debug.log"
@@ -97,6 +90,36 @@ function! s:initialize(path)
 endfunction
 " }}}
 
+" Function: s:_get_dict() {{{
+" ============================================================
+function! s:_get_dict(object_path, pattern)
+
+  let dict = {}
+
+  for path in split(globpath(a:object_path, a:pattern), "\n")
+    let name = s:path_to_name(path)
+    let dict[name] = path
+  endfor
+
+  return dict
+
+endfunction
+" }}}
+" Function: s:_get_dict_test() {{{
+" ============================================================
+function! s:_get_dict_test(object_path, pattern)
+
+  let dict = {}
+
+  for path in split(globpath(a:object_path, a:pattern), "\n")
+    let name = s:path_to_name_test(path)
+    let dict[name] = path
+  endfor
+
+  return dict
+
+endfunction
+" }}}
 " Function: s:get_controllers() {{{
 " ============================================================
 function! s:get_controllers()
@@ -123,8 +146,7 @@ function! s:get_models()
   endfor
 
   for path in split(globpath(s:paths.app, "*_model.php"), "\n")
-    let name = substitute(s:path_to_name_model(path), "_model$", "", "")
-    let models[name] = path
+    let models[s:path_to_name_model(path)] = path
   endfor
 
   return models
@@ -172,84 +194,88 @@ endfunction
 " Function: s:get_configs() {{{
 " ============================================================
 function! s:get_configs()
-
-  let configs = {}
-
-  for path in split(globpath(s:paths.configs, "*.php"), "\n")
-    let configs[s:path_to_name_config(path)] = path
-  endfor
-
-  return configs
-
+  return s:_get_dict(s:paths.configs, "*.php")
 endfunction
 " }}}
 " Function: s:get_components() {{{
 " ============================================================
 function! s:get_components()
-
-  let components = {}
-
-  for path in split(globpath(s:paths.components, "*.php"), "\n")
-    let components[s:path_to_name_component(path)] = path
-  endfor
-
-  return components
-
+  return s:_get_dict(s:paths.components, "*.php")
 endfunction
 " }}}
 " Function: s:get_shells() {{{
 " ============================================================
 function! s:get_shells()
-
-  let shells = {}
-
-  for path in split(globpath(s:paths.shells, "*.php"), "\n")
-    let shells[s:path_to_name_shell(path)] = path
-  endfor
-
-  return shells
-
+  return s:_get_dict(s:paths.shells, "*.php")
 endfunction
 " }}}
 " Function: s:get_tasks() {{{
 " ============================================================
 function! s:get_tasks()
-
-  let tasks = {}
-
-  for path in split(globpath(s:paths.tasks, "*.php"), "\n")
-    let tasks[s:path_to_name_task(path)] = path
-  endfor
-
-  return tasks
-
+  return s:_get_dict(s:paths.tasks, "*.php")
 endfunction
 " }}}
 " Function: s:get_behaviors() {{{
 " ============================================================
 function! s:get_behaviors()
-
-  let behaviors = {}
-
-  for path in split(globpath(s:paths.behaviors, "*.php"), "\n")
-    let behaviors[s:path_to_name_behavior(path)] = path
-  endfor
-
-  return behaviors
-
+  return s:_get_dict(s:paths.behaviors, "*.php")
 endfunction
 " }}}
 " Function: s:get_helpers() {{{
 " ============================================================
 function! s:get_helpers()
+  return s:_get_dict(s:paths.helpers, "*.php")
+endfunction
+" }}}
+" Function: s:get_testmodels() {{{
+" ============================================================
+function! s:get_testmodels()
+  return s:_get_dict_test(s:paths.testmodels, "*.test.php")
+endfunction
+" }}}
+" Function: s:get_testbehaviors() {{{
+" ============================================================
+function! s:get_testbehaviors()
+  return s:_get_dict_test(s:paths.testbehaviors, "*.test.php")
+endfunction
+" }}}
+" Function: s:get_testcomponents() {{{
+" ============================================================
+function! s:get_testcomponents()
+  return s:_get_dict_test(s:paths.testcomponents, "*.test.php")
+endfunction
+" }}}
+" Function: s:get_testcontrollers() {{{
+" ============================================================
+function! s:get_testcontrollers()
 
-  let helpers = {}
+  let testcontrollers = {}
 
-  for path in split(globpath(s:paths.helpers, "*.php"), "\n")
-    let helpers[s:path_to_name_helper(path)] = path
+  for path in split(globpath(s:paths.testcontrollers, "*_controller.test.php"), "\n")
+    let testcontrollers[s:path_to_name_testcontroller(path)] = path
   endfor
 
-  return helpers
+  return testcontrollers
+
+endfunction
+" }}}
+" Function: s:get_testhelpers() {{{
+" ============================================================
+function! s:get_testhelpers()
+  return s:_get_dict_test(s:paths.testhelpers, "*.test.php")
+endfunction
+" }}}
+" Function: s:get_fixtures() {{{
+" ============================================================
+function! s:get_fixtures()
+
+  let fixtures = {}
+
+  for path in split(globpath(s:paths.fixtures, "*_fixture.php"), "\n")
+    let fixtures[s:path_to_name_fixture(path)] = path
+  endfor
+
+  return fixtures
 
 endfunction
 " }}}
@@ -266,7 +292,7 @@ function! s:jump_controller(...)
     " Controller name is specified in the argument.
     let target = a:2
   else
-    " Controller name is inferred from the currently opened file (view or model).
+    " Controller name is inferred from the currently opened file (view or model or testcontroller).
     let path = expand("%:p")
 
     if s:is_view(path)
@@ -274,6 +300,8 @@ function! s:jump_controller(...)
       let func_name = expand("%:p:t:r")
     elseif s:is_model(path)
       let target = s:pluralize(expand("%:p:t:r"))
+    elseif s:is_testcontroller(path)
+      let target = s:path_to_name_testcontroller(path)
     else
       return
     endif
@@ -313,7 +341,6 @@ endfunction
 function! s:jump_model(...)
 
   let split_option = a:1
-
   let target = ''
 
   if a:0 >= 2
@@ -325,6 +352,10 @@ function! s:jump_model(...)
 
     if s:is_controller(path)
       let target = s:singularize(substitute(expand("%:p:t:r"), "_controller$", "", ""))
+    elseif s:is_testmodel(path)
+      let target = s:path_to_name_test(path)
+    elseif s:is_fixture(path)
+      let target = s:path_to_name_fixture(path)
     else
       return
     endif
@@ -439,8 +470,22 @@ endfunction
 function! s:jump_component(...)
 
   let split_option = a:1
-  let target = a:2
+  let target = ''
   let components = s:get_components()
+
+  if a:0 >= 2
+    " Component name is specified in the argument.
+    let target = a:2
+  else
+    " Component name is inferred from the currently opened testcomponent file.
+    let path = expand("%:p")
+
+    if s:is_testcomponent(path)
+      let target = s:path_to_name_test(path)
+    else
+      return
+    endif
+  endif
 
   if !has_key(components, target)
     " If the file does not exist, ask whether to create a new file.
@@ -508,8 +553,22 @@ endfunction
 function! s:jump_behavior(...)
 
   let split_option = a:1
-  let target = a:2
+  let target = ''
   let behaviors = s:get_behaviors()
+
+  if a:0 >= 2
+    " Behaivior name is specified in the argument.
+    let target = a:2
+  else
+    " Behaivior name is inferred from the currently opened testbehavior file.
+    let path = expand("%:p")
+
+    if s:is_testbehavior(path)
+      let target = s:path_to_name(path)
+    else
+      return
+    endif
+  endif
 
   if !has_key(behaviors, target)
     " If the file does not exist, ask whether to create a new file.
@@ -531,8 +590,22 @@ endfunction
 function! s:jump_helper(...)
 
   let split_option = a:1
-  let target = a:2
+  let target = ''
   let helpers = s:get_helpers()
+
+  if a:0 >= 2
+    " Helper name is specified in the argument.
+    let target = a:2
+  else
+    " Helper name is inferred from the currently opened testhelper file.
+    let path = expand("%:p")
+
+    if s:is_testhelper(path)
+      let target = s:path_to_name_test(path)
+    else
+      return
+    endif
+  endif
 
   if !has_key(helpers, target)
     " If the file does not exist, ask whether to create a new file.
@@ -549,6 +622,276 @@ function! s:jump_helper(...)
 
 endfunction
 "}}}
+" Function: s:jump_testmodel() {{{
+" ============================================================
+function! s:jump_testmodel(...)
+
+  let split_option = a:1
+  let target = ''
+  let testmodels = s:get_testmodels()
+
+  if a:0 >= 2
+    " Model name is specified in the argument.
+    let target = a:2
+  else
+    " Model name is inferred from the currently opened controller file.
+    let path = expand("%:p")
+
+    if s:is_model(path)
+      let target = s:path_to_name_model(path)
+    elseif s:is_fixture(path)
+      let target = s:path_to_name_fixture(path)
+    else
+      return
+    endif
+  endif
+
+  if !has_key(testmodels, target)
+    " If the file does not exist, ask whether to create a new file.
+    if s:confirm_create_file(s:name_to_path_testmodel(target))
+      let testmodels[target] = s:name_to_path_testmodel(target)
+    else
+      call s:echo_warning(target . " is not found.")
+      return
+    endif
+  endif
+
+  let line = 0
+  call s:open_file(testmodels[target], split_option, line)
+
+endfunction
+"}}}
+" Function: s:jump_testbehavior() {{{
+" ============================================================
+function! s:jump_testbehavior(...)
+
+  let split_option = a:1
+  let target = ''
+  let testbehaviors = s:get_testbehaviors()
+
+  if a:0 >= 2
+    " Behaivior name is specified in the argument.
+    let target = a:2
+  else
+    " Behaivior name is inferred from the currently opened behavior file.
+    let path = expand("%:p")
+
+    if s:is_behavior(path)
+      let target = s:path_to_name_test(path)
+    else
+      return
+    endif
+  endif
+
+  if !has_key(testbehaviors, target)
+    " If the file does not exist, ask whether to create a new file.
+    if s:confirm_create_file(s:name_to_path_testbehavior(target))
+      let testbehaviors[target] = s:name_to_path_testbehavior(target)
+    else
+      call s:echo_warning(target . " is not found.")
+      return
+    endif
+  endif
+
+  let line = 0
+  call s:open_file(testbehaviors[target], split_option, line)
+
+endfunction
+"}}}
+" Function: s:jump_testcomponent() {{{
+" ============================================================
+function! s:jump_testcomponent(...)
+
+  let split_option = a:1
+  let target = ''
+  let testcomponents = s:get_testcomponents()
+
+
+  if a:0 >= 2
+    " Component name is specified in the argument.
+    let target = a:2
+  else
+    " Componen tname is inferred from the currently opened component file.
+    let path = expand("%:p")
+
+    if s:is_component(path)
+      let target = s:path_to_name(path)
+    else
+      return
+    endif
+  endif
+
+  if !has_key(testcomponents, target)
+    " If the file does not exist, ask whether to create a new file.
+    if s:confirm_create_file(s:name_to_path_testcomponent(target))
+      let testcomponents[target] = s:name_to_path_testcomponent(target)
+    else
+      call s:echo_warning(target . " is not found.")
+      return
+    endif
+  endif
+
+  let line = 0
+  call s:open_file(testcomponents[target], split_option, line)
+
+endfunction
+"}}}
+" Function: s:jump_testcontroller() {{{
+" ============================================================
+function! s:jump_testcontroller(...)
+
+  let split_option = a:1
+  let target = ''
+  let testcontrollers = s:get_testcontrollers()
+
+  if a:0 >= 2
+    " Controller name is specified in the argument.
+    let target = a:2
+  else
+    " Controller name is inferred from the currently opened controllers file.
+    let path = expand("%:p")
+
+    if s:is_controller(path)
+      let target = s:path_to_name_controller(path)
+    else
+      return
+    endif
+  endif
+
+  if !has_key(testcontrollers, target)
+    " If the file does not exist, ask whether to create a new file.
+    if s:confirm_create_file(s:name_to_path_testcontroller(target))
+      let testcontrollers[target] = s:name_to_path_testcontroller(target)
+    else
+      call s:echo_warning(target . " is not found.")
+      return
+    endif
+  endif
+
+  let line = 0
+  call s:open_file(testcontrollers[target], split_option, line)
+
+endfunction
+"}}}
+" Function: s:jump_testhelper() {{{
+" ============================================================
+function! s:jump_testhelper(...)
+
+  let split_option = a:1
+  let target = ''
+  let testhelpers = s:get_testhelpers()
+
+  if a:0 >= 2
+    " Helper name is specified in the argument.
+    let target = a:2
+  else
+    " Helper name is inferred from the currently opened helper file.
+    let path = expand("%:p")
+
+    if s:is_helper(path)
+      let target = s:path_to_name(path)
+    else
+      return
+    endif
+  endif
+
+  if !has_key(testhelpers, target)
+    " If the file does not exist, ask whether to create a new file.
+    if s:confirm_create_file(s:name_to_path_testhelper(target))
+      let testhelpers[target] = s:name_to_path_testhelper(target)
+    else
+      call s:echo_warning(target . " is not found.")
+      return
+    endif
+  endif
+
+  let line = 0
+  call s:open_file(testhelpers[target], split_option, line)
+
+endfunction
+"}}}
+" Function: s:jump_test() {{{
+" ============================================================
+function! s:jump_test(...)
+
+  let split_option = a:1
+  let path = expand("%:p")
+
+  if s:is_component(path)
+    " -> testcomponent
+    let target = s:path_to_name(path)
+    call s:jump_testcomponent(a:1, target)
+
+  elseif s:is_controller(path)
+    " -> testcontroller
+    let target = s:path_to_name_controller(path)
+    call s:jump_testcontroller(a:1, target)
+
+  elseif s:is_behavior(path)
+    " -> testbehavior
+    let target = s:path_to_name(path)
+    call s:jump_testbehavior(a:1, target)
+
+  elseif s:is_model(path)
+    " -> testmodel
+    let target = s:path_to_name_model(path)
+    call s:jump_testmodel(a:1, target)
+
+  elseif s:is_fixture(path)
+    " -> testmodel
+    let target = s:path_to_name_fixture(path)
+    call s:jump_testmodel(a:1, target)
+
+  elseif s:is_helper(path)
+    " -> testhelper
+    let target = s:path_to_name(path)
+    call s:jump_testhelper(a:1, target)
+  else
+    return
+  endif
+
+endfunction
+"}}}
+" Function: s:jump_fixture() {{{
+" ============================================================
+function! s:jump_fixture(...)
+
+  let split_option = a:1
+  let target = ''
+  let fixtures = s:get_fixtures()
+
+  if a:0 >= 2
+    " fixture name is specified in the argument.
+    let target = a:2
+  else
+    " fixture name is inferred from the currently opened model file.
+    let path = expand("%:p")
+
+    if s:is_model(path)
+      let target = s:path_to_name_model(path)
+    elseif s:is_testmodel(path)
+      let target = s:path_to_name_test(path)
+    else
+      return
+    endif
+  endif
+
+  if !has_key(fixtures, target)
+    " If the file does not exist, ask whether to create a new file.
+    if s:confirm_create_file(s:name_to_path_fixture(target))
+      let fixtures[target] = s:name_to_path_fixture(target)
+    else
+      call s:echo_warning(target . " is not found.")
+      return
+    endif
+  endif
+
+  let line = 0
+  call s:open_file(fixtures[target], split_option, line)
+
+endfunction
+"}}}
+
 " Function: s:tail_log() {{{
 " ============================================================
 function! s:tail_log(log_name)
@@ -561,144 +904,182 @@ function! s:tail_log(log_name)
 endfunction
 "}}}
 
-" Function: s:path_to_name_controller() {{{
+" Functions: s:path_to_name_xxx() {{{
 " ============================================================
-function! s:path_to_name_controller(controller_path)
-  return substitute(fnamemodify(a:controller_path, ":t:r"), "_controller$", "", "")
+function! s:path_to_name(path)
+  return fnamemodify(a:path, ":t:r")
 endfunction
-" }}}
-" Function: s:path_to_name_model() {{{
-" ============================================================
-function! s:path_to_name_model(model_path)
-  return fnamemodify(a:model_path, ":t:r")
+
+function! s:path_to_name_controller(path)
+  return substitute(fnamemodify(a:path, ":t:r"), "_controller$", "", "")
 endfunction
-" }}}
-" Function: s:path_to_name_theme() {{{
-" ============================================================
-function! s:path_to_name_theme(theme_path)
-  return fnamemodify(a:theme_path, ":p:h:t")
+
+function! s:path_to_name_model(path)
+  return substitute(fnamemodify(a:path, ":t:r"), "_model$", "", "")
 endfunction
-" }}}
-" Function: s:path_to_name_config() {{{
-" ============================================================
-function! s:path_to_name_config(config_path)
-  return fnamemodify(a:config_path, ":t:r")
+
+function! s:path_to_name_theme(path)
+  return fnamemodify(a:path, ":p:h:t")
 endfunction
-" }}}
-" Function: s:path_to_name_component() {{{
-" ============================================================
-function! s:path_to_name_component(component_path)
-  return fnamemodify(a:component_path, ":t:r")
+
+function! s:path_to_name_test(path)
+  return substitute(fnamemodify(a:path, ":t:r"), ".test$", "", "")
 endfunction
-" }}}
-" Function: s:path_to_name_shell() {{{
-" ============================================================
-function! s:path_to_name_shell(shell_path)
-  return fnamemodify(a:shell_path, ":t:r")
+
+function! s:path_to_name_testcontroller(path)
+  return substitute(fnamemodify(a:path, ":t:r"), "_controller.test$", "", "")
 endfunction
-" }}}
-" Function: s:path_to_name_task() {{{
-" ============================================================
-function! s:path_to_name_task(task_path)
-  return fnamemodify(a:task_path, ":t:r")
-endfunction
-" }}}
-" Function: s:path_to_name_behavior() {{{
-" ============================================================
-function! s:path_to_name_behavior(behavior_path)
-  return fnamemodify(a:behavior_path, ":t:r")
-endfunction
-" }}}
-" Function: s:path_to_name_helper() {{{
-" ============================================================
-function! s:path_to_name_helper(helper_path)
-  return fnamemodify(a:helper_path, ":t:r")
-endfunction
-" }}}
-" Function: s:name_to_path_controller() {{{
-" ============================================================
-function! s:name_to_path_controller(controller_name)
-  return s:paths.controllers . a:controller_name . "_controller.php"
-endfunction
-" }}}
-" Function: s:name_to_path_model() {{{
-" ============================================================
-function! s:name_to_path_model(model_name)
-  return s:paths.models . a:model_name . ".php"
-endfunction
-" }}}
-" Function: s:name_to_path_config() {{{
-" ============================================================
-function! s:name_to_path_config(config_name)
-  return s:paths.configs . a:config_name . ".php"
-endfunction
-" }}}
-" Function: s:name_to_path_component() {{{
-" ============================================================
-function! s:name_to_path_component(component_name)
-  return s:paths.components . a:component_name . ".php"
-endfunction
-" }}}
-" Function: s:name_to_path_shell() {{{
-" ============================================================
-function! s:name_to_path_shell(shell_name)
-  return s:paths.shells . a:shell_name . ".php"
-endfunction
-" }}}
-" Function: s:name_to_path_task() {{{
-" ============================================================
-function! s:name_to_path_task(task_name)
-  return s:paths.tasks . a:task_name . ".php"
-endfunction
-" }}}
-" Function: s:name_to_path_behavior() {{{
-" ============================================================
-function! s:name_to_path_behavior(behavior_name)
-  return s:paths.behaviors . a:behavior_name . ".php"
-endfunction
-" }}}
-" Function: s:name_to_path_helper() {{{
-" ============================================================
-function! s:name_to_path_helper(helper_name)
-  return s:paths.helpers . a:helper_name . ".php"
+
+function! s:path_to_name_fixture(path)
+  return substitute(fnamemodify(a:path, ":t:r"), "_fixture$", "", "")
 endfunction
 " }}}
 
-" Function: s:is_view() {{{
+" Functions: s:name_to_path_xxx() {{{
+" ============================================================
+function! s:name_to_path_controller(name)
+  return s:paths.controllers . a:name . "_controller.php"
+endfunction
+
+function! s:name_to_path_model(name)
+  return s:paths.models . a:name . ".php"
+endfunction
+
+function! s:name_to_path_config(name)
+  return s:paths.configs . a:name . ".php"
+endfunction
+
+function! s:name_to_path_component(name)
+  return s:paths.components . a:name . ".php"
+endfunction
+
+function! s:name_to_path_shell(name)
+  return s:paths.shells . a:name . ".php"
+endfunction
+
+function! s:name_to_path_task(name)
+  return s:paths.tasks . a:name . ".php"
+endfunction
+
+function! s:name_to_path_behavior(name)
+  return s:paths.behaviors . a:name . ".php"
+endfunction
+
+function! s:name_to_path_helper(name)
+  return s:paths.helpers . a:name . ".php"
+endfunction
+
+function! s:name_to_path_testmodel(name)
+  return s:paths.testmodels . a:name . ".test.php"
+endfunction
+
+function! s:name_to_path_testbehavior(name)
+  return s:paths.testbehaviors . a:name . ".test.php"
+endfunction
+
+function! s:name_to_path_testcomponent(name)
+  return s:paths.testcomponents . a:name . ".test.php"
+endfunction
+
+function! s:name_to_path_testcontroller(name)
+  return s:paths.testcontrollers . a:name . "_controller.test.php"
+endfunction
+
+function! s:name_to_path_testhelper(name)
+  return s:paths.testhelpers . a:name . ".test.php"
+endfunction
+
+function! s:name_to_path_fixture(name)
+  return s:paths.fixtures. a:name . "_fixture.php"
+endfunction
+" }}}
+
+" Functions: s:is_xxx() {{{
 " ============================================================
 function! s:is_view(path)
-
   if filereadable(a:path) && match(a:path, s:paths.views) != -1 && fnamemodify(a:path, ":e") == "ctp"
     return 1
   endif
-
   return 0
-
 endfunction
-" }}}
-" Function: s:is_model() {{{
-" ============================================================
-function! s:is_model(path)
 
+function! s:is_model(path)
   if filereadable(a:path) && match(a:path, s:paths.models) != -1 && fnamemodify(a:path, ":e") == "php"
     return 1
   endif
-
   return 0
-
 endfunction
-" }}}
-" Function: s:is_controller() {{{
-" ============================================================
-function! s:is_controller(path)
 
+function! s:is_controller(path)
   if filereadable(a:path) && match(a:path, s:paths.controllers) != -1 && match(a:path, "_controller\.php$") != -1
     return 1
   endif
-
   return 0
-
 endfunction
+
+function! s:is_component(path)
+  if filereadable(a:path) && match(a:path, s:paths.components) != -1 && fnamemodify(a:path, ":e") == "php"
+    return 1
+  endif
+  return 0
+endfunction
+
+function! s:is_behavior(path)
+  if filereadable(a:path) && match(a:path, s:paths.behaviors) != -1 && fnamemodify(a:path, ":e") == "php"
+    return 1
+  endif
+  return 0
+endfunction
+
+function! s:is_helper(path)
+  if filereadable(a:path) && match(a:path, s:paths.helpers) != -1 && fnamemodify(a:path, ":e") == "php"
+    return 1
+  endif
+  return 0
+endfunction
+
+function! s:is_testmodel(path)
+  if filereadable(a:path) && match(a:path, s:paths.testmodels) != -1 && match(a:path, "\.test\.php$") != -1
+    return 1
+  endif
+  return 0
+endfunction
+
+function! s:is_testbehavior(path)
+  if filereadable(a:path) && match(a:path, s:paths.testbehaviors) != -1 && match(a:path, "\.test\.php$") != -1
+    return 1
+  endif
+  return 0
+endfunction
+
+function! s:is_testcomponent(path)
+  if filereadable(a:path) && match(a:path, s:paths.testcomponents) != -1 && match(a:path, "\.test\.php$") != -1
+    return 1
+  endif
+  return 0
+endfunction
+
+function! s:is_testcontroller(path)
+  if filereadable(a:path) && match(a:path, s:paths.testcontrollers) != -1 && match(a:path, "_controller\.test\.php$") != -1
+    return 1
+  endif
+  return 0
+endfunction
+
+function! s:is_testhelper(path)
+  if filereadable(a:path) && match(a:path, s:paths.testhelpers) != -1 && match(a:path, "\.test\.php$") != -1
+    return 1
+  endif
+  return 0
+endfunction
+
+function! s:is_fixture(path)
+  if filereadable(a:path) && match(a:path, s:paths.fixtures) != -1 && match(a:path, "_fixture\.php$") != -1
+    return 1
+  endif
+  return 0
+endfunction
+
 " }}}
 
 " Function: s:singularize() {{{
@@ -746,20 +1127,24 @@ function! s:pluralize(word)
 endfunction
 " }}}
 
+
+" Function: s:get_complelist() {{{
+" ============================================================
+function! s:get_complelist(dict,ArgLead)
+  let list = sort(keys(a:dict))
+  return filter(list, 'v:val =~ "^'. fnameescape(a:ArgLead) . '"')
+endfunction
+" }}}
 " Function: s:get_complelist_controller() {{{
 " ============================================================
 function! s:get_complelist_controller(ArgLead, CmdLine, CursorPos)
-  let controllers = s:get_controllers()
-  let list = sort(keys(controllers))
-  return filter(list, 'v:val =~ "^'. fnameescape(a:ArgLead) . '"')
+  return s:get_complelist(s:get_controllers(), a:ArgLead)
 endfunction
 " }}}
 " Function: s:get_complelist_model() {{{
 " ============================================================
 function! s:get_complelist_model(ArgLead, CmdLine, CursorPos)
-  let models = s:get_models()
-  let list = sort(keys(models))
-  return filter(list, 'v:val =~ "^'. fnameescape(a:ArgLead) . '"')
+  return s:get_complelist(s:get_models(), a:ArgLead)
 endfunction
 " }}}
 " Function: s:get_complelist_view() {{{
@@ -808,49 +1193,67 @@ endfunction
 " Function: s:get_complelist_config() {{{
 " ============================================================
 function! s:get_complelist_config(ArgLead, CmdLine, CursorPos)
-  let configs = s:get_configs()
-  let list = sort(keys(configs))
-  return filter(sort(list), 'v:val =~ "^'. fnameescape(a:ArgLead) . '"')
+  return s:get_complelist(s:get_configs(), a:ArgLead)
 endfunction
 " }}}
 " Function: s:get_complelist_component() {{{
 " ============================================================
 function! s:get_complelist_component(ArgLead, CmdLine, CursorPos)
-  let components = s:get_components()
-  let list = sort(keys(components))
-  return filter(sort(list), 'v:val =~ "^'. fnameescape(a:ArgLead) . '"')
+  return s:get_complelist(s:get_components(), a:ArgLead)
 endfunction
 " }}}
 " Function: s:get_complelist_shell() {{{
 " ============================================================
 function! s:get_complelist_shell(ArgLead, CmdLine, CursorPos)
-  let shells = s:get_shells()
-  let list = sort(keys(shells))
-  return filter(sort(list), 'v:val =~ "^'. fnameescape(a:ArgLead) . '"')
+  return s:get_complelist(s:get_shells(), a:ArgLead)
 endfunction
 " }}}
 " Function: s:get_complelist_task() {{{
 " ============================================================
 function! s:get_complelist_task(ArgLead, CmdLine, CursorPos)
-  let tasks = s:get_tasks()
-  let list = sort(keys(tasks))
-  return filter(sort(list), 'v:val =~ "^'. fnameescape(a:ArgLead) . '"')
+  return s:get_complelist(s:get_tasks(), a:ArgLead)
 endfunction
 " }}}
 " Function: s:get_complelist_behavior() {{{
 " ============================================================
 function! s:get_complelist_behavior(ArgLead, CmdLine, CursorPos)
-  let behaviors = s:get_behaviors()
-  let list = sort(keys(behaviors))
-  return filter(sort(list), 'v:val =~ "^'. fnameescape(a:ArgLead) . '"')
+  return s:get_complelist(s:get_behaviors(), a:ArgLead)
 endfunction
 " }}}
 " Function: s:get_complelist_helper() {{{
 " ============================================================
 function! s:get_complelist_helper(ArgLead, CmdLine, CursorPos)
-  let helpers = s:get_helpers()
-  let list = sort(keys(helpers))
-  return filter(sort(list), 'v:val =~ "^'. fnameescape(a:ArgLead) . '"')
+  return s:get_complelist(s:get_helpers(), a:ArgLead)
+endfunction
+" }}}
+" Function: s:get_complelist_testmodel() {{{
+" ============================================================
+function! s:get_complelist_testmodel(ArgLead, CmdLine, CursorPos)
+  return s:get_complelist(s:get_testmodels(), a:ArgLead)
+endfunction
+" }}}
+" Function: s:get_complelist_testbehavior() {{{
+" ============================================================
+function! s:get_complelist_testbehavior(ArgLead, CmdLine, CursorPos)
+  return s:get_complelist(s:get_testbehaviors(), a:ArgLead)
+endfunction
+" }}}
+" Function: s:get_complelist_testcomponent() {{{
+" ============================================================
+function! s:get_complelist_testcomponent(ArgLead, CmdLine, CursorPos)
+  return s:get_complelist(s:get_testcomponents(), a:ArgLead)
+endfunction
+" }}}
+" Function: s:get_complelist_testcontroller() {{{
+" ============================================================
+function! s:get_complelist_testcontroller(ArgLead, CmdLine, CursorPos)
+  return s:get_complelist(s:get_testcontrollers(), a:ArgLead)
+endfunction
+" }}}
+" Function: s:get_complelist_testhelper() {{{
+" ============================================================
+function! s:get_complelist_testhelper(ArgLead, CmdLine, CursorPos)
+  return s:get_complelist(s:get_testhelpers(), a:ArgLead)
 endfunction
 " }}}
 " Function: s:get_complelist_log() {{{
@@ -858,6 +1261,12 @@ endfunction
 function! s:get_complelist_log(ArgLead, CmdLine, CursorPos)
   let list = sort(keys(g:cakephp_log))
   return filter(sort(list), 'v:val =~ "^'. fnameescape(a:ArgLead) . '"')
+endfunction
+" }}}
+" Function: s:get_complelist_fixture() {{{
+" ============================================================
+function! s:get_complelist_fixture(ArgLead, CmdLine, CursorPos)
+  return s:get_complelist(s:get_fixtures(), a:ArgLead)
 endfunction
 " }}}
 
@@ -1024,10 +1433,10 @@ command! -n=1 -complete=customlist,s:get_complelist_config Cconfigtab call s:jum
 
 " * -> Component
 " Argument is Component.
-command! -n=1 -complete=customlist,s:get_complelist_component Ccomponent call s:jump_component('n', <f-args>)
-command! -n=1 -complete=customlist,s:get_complelist_component Ccomponentsp call s:jump_component('s', <f-args>)
-command! -n=1 -complete=customlist,s:get_complelist_component Ccomponentvsp call s:jump_component('v', <f-args>)
-command! -n=1 -complete=customlist,s:get_complelist_component Ccomponenttab call s:jump_component('t', <f-args>)
+command! -n=? -complete=customlist,s:get_complelist_component Ccomponent call s:jump_component('n', <f-args>)
+command! -n=? -complete=customlist,s:get_complelist_component Ccomponentsp call s:jump_component('s', <f-args>)
+command! -n=? -complete=customlist,s:get_complelist_component Ccomponentvsp call s:jump_component('v', <f-args>)
+command! -n=? -complete=customlist,s:get_complelist_component Ccomponenttab call s:jump_component('t', <f-args>)
 
 " * -> Shell
 " Argument is Shell.
@@ -1045,17 +1454,65 @@ command! -n=1 -complete=customlist,s:get_complelist_task Ctasktab call s:jump_ta
 
 " * -> Behavior
 " Argument is Behavior.
-command! -n=1 -complete=customlist,s:get_complelist_behavior Cbehavior call s:jump_behavior('n', <f-args>)
-command! -n=1 -complete=customlist,s:get_complelist_behavior Cbehaviorsp call s:jump_behavior('s', <f-args>)
-command! -n=1 -complete=customlist,s:get_complelist_behavior Cbehaviorvsp call s:jump_behavior('v', <f-args>)
-command! -n=1 -complete=customlist,s:get_complelist_behavior Cbehaviortab call s:jump_behavior('t', <f-args>)
+command! -n=? -complete=customlist,s:get_complelist_behavior Cbehavior call s:jump_behavior('n', <f-args>)
+command! -n=? -complete=customlist,s:get_complelist_behavior Cbehaviorsp call s:jump_behavior('s', <f-args>)
+command! -n=? -complete=customlist,s:get_complelist_behavior Cbehaviorvsp call s:jump_behavior('v', <f-args>)
+command! -n=? -complete=customlist,s:get_complelist_behavior Cbehaviortab call s:jump_behavior('t', <f-args>)
 
 " * -> Helper
 " Argument is Helper.
-command! -n=1 -complete=customlist,s:get_complelist_helper Chelper call s:jump_helper('n', <f-args>)
-command! -n=1 -complete=customlist,s:get_complelist_helper Chelpersp call s:jump_helper('s', <f-args>)
-command! -n=1 -complete=customlist,s:get_complelist_helper Chelpervsp call s:jump_helper('v', <f-args>)
-command! -n=1 -complete=customlist,s:get_complelist_helper Chelpertab call s:jump_helper('t', <f-args>)
+command! -n=? -complete=customlist,s:get_complelist_helper Chelper call s:jump_helper('n', <f-args>)
+command! -n=? -complete=customlist,s:get_complelist_helper Chelpersp call s:jump_helper('s', <f-args>)
+command! -n=? -complete=customlist,s:get_complelist_helper Chelpervsp call s:jump_helper('v', <f-args>)
+command! -n=? -complete=customlist,s:get_complelist_helper Chelpertab call s:jump_helper('t', <f-args>)
+
+" * -> Test of Model
+" Argument is Test of Model.
+command! -n=? -complete=customlist,s:get_complelist_testmodel Ctestmodel call s:jump_testmodel('n', <f-args>)
+command! -n=? -complete=customlist,s:get_complelist_testmodel Ctestmodelsp call s:jump_testmodel('s', <f-args>)
+command! -n=? -complete=customlist,s:get_complelist_testmodel Ctestmodelvsp call s:jump_testmodel('v', <f-args>)
+command! -n=? -complete=customlist,s:get_complelist_testmodel Ctestmodeltab call s:jump_testmodel('t', <f-args>)
+
+" * -> Test of Behavior
+" Argument is Test of Behavior.
+command! -n=? -complete=customlist,s:get_complelist_testbehavior Ctestbehavior call s:jump_testbehavior('n', <f-args>)
+command! -n=? -complete=customlist,s:get_complelist_testbehavior Ctestbehaviorsp call s:jump_testbehavior('s', <f-args>)
+command! -n=? -complete=customlist,s:get_complelist_testbehavior Ctestbehaviorvsp call s:jump_testbehavior('v', <f-args>)
+command! -n=? -complete=customlist,s:get_complelist_testbehavior Ctestbehaviortab call s:jump_testbehavior('t', <f-args>)
+
+" * -> Test of Component
+" Argument is Test of Component.
+command! -n=? -complete=customlist,s:get_complelist_testcomponent Ctestcomponent call s:jump_testcomponent('n', <f-args>)
+command! -n=? -complete=customlist,s:get_complelist_testcomponent Ctestcomponentsp call s:jump_testcomponent('s', <f-args>)
+command! -n=? -complete=customlist,s:get_complelist_testcomponent Ctestcomponentvsp call s:jump_testcomponent('v', <f-args>)
+command! -n=? -complete=customlist,s:get_complelist_testcomponent Ctestcomponenttab call s:jump_testcomponent('t', <f-args>)
+
+" * -> Test of Controller
+" Argument is Test of Controller.
+command! -n=? -complete=customlist,s:get_complelist_testcontroller Ctestcontroller call s:jump_testcontroller('n', <f-args>)
+command! -n=? -complete=customlist,s:get_complelist_testcontroller Ctestcontrollersp call s:jump_testcontroller('s', <f-args>)
+command! -n=? -complete=customlist,s:get_complelist_testcontroller Ctestcontrollervsp call s:jump_testcontroller('v', <f-args>)
+command! -n=? -complete=customlist,s:get_complelist_testcontroller Ctestcontrollertab call s:jump_testcontroller('t', <f-args>)
+
+" * -> Test of Helper
+" Argument is Test of Helper.
+command! -n=? -complete=customlist,s:get_complelist_testhelper Ctesthelper call s:jump_testhelper('n', <f-args>)
+command! -n=? -complete=customlist,s:get_complelist_testhelper Ctesthelpersp call s:jump_testhelper('s', <f-args>)
+command! -n=? -complete=customlist,s:get_complelist_testhelper Ctesthelpervsp call s:jump_testhelper('v', <f-args>)
+command! -n=? -complete=customlist,s:get_complelist_testhelper Ctesthelpertab call s:jump_testhelper('t', <f-args>)
+
+" * -> Test of any
+command! -n=0  Ctest call s:jump_test('n', <f-args>)
+command! -n=0  Ctestsp call s:jump_test('s', <f-args>)
+command! -n=0  Ctestvsp call s:jump_test('v', <f-args>)
+command! -n=0  Ctesttab call s:jump_test('t', <f-args>)
+
+" * -> Fixture
+" Argument is Fixture.
+command! -n=? -complete=customlist,s:get_complelist_fixture Cfixture call s:jump_fixture('n', <f-args>)
+command! -n=? -complete=customlist,s:get_complelist_fixture Cfixturesp call s:jump_fixture('s', <f-args>)
+command! -n=? -complete=customlist,s:get_complelist_fixture Cfixturevsp call s:jump_fixture('v', <f-args>)
+command! -n=? -complete=customlist,s:get_complelist_fixture Cfixturetab call s:jump_fixture('t', <f-args>)
 
 " * -> Log
 " Argument is Log name.
