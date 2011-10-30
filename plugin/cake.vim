@@ -76,12 +76,15 @@ function! s:initialize(path)
 
   let s:paths.controllers = s:paths.app . "controllers/"
   let s:paths.models      = s:paths.app . "models/"
+  let s:paths.behaviors   = s:paths.models . "behaviors/"
   let s:paths.views       = s:paths.app . "views/"
+  let s:paths.helpers     = s:paths.views . "helpers/"
   let s:paths.themes      = s:paths.views . "themed/"
   let s:paths.configs     = s:paths.app . "config/"
   let s:paths.components  = s:paths.app . "controllers/components/"
   let s:paths.shells      = s:paths.app . "vendors/shells/"
   let s:paths.tasks       = s:paths.shells . "tasks/"
+  let s:paths.behaviors   = s:paths.models . "behaviors/"
 
   if !has_key(g:cakephp_log, 'debug') || g:cakephp_log['debug'] == ''
     let g:cakephp_log['debug'] = s:paths.app . "tmp/logs/debug.log"
@@ -109,7 +112,6 @@ function! s:get_controllers()
 
 endfunction
 " }}}
-
 " Function: s:get_models() {{{
 " ============================================================
 function! s:get_models()
@@ -220,6 +222,34 @@ function! s:get_tasks()
   endfor
 
   return tasks
+
+endfunction
+" }}}
+" Function: s:get_behaviors() {{{
+" ============================================================
+function! s:get_behaviors()
+
+  let behaviors = {}
+
+  for path in split(globpath(s:paths.behaviors, "*.php"), "\n")
+    let behaviors[s:path_to_name_behavior(path)] = path
+  endfor
+
+  return behaviors
+
+endfunction
+" }}}
+" Function: s:get_helpers() {{{
+" ============================================================
+function! s:get_helpers()
+
+  let helpers = {}
+
+  for path in split(globpath(s:paths.helpers, "*.php"), "\n")
+    let helpers[s:path_to_name_helper(path)] = path
+  endfor
+
+  return helpers
 
 endfunction
 " }}}
@@ -473,6 +503,52 @@ function! s:jump_task(...)
 
 endfunction
 "}}}
+" Function: s:jump_behavior() {{{
+" ============================================================
+function! s:jump_behavior(...)
+
+  let split_option = a:1
+  let target = a:2
+  let behaviors = s:get_behaviors()
+
+  if !has_key(behaviors, target)
+    " If the file does not exist, ask whether to create a new file.
+    if s:confirm_create_file(s:name_to_path_behavior(target))
+      let behaviors[target] = s:name_to_path_behavior(target)
+    else
+      call s:echo_warning(target . " is not found.")
+      return
+    endif
+  endif
+
+  let line = 0
+  call s:open_file(behaviors[target], split_option, line)
+
+endfunction
+"}}}
+" Function: s:jump_helper() {{{
+" ============================================================
+function! s:jump_helper(...)
+
+  let split_option = a:1
+  let target = a:2
+  let helpers = s:get_helpers()
+
+  if !has_key(helpers, target)
+    " If the file does not exist, ask whether to create a new file.
+    if s:confirm_create_file(s:name_to_path_helper(target))
+      let helpers[target] = s:name_to_path_helper(target)
+    else
+      call s:echo_warning(target . " is not found.")
+      return
+    endif
+  endif
+
+  let line = 0
+  call s:open_file(helpers[target], split_option, line)
+
+endfunction
+"}}}
 " Function: s:tail_log() {{{
 " ============================================================
 function! s:tail_log(log_name)
@@ -527,6 +603,18 @@ function! s:path_to_name_task(task_path)
   return fnamemodify(a:task_path, ":t:r")
 endfunction
 " }}}
+" Function: s:path_to_name_behavior() {{{
+" ============================================================
+function! s:path_to_name_behavior(behavior_path)
+  return fnamemodify(a:behavior_path, ":t:r")
+endfunction
+" }}}
+" Function: s:path_to_name_helper() {{{
+" ============================================================
+function! s:path_to_name_helper(helper_path)
+  return fnamemodify(a:helper_path, ":t:r")
+endfunction
+" }}}
 " Function: s:name_to_path_controller() {{{
 " ============================================================
 function! s:name_to_path_controller(controller_name)
@@ -563,7 +651,18 @@ function! s:name_to_path_task(task_name)
   return s:paths.tasks . a:task_name . ".php"
 endfunction
 " }}}
-
+" Function: s:name_to_path_behavior() {{{
+" ============================================================
+function! s:name_to_path_behavior(behavior_name)
+  return s:paths.behaviors . a:behavior_name . ".php"
+endfunction
+" }}}
+" Function: s:name_to_path_helper() {{{
+" ============================================================
+function! s:name_to_path_helper(helper_name)
+  return s:paths.helpers . a:helper_name . ".php"
+endfunction
+" }}}
 
 " Function: s:is_view() {{{
 " ============================================================
@@ -735,6 +834,22 @@ endfunction
 function! s:get_complelist_task(ArgLead, CmdLine, CursorPos)
   let tasks = s:get_tasks()
   let list = sort(keys(tasks))
+  return filter(sort(list), 'v:val =~ "^'. fnameescape(a:ArgLead) . '"')
+endfunction
+" }}}
+" Function: s:get_complelist_behavior() {{{
+" ============================================================
+function! s:get_complelist_behavior(ArgLead, CmdLine, CursorPos)
+  let behaviors = s:get_behaviors()
+  let list = sort(keys(behaviors))
+  return filter(sort(list), 'v:val =~ "^'. fnameescape(a:ArgLead) . '"')
+endfunction
+" }}}
+" Function: s:get_complelist_helper() {{{
+" ============================================================
+function! s:get_complelist_helper(ArgLead, CmdLine, CursorPos)
+  let helpers = s:get_helpers()
+  let list = sort(keys(helpers))
   return filter(sort(list), 'v:val =~ "^'. fnameescape(a:ArgLead) . '"')
 endfunction
 " }}}
@@ -927,6 +1042,20 @@ command! -n=1 -complete=customlist,s:get_complelist_task Ctask call s:jump_task(
 command! -n=1 -complete=customlist,s:get_complelist_task Ctasksp call s:jump_task('s', <f-args>)
 command! -n=1 -complete=customlist,s:get_complelist_task Ctaskvsp call s:jump_task('v', <f-args>)
 command! -n=1 -complete=customlist,s:get_complelist_task Ctasktab call s:jump_task('t', <f-args>)
+
+" * -> Behavior
+" Argument is Behavior.
+command! -n=1 -complete=customlist,s:get_complelist_behavior Cbehavior call s:jump_behavior('n', <f-args>)
+command! -n=1 -complete=customlist,s:get_complelist_behavior Cbehaviorsp call s:jump_behavior('s', <f-args>)
+command! -n=1 -complete=customlist,s:get_complelist_behavior Cbehaviorvsp call s:jump_behavior('v', <f-args>)
+command! -n=1 -complete=customlist,s:get_complelist_behavior Cbehaviortab call s:jump_behavior('t', <f-args>)
+
+" * -> Helper
+" Argument is Helper.
+command! -n=1 -complete=customlist,s:get_complelist_helper Chelper call s:jump_helper('n', <f-args>)
+command! -n=1 -complete=customlist,s:get_complelist_helper Chelpersp call s:jump_helper('s', <f-args>)
+command! -n=1 -complete=customlist,s:get_complelist_helper Chelpervsp call s:jump_helper('v', <f-args>)
+command! -n=1 -complete=customlist,s:get_complelist_helper Chelpertab call s:jump_helper('t', <f-args>)
 
 " * -> Log
 " Argument is Log name.
