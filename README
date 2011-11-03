@@ -23,11 +23,13 @@ perform automatically at startup.
 
 Edit the specified or current controller.
 :Ccontroller hogehoges
+It guess the model when current buffer is View or Model.
+:Controller
+
 
 Edit the specified controller's view.
 when current buffer is controller.
 :Cview index
-
 
 Edit the specified or current view( and use theme name).
 :Cview index mytheme
@@ -35,10 +37,12 @@ Edit the specified or current view( and use theme name).
 
 Edit the specified or current model.
 :Cmodel hogehoge
+It guess the model when current buffer is Controller.
+:Cmodel
 
 
 Edit the specified config.
-:Ctask hogehoge
+:Cconfig hogehoge
 
 
 Edit the specified component.
@@ -68,13 +72,15 @@ Edit the specified test case.
 :Ctestcontroller hoge
 :Ctesthelper hoge
 
-when current buffer is model or behavior or component,
- or controller or helper or fixture.
+when current buffer is Model or Behavior or Component,
+ or Controller or Helper or Fixture.
 :Ctest
 
 
 Edit the specified fixture.
 :Cfixture hoge
+It guess the model when current buffer is Model.
+:Cfixture
 
 
 Edit the debug.log.
@@ -110,7 +116,9 @@ More comfortable to use cake.vim, if you write key-mappings in your .vimrc.
 Here is recommended key-mappings.
 
     " Recommended  key-mappings.
-    nnoremap <Space>cc :Ccontroller 
-    nnoremap <Space>cm :Cmodel 
-    nnoremap <Space>cv :Cview 
-    nnoremap <Space>cl :Clog 
+    nnoremap <Space>cc :<C-u>Ccontroller 
+    nnoremap <Space>cm :<C-u>Cmodel 
+    nnoremap <Space>cv :<C-u>Cview 
+	nnoremap <Space>ct :<C-u>Ctest 
+	nnoremap <Space>cf :<C-u>Cfixture 
+    nnoremap <Space>cl :<C-u>Clog 
