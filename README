@@ -23,7 +23,7 @@ perform automatically at startup.
 
 Edit the specified or current controller.
 :Ccontroller hogehoges
-It guess the model when current buffer is View or Model.
+It guess the Controller when current buffer is View or Model.
 :Controller
 
 
@@ -37,7 +37,7 @@ Edit the specified or current view( and use theme name).
 
 Edit the specified or current model.
 :Cmodel hogehoge
-It guess the model when current buffer is Controller.
+It guess the Model when current buffer is Controller.
 :Cmodel
 
 
@@ -79,7 +79,7 @@ when current buffer is Model or Behavior or Component,
 
 Edit the specified fixture.
 :Cfixture hoge
-It guess the model when current buffer is Model.
+It guess the Fixture when current buffer is Model.
 :Cfixture
 
 
