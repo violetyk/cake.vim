@@ -40,8 +40,17 @@ Edit the specified or current model.
 Edit the specified config.
 :Ctask hogehoge
 
+
 Edit the specified component.
 :Ccomponent hogehoge
+
+
+Edit the specified behavior.
+:Cbehavior hogehoge
+
+
+Edit the specified helper.
+:Chelper hogehoge
 
 
 Edit the specified shell.
@@ -52,10 +61,7 @@ Edit the specified task.
 :Ctask hogehoge
 
 
-Edit the debug.log.
-:Clog debug
-
-Edit the specified est case.
+Edit the specified test case.
 :Ctestmodel hoge
 :Ctestbehavior hoge
 :Ctestcomponent hoge
@@ -66,8 +72,13 @@ when current buffer is model or behavior or component,
  or controller or helper or fixture.
 :Ctest
 
+
 Edit the specified fixture.
 :Cfixture hoge
+
+
+Edit the debug.log.
+:Clog debug
 
 
 << install details >>
@@ -102,4 +113,4 @@ Here is recommended key-mappings.
     nnoremap <Space>cc :Ccontroller 
     nnoremap <Space>cm :Cmodel 
     nnoremap <Space>cv :Cview 
-    nnoremap <Space>cl :Clog "
+    nnoremap <Space>cl :Clog 

@@ -1,6 +1,6 @@
 *cake.txt*  Utility for CakePHP developpers.
 
-Version: 1.2.0
+Version: 1.3.0
 Author: Yuhei Kagaya <yuhei.kagaya@gmail.com>
 English Documentation Author: Takahiro Jinno <takahiro.jinno@gmail.com>
 Repository: https://github.com/violetyk/cake.vim
@@ -38,6 +38,14 @@ Commands		|cake-commands|
 			|:Ccomponentsp|
 			|:Ccomponentvsp|
 			|:Ccomponenttab|
+    Jump to Behavior	|:Cbehavior|
+			|:Cbehaviorsp|
+			|:Cbehaviorvsp|
+			|:Cbehaviortab|
+    Jump to Helper	|:Chelper|
+			|:Chelpersp|
+			|:Chelpervsp|
+			|:Chelpertab|
     Jump to Shell	|:Cshell|
 			|:Cshellsp|
 			|:Cshellvsp|
@@ -46,9 +54,36 @@ Commands		|cake-commands|
 			|:Ctasksp|
 			|:Ctaskvsp|
 			|:Ctasktab|
+    Jump to Test	|:Ctestmodel|
+			|:Ctestmodelsp|
+			|:Ctestmodelvsp|
+			|:Ctestmodeltab|
+			|:Ctestbehavior|
+			|:Ctestbehaviorsp|
+			|:Ctestbehaviorvsp|
+			|:Ctestbehaviortab|
+			|:Ctestcontroller|
+			|:Ctestcontrollersp|
+			|:Ctestcontrollervsp|
+			|:Ctestcontrollertab|
+			|:Ctestcomponent|
+			|:Ctestcomponentsp|
+			|:Ctestcomponentvsp|
+			|:Ctestcomponenttab|
+			|:Ctesthelper|
+			|:Ctesthelpersp|
+			|:Ctesthelpervsp|
+			|:Ctesthelpertab|
+			|:Ctest|
+			|:Ctestsp|
+			|:Ctestvsp|
+			|:Ctesttab|
+    Jump to Fixture	|:Cfixture|
+			|:Cfixturesp|
+			|:Cfixturevsp|
+			|:Cfixturetab|
     Open the Log	|:CLog|
-    
-	
+
 Bugs			|cake-bugs|
 Changelog		|cake-changelog|
 
@@ -60,7 +95,7 @@ INTRODUCTION							*cake-introduction*
 
 Requirements:
 - Vim ver.7.0 or heigher
-- CakePHP ver.1.3 or heigher
+- CakePHP ver.1.3.x
 
 
 ==============================================================================
@@ -203,8 +238,35 @@ Jump to Component
 		You can open new tab editing, using |:Ccomponenttab|.
 
 
+Jump to Behavior
+----------------
+
+:Cbehavior [{behavior-name}]					*:Cbehavior*
+:Cbehaviorsp [{behavior-name}]					*:Cbehaviorsp*
+:Cbehaviorvsp [{behavior-name}]					*:Cbehaviorvsp*
+:Cbehaviortab [{behavior-name}]					*:Cbehaviortab*
+		Edit the specified behavior file.
+		Also you can make a new file if there is no file.
+		You can split editing using |:Cbehaviorsp|.
+		You can split editing vertically using |:Cbehaviorvsp|.
+		You can open new tab editing, using |:Cbehaviortab|.
+
+Jump to Helper
+--------------
+
+:Chelper [{helper-name}]					*:Chelper*
+:Chelpersp [{helper-name}]					*:Chelpersp*
+:Chelpervsp [{helper-name}]					*:Chelpervsp*
+:Chelpertab [{helper-name}]					*:Chelpertab*
+		Edit the specified helper file.
+		Also you can make a new file if there is no file.
+		You can split editing using |:Chelpersp|.
+		You can split editing vertically using |:Chelpervsp|.
+		You can open new tab editing, using |:Chelpertab|.
+
+
 Jump to Shell
------------------
+-------------
 
 :Cshell [{shell-name}]						*:Cshell*
 :Cshellsp [{shell-name}]					*:Cshellsp*
@@ -217,9 +279,8 @@ Jump to Shell
 		You can open new tab editing, using |:Cshelltab|.
 
 
-
 Jump to Task
------------------
+------------
 
 :Ctask [{task-name}]						*:Ctask*
 :Ctasksp [{task-name}]						*:Ctasksp*
@@ -232,8 +293,92 @@ Jump to Task
 		You can open new tab editing, using |:Ctasktab|.
 
 
+Jump to Test
+------------
+
+:Ctestmodel [{testmodel-name}]					*:Ctestmodel*
+:Ctestmodelsp [{testmodel-name}]				*:Ctestmodelsp*
+:Ctestmodelvsp [{testmodel-name}]				*:Ctestmodelvsp*
+:Ctestmodeltab [{testmodel-name}]				*:Ctestmodeltab*
+		Edit the specified or guess the testmodel when current buffer is
+		model or fixture.
+		If you do not specify {testmodel-name} deduced from the open files.
+		Also you can make a new file if there is no file.
+		You can split editing using |:Ctestmodelsp|.
+		You can split editing vertically using |:Ctestmodelvsp|.
+		You can open new tab editing, using |:Ctestmodeltab|.
+
+:Ctestbehavior [{testbehavior-name}]				*:Ctestbehavior*
+:Ctestbehaviorsp [{testbehavior-name}]				*:Ctestbehaviorsp*
+:Ctestbehaviorvsp [{testbehavior-name}]				*:Ctestbehaviorvsp*
+:Ctestbehaviortab [{testbehavior-name}]				*:Ctestbehaviortab*
+		Edit the specified or guess the testbehavior when current buffer is
+		behavior.
+		If you do not specify {testbehavior-name} deduced from the open files.
+		Also you can make a new file if there is no file.
+		You can split editing using |:Ctestbehaviorsp|.
+		You can split editing vertically using |:Ctestbehaviorvsp|.
+		You can open new tab editing, using |:Ctestbehaviortab|.
+
+:Ctestcontroller [{testcontroller-name}]			*:Ctestcontroller*
+:Ctestcontrollersp [{testcontroller-name}]			*:Ctestcontrollersp*
+:Ctestcontrollervsp [{testcontroller-name}]			*:Ctestcontrollervsp*
+:Ctestcontrollertab [{testcontroller-name}]			*:Ctestcontrollertab*
+		Edit the specified or guess the testcontroller when current buffer is
+		controller.
+		If you do not specify {testcontroller-name} deduced from the open files.
+		Also you can make a new file if there is no file.
+		You can split editing using |:Ctestcontrollersp|.
+		You can split editing vertically using |:Ctestcontrollervsp|.
+		You can open new tab editing, using |:Ctestcontrollertab|.
+
+:Ctestcomponent [{testcomponent-name}]				*:Ctestcomponent*
+:Ctestcomponentsp [{testcomponent-name}]			*:Ctestcomponentsp*
+:Ctestcomponentvsp [{testcomponent-name}]			*:Ctestcomponentvsp*
+:Ctestcomponenttab [{testcomponent-name}]			*:Ctestcomponenttab*
+		Edit the specified or guess the testcomponent when current buffer is
+		component.
+		If you do not specify {testcomponent-name} deduced from the open files.
+		Also you can make a new file if there is no file.
+		You can split editing using |:Ctestcomponentsp|.
+		You can split editing vertically using |:Ctestcomponentvsp|.
+		You can open new tab editing, using |:Ctestcomponenttab|.
+
+:Ctesthelper [{testhelper-name}]				*:Ctesthelper*
+:Ctesthelpersp [{testhelper-name}]				*:Ctesthelpersp*
+:Ctesthelpervsp [{testhelper-name}]				*:Ctesthelpervsp*
+:Ctesthelpertab [{testhelper-name}]				*:Ctesthelpertab*
+		Edit the specified or guess the testhelper when current buffer is
+		helper.
+		If you do not specify {testhelper-name} deduced from the open files.
+		Also you can make a new file if there is no file.
+		You can split editing using |:Ctesthelpersp|.
+		You can split editing vertically using |:Ctesthelpervsp|.
+		You can open new tab editing, using |:Ctesthelpertab|.
+
+:Ctest								*:Ctest*
+:Ctestsp							*:Ctestsp*
+:Ctestvsp							*:Ctestvsp*
+:Ctesttab							*:Ctesttab*
+		Edit the test case file of the file which you open in a current buffer now.
+		Supports Model, Behavior, Component, Controller, Helper.
+
+Jump to Fixture
+------------
+
+:Cfixture [{fixture-name}]					*:Cfixture*
+:Cfixturesp [{fixture-name}]					*:Cfixturesp*
+:Cfixturevsp [{fixture-name}]					*:Cfixturevsp*
+:Cfixturetab [{fixture-name}]					*:Cfixturetab*
+		Edit the specified or guess the fixture when current buffer is
+		model.
+		Also you can make a new file if there is no file.
+		You can split editing using |:Cfixturesp|.
+		You can split editing vertically using |:Cfixturevsp|.
+		You can open new tab editing, using |:Cfixturetab|.
+
 Open the Log
------------------
+------------
 
 :Clog [{log-name}]						*:Clog*
 		Open up the log that I appointed like "tail -f" command quickly.
@@ -255,6 +400,46 @@ BUGS								*cake-bugs*
 
 ==============================================================================
 CHANGE LOG							*cake-changelog*
+
+1.3.0   2011-11-03
+     - Fix a few bugs.
+     - Add Commands.
+       |:Cbehavior|
+       |:Cbehaviorsp|
+       |:Cbehaviorvsp|
+       |:Cbehaviortab|
+       |:Chelper|
+       |:Chelpersp|
+       |:Chelpervsp|
+       |:Chelpertab|
+       |:Ctestmodel|
+       |:Ctestmodelsp|
+       |:Ctestmodelvsp|
+       |:Ctestmodeltab|
+       |:Ctestbehavior|
+       |:Ctestbehaviorsp|
+       |:Ctestbehaviorvsp|
+       |:Ctestbehaviortab|
+       |:Ctestcontroller|
+       |:Ctestcontrollersp|
+       |:Ctestcontrollervsp|
+       |:Ctestcontrollertab|
+       |:Ctestcomponent|
+       |:Ctestcomponentsp|
+       |:Ctestcomponentvsp|
+       |:Ctestcomponenttab|
+       |:Ctesthelper|
+       |:Ctesthelpersp|
+       |:Ctesthelpervsp|
+       |:Ctesthelpertab|
+       |:Ctest|
+       |:Ctestsp|
+       |:Ctestvsp|
+       |:Ctesttab|
+       |:Cfixture|
+       |:Cfixturesp|
+       |:Cfixturevsp|
+       |:Cfixturetab|
 
 1.2.0	2011-06-07
      - Fix a few bugs.
