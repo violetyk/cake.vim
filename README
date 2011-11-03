@@ -116,9 +116,15 @@ More comfortable to use cake.vim, if you write key-mappings in your .vimrc.
 Here is recommended key-mappings.
 
     " Recommended  key-mappings.
-    nnoremap <Space>cc :<C-u>Ccontroller 
-    nnoremap <Space>cm :<C-u>Cmodel 
-    nnoremap <Space>cv :<C-u>Cview 
-	nnoremap <Space>ct :<C-u>Ctest 
-	nnoremap <Space>cf :<C-u>Cfixture 
-    nnoremap <Space>cl :<C-u>Clog 
+    nnoremap <Space>cc :<C-u>Ccontroller
+    nnoremap <Space>cm :<C-u>Cmodel
+    nnoremap <Space>cv :<C-u>Cview
+    nnoremap <Space>cl :<C-u>Clog
+    nnoremap <Space>ccv :<C-u>Ccontrollerview
+    nnoremap <Space>ccm :<C-u>Ccomponent
+    nnoremap <Space>ccf :<C-u>Cconfig
+    nnoremap <Space>cb :<C-u>Cbehavior
+    nnoremap <Space>ch :<C-u>Chelper
+    nnoremap <Space>ct :<C-u>Ctest
+    nnoremap <Space>cf :<C-u>Cfixture
+    nnoremap <Space>cs :<C-u>Cshell
