@@ -1,7 +1,7 @@
 " cake.vim - Utility for CakePHP developpers.
 " Maintainer:  Yuhei Kagaya <yuhei.kagaya@gmail.com>
 " License:     This file is placed in the public domain.
-" Last Change: 2011/11/03
+" Last Change: 2011/11/04
 
 
 if exists('g:loaded_cake_vim')
@@ -38,7 +38,7 @@ let g:cakephp_log_window_size = 15
 " }}}
 " SECTION: Script Variables {{{
 " ============================================================
-let s:cake_vim_version = '1.3.0'
+let s:cake_vim_version = '1.4.0'
 let s:message_prefix = '[cake.vim] '
 let s:paths = {}
 let s:log_buffers = {}
@@ -1519,6 +1519,279 @@ command! -n=? -complete=customlist,s:get_complelist_fixture Cfixturetab call s:j
 command! -n=1 -complete=customlist,s:get_complelist_log Clog call s:tail_log(<f-args>)
 " }}}
 
+" SECTION: Unite Sources {{{
+" ============================================================
+if exists('g:loaded_unite')
+
+  " unite-cake_controller {{{
+    let s:unite_source_controller = {
+          \ 'name' : 'cake_controller',
+          \ 'description' : 'CakePHP Controllers',
+          \ }
+    call unite#define_source(s:unite_source_controller)
+
+    function! s:unite_source_controller.gather_candidates(args, context)
+      let candidates = []
+      for i in items(s:get_controllers())
+        call add(candidates, {
+              \ 'word' : i[0],
+              \ 'kind' : 'file',
+              \ 'source' : 'cake_controller',
+              \ 'action__path' : i[1],
+              \ 'action__directory' : fnamemodify(i[1],":p:h"),
+              \ })
+      endfor
+
+      return candidates
+    endfunction
+  " }}}
+  " unite-cake_model {{{
+    let s:unite_source_model = {
+          \ 'name' : 'cake_model',
+          \ 'description' : 'CakePHP Models',
+          \ }
+    call unite#define_source(s:unite_source_model)
+
+    function! s:unite_source_model.gather_candidates(args, context)
+      let candidates = []
+      for i in items(s:get_models())
+        call add(candidates, {
+              \ 'word' : i[0],
+              \ 'kind' : 'file',
+              \ 'source' : 'cake_model',
+              \ 'action__path' : i[1],
+              \ 'action__directory' : fnamemodify(i[1],":p:h"),
+              \ })
+      endfor
+
+      return candidates
+    endfunction
+  " }}}
+  " unite-cake_view {{{
+    let s:unite_source_view = {
+          \ 'name' : 'cake_view',
+          \ 'description' : 'CakePHP Views',
+          \ 'hooks' : {},
+          \ }
+    call unite#define_source(s:unite_source_view)
+
+    function! s:unite_source_view.gather_candidates(args, context)
+      let candidates = []
+
+      if len(a:context.source__controllers) == 0
+        call s:echo_warning("No controller in current buffer. [Usage] :Unite cake_view:{controller-name},{controller-name}...")
+        return candidates
+      endif
+
+      for i in a:context.source__controllers
+        " default
+        for path in split(globpath(s:paths.views . i . "/", "*.ctp"), "\n")
+          call add(candidates, {
+                \ 'word' : '(No Theme) ' . s:path_to_name(path),
+                \ 'kind' : 'file',
+                \ 'source' : 'cake_view',
+                \ 'action__path' : path,
+                \ 'action__directory' : fnamemodify(path,":p:h"),
+                \ })
+        endfor
+
+        " every theme
+        for theme in items(s:get_themes())
+          for path in split(globpath(theme[1] . i . "/", "*.ctp"), "\n")
+            call add(candidates, {
+                  \ 'word' : '(' . theme[0] . ') ' . s:path_to_name(path),
+                  \ 'kind' : 'file',
+                  \ 'source' : 'cake_view',
+                  \ 'action__path' : path,
+                  \ 'action__directory' : fnamemodify(path,":p:h"),
+                  \ })
+          endfor
+        endfor
+      endfor
+
+      return candidates
+    endfunction
+
+    function! s:unite_source_view.hooks.on_init(args, context)
+      " get controller's list
+      let controllers = []
+
+      if len(a:args) == 0
+        if s:is_controller(expand("%:p"))
+          call add(controllers, s:path_to_name_controller(expand("%:p")))
+        endif
+      else
+        for i in split(a:args[0], ",")
+          if s:is_controller(s:name_to_path_controller(i))
+            call add(controllers, i)
+          elseif s:is_controller(s:name_to_path_controller(s:pluralize(i)))
+            " try the plural form.
+            call add(controllers, s:pluralize(i))
+          endif
+        endfor
+      endif
+
+      let a:context.source__controllers = controllers
+
+    endfunction
+  " }}}
+" unite-cake_behavior {{{
+  let s:unite_source_behavior = {
+        \ 'name' : 'cake_behavior',
+        \ 'description' : 'CakePHP Behaviors',
+        \ }
+  call unite#define_source(s:unite_source_behavior)
+
+  function! s:unite_source_behavior.gather_candidates(args, context)
+    let candidates = []
+    for i in items(s:get_behaviors())
+      call add(candidates, {
+            \ 'word' : i[0],
+            \ 'kind' : 'file',
+            \ 'source' : 'cake_behavior',
+            \ 'action__path' : i[1],
+            \ 'action__directory' : fnamemodify(i[1],":p:h"),
+            \ })
+    endfor
+
+    return candidates
+  endfunction
+" }}}
+" unite-cake_helper {{{
+  let s:unite_source_helper = {
+        \ 'name' : 'cake_helper',
+        \ 'description' : 'CakePHP Helpers',
+        \ }
+  call unite#define_source(s:unite_source_helper)
+
+  function! s:unite_source_helper.gather_candidates(args, context)
+    let candidates = []
+    for i in items(s:get_helpers())
+      call add(candidates, {
+            \ 'word' : i[0],
+            \ 'kind' : 'file',
+            \ 'source' : 'cake_helper',
+            \ 'action__path' : i[1],
+            \ 'action__directory' : fnamemodify(i[1],":p:h"),
+            \ })
+    endfor
+
+    return candidates
+  endfunction
+" }}}
+" unite-cake_component {{{
+  let s:unite_source_component = {
+        \ 'name' : 'cake_component',
+        \ 'description' : 'CakePHP Components',
+        \ }
+  call unite#define_source(s:unite_source_component)
+
+  function! s:unite_source_component.gather_candidates(args, context)
+    let candidates = []
+    for i in items(s:get_components())
+      call add(candidates, {
+            \ 'word' : i[0],
+            \ 'kind' : 'file',
+            \ 'source' : 'cake_component',
+            \ 'action__path' : i[1],
+            \ 'action__directory' : fnamemodify(i[1],":p:h"),
+            \ })
+    endfor
+
+    return candidates
+  endfunction
+" }}}
+" unite-cake_fixture {{{
+  let s:unite_source_fixture = {
+        \ 'name' : 'cake_fixture',
+        \ 'description' : 'CakePHP Fixtures',
+        \ }
+  call unite#define_source(s:unite_source_fixture)
+
+  function! s:unite_source_fixture.gather_candidates(args, context)
+    let candidates = []
+    for i in items(s:get_fixtures())
+      call add(candidates, {
+            \ 'word' : i[0],
+            \ 'kind' : 'file',
+            \ 'source' : 'cake_fixture',
+            \ 'action__path' : i[1],
+            \ 'action__directory' : fnamemodify(i[1],":p:h"),
+            \ })
+    endfor
+
+    return candidates
+  endfunction
+" }}}
+" unite-cake_config {{{
+  let s:unite_source_config = {
+        \ 'name' : 'cake_config',
+        \ 'description' : 'CakePHP Configs',
+        \ }
+  call unite#define_source(s:unite_source_config)
+
+  function! s:unite_source_config.gather_candidates(args, context)
+    let candidates = []
+    for i in items(s:get_configs())
+      call add(candidates, {
+            \ 'word' : i[0],
+            \ 'kind' : 'file',
+            \ 'source' : 'cake_config',
+            \ 'action__path' : i[1],
+            \ 'action__directory' : fnamemodify(i[1],":p:h"),
+            \ })
+    endfor
+
+    return candidates
+  endfunction
+" }}}
+" unite-cake_shell {{{
+  let s:unite_source_shell = {
+        \ 'name' : 'cake_shell',
+        \ 'description' : 'CakePHP Shells',
+        \ }
+  call unite#define_source(s:unite_source_shell)
+
+  function! s:unite_source_shell.gather_candidates(args, context)
+    let candidates = []
+    for i in items(s:get_shells())
+      call add(candidates, {
+            \ 'word' : i[0],
+            \ 'kind' : 'file',
+            \ 'source' : 'cake_shell',
+            \ 'action__path' : i[1],
+            \ 'action__directory' : fnamemodify(i[1],":p:h"),
+            \ })
+    endfor
+
+    return candidates
+  endfunction
+" }}}
+" unite-cake_task {{{
+  let s:unite_source_task = {
+        \ 'name' : 'cake_task',
+        \ 'description' : 'CakePHP Tasks',
+        \ }
+  call unite#define_source(s:unite_source_task)
+
+  function! s:unite_source_task.gather_candidates(args, context)
+    let candidates = []
+    for i in items(s:get_tasks())
+      call add(candidates, {
+            \ 'word' : i[0],
+            \ 'kind' : 'file',
+            \ 'source' : 'cake_task',
+            \ 'action__path' : i[1],
+            \ 'action__directory' : fnamemodify(i[1],":p:h"),
+            \ })
+    endfor
+
+    return candidates
+  endfunction
+" }}}
+
+endif
+" }}}
 
 let &cpo = s:save_cpo
 unlet s:save_cpo
