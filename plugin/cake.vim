@@ -1,7 +1,7 @@
 " cake.vim - Utility for CakePHP developpers.
 " Maintainer:  Yuhei Kagaya <yuhei.kagaya@gmail.com>
 " License:     This file is placed in the public domain.
-" Last Change: 2011/11/04
+" Last Change: 2011/11/06
 
 
 if exists('g:loaded_cake_vim')
@@ -38,7 +38,7 @@ let g:cakephp_log_window_size = 15
 " }}}
 " SECTION: Script Variables {{{
 " ============================================================
-let s:cake_vim_version = '1.4.0'
+let s:cake_vim_version = '2.0'
 let s:message_prefix = '[cake.vim] '
 let s:paths = {}
 let s:log_buffers = {}
@@ -60,32 +60,80 @@ function! s:initialize(path)
     return
   endif
 
-  let s:paths.controllers      = s:paths.app . "controllers/"
-  let s:paths.models           = s:paths.app . "models/"
-  let s:paths.behaviors        = s:paths.models . "behaviors/"
-  let s:paths.views            = s:paths.app . "views/"
-  let s:paths.helpers          = s:paths.views . "helpers/"
-  let s:paths.themes           = s:paths.views . "themed/"
-  let s:paths.configs          = s:paths.app . "config/"
-  let s:paths.components       = s:paths.app . "controllers/components/"
-  let s:paths.shells           = s:paths.app . "vendors/shells/"
-  let s:paths.tasks            = s:paths.shells . "tasks/"
-  let s:paths.behaviors        = s:paths.models . "behaviors/"
-  let s:paths.test             = s:paths.app . "tests/cases/"
-  let s:paths.testmodels       = s:paths.test . "models/"
-  let s:paths.testbehaviors    = s:paths.test . "behaviors/"
-  let s:paths.testcomponents   = s:paths.test . "components/"
-  let s:paths.testcontrollers  = s:paths.test . "controllers/"
-  let s:paths.testhelpers      = s:paths.test . "helpers/"
-  let s:paths.fixtures         = s:paths.app  . "tests/fixtures/"
+  let s:cakephp_version = s:get_cakephp_version()
 
-  if !has_key(g:cakephp_log, 'debug') || g:cakephp_log['debug'] == ''
-    let g:cakephp_log['debug'] = s:paths.app . "tmp/logs/debug.log"
+  if s:cakephp_version == 2
+    " version 2 directory tree
+    let s:paths.controllers      = s:paths.app . "Controller/"
+    let s:paths.models           = s:paths.app . "Model/"
+    let s:paths.behaviors        = s:paths.models . "Behavior/"
+    let s:paths.views            = s:paths.app . "View/"
+    let s:paths.helpers          = s:paths.views . "Helper/"
+    let s:paths.themes           = s:paths.views . "themed/"
+    let s:paths.configs          = s:paths.app . "config/"
+    let s:paths.components       = s:paths.app . "controllers/components/"
+    let s:paths.shells           = s:paths.app . "vendors/shells/"
+    let s:paths.tasks            = s:paths.shells . "tasks/"
+    let s:paths.behaviors        = s:paths.models . "behaviors/"
+    let s:paths.test             = s:paths.app . "tests/cases/"
+    let s:paths.testmodels       = s:paths.test . "models/"
+    let s:paths.testbehaviors    = s:paths.test . "behaviors/"
+    let s:paths.testcomponents   = s:paths.test . "components/"
+    let s:paths.testcontrollers  = s:paths.test . "controllers/"
+    let s:paths.testhelpers      = s:paths.test . "helpers/"
+    let s:paths.fixtures         = s:paths.app  . "tests/fixtures/"
+
+    if !has_key(g:cakephp_log, 'debug') || g:cakephp_log['debug'] == ''
+      let g:cakephp_log['debug'] = s:paths.app . "tmp/logs/debug.log"
+    endif
+
+    if !has_key(g:cakephp_log, 'error') || g:cakephp_log['error'] == ''
+      let g:cakephp_log['error'] = s:paths.app . "tmp/logs/error.log"
+    endif
+
+  else
+    " version 1.3.x directory tree
+    let s:paths.controllers      = s:paths.app . "controllers/"
+    let s:paths.models           = s:paths.app . "models/"
+    let s:paths.behaviors        = s:paths.models . "behaviors/"
+    let s:paths.views            = s:paths.app . "views/"
+    let s:paths.helpers          = s:paths.views . "helpers/"
+    let s:paths.themes           = s:paths.views . "themed/"
+    let s:paths.configs          = s:paths.app . "config/"
+    let s:paths.components       = s:paths.app . "controllers/components/"
+    let s:paths.shells           = s:paths.app . "vendors/shells/"
+    let s:paths.tasks            = s:paths.shells . "tasks/"
+    let s:paths.behaviors        = s:paths.models . "behaviors/"
+    let s:paths.test             = s:paths.app . "tests/cases/"
+    let s:paths.testmodels       = s:paths.test . "models/"
+    let s:paths.testbehaviors    = s:paths.test . "behaviors/"
+    let s:paths.testcomponents   = s:paths.test . "components/"
+    let s:paths.testcontrollers  = s:paths.test . "controllers/"
+    let s:paths.testhelpers      = s:paths.test . "helpers/"
+    let s:paths.fixtures         = s:paths.app  . "tests/fixtures/"
+
+    if !has_key(g:cakephp_log, 'debug') || g:cakephp_log['debug'] == ''
+      let g:cakephp_log['debug'] = s:paths.app . "tmp/logs/debug.log"
+    endif
+
+    if !has_key(g:cakephp_log, 'error') || g:cakephp_log['error'] == ''
+      let g:cakephp_log['error'] = s:paths.app . "tmp/logs/error.log"
+    endif
+
   endif
 
-  if !has_key(g:cakephp_log, 'error') || g:cakephp_log['error'] == ''
-    let g:cakephp_log['error'] = s:paths.app . "tmp/logs/error.log"
+endfunction
+" }}}
+
+" Function: s:get_cakephp_version() {{{
+" ============================================================
+function! s:get_cakephp_version()
+
+  if isdirectory(s:paths.app . 'Controller') && isdirectory(s:paths.app . 'Model') && isdirectory(s:paths.app . 'View')
+    return 2
   endif
+
+  return 1
 
 endfunction
 " }}}
@@ -126,7 +174,14 @@ function! s:get_controllers()
 
   let controllers = {}
 
-  for path in split(globpath(s:paths.app, "**/*_controller.php"), "\n")
+  let list = []
+  if s:cakephp_version == 2
+    let list = split(globpath(s:paths.controllers, "**/*Controller\.php"), "\n")
+  else
+    let list = split(globpath(s:paths.app, "**/*_controller\.php"), "\n")
+  endif
+
+  for path in list
     let name = s:path_to_name_controller(path)
     let controllers[name] = path
   endfor
@@ -141,13 +196,19 @@ function! s:get_models()
 
   let models = {}
 
-  for path in split(globpath(s:paths.models, "*.php"), "\n")
-    let models[s:path_to_name_model(path)] = path
-  endfor
+  if s:cakephp_version == 2
+    for path in split(globpath(s:paths.models, "*.php"), "\n")
+      let models[s:path_to_name_model(path)] = path
+    endfor
+  else
+    for path in split(globpath(s:paths.models, "*.php"), "\n")
+      let models[s:path_to_name_model(path)] = path
+    endfor
 
-  for path in split(globpath(s:paths.app, "*_model.php"), "\n")
-    let models[s:path_to_name_model(path)] = path
-  endfor
+    for path in split(globpath(s:paths.app, "*_model.php"), "\n")
+      let models[s:path_to_name_model(path)] = path
+    endfor
+  endif
 
   return models
 
@@ -315,7 +376,7 @@ function! s:jump_controller(...)
     if s:confirm_create_file(s:name_to_path_controller(target))
       let controllers[target] = s:name_to_path_controller(target)
     else
-      call s:echo_warning(target . "_controller is not found.")
+      call s:echo_warning(target . " is not found.")
       return
     endif
   endif
@@ -351,7 +412,11 @@ function! s:jump_model(...)
     let path = expand("%:p")
 
     if s:is_controller(path)
-      let target = s:singularize(substitute(expand("%:p:t:r"), "_controller$", "", ""))
+      if s:cakephp_version == 2
+        let target = s:singularize(substitute(expand("%:p:t:r"), "Controller$", "", ""))
+      else
+        let target = s:singularize(substitute(expand("%:p:t:r"), "_controller$", "", ""))
+      endif
     elseif s:is_testmodel(path)
       let target = s:path_to_name_test(path)
     elseif s:is_fixture(path)
@@ -911,11 +976,20 @@ function! s:path_to_name(path)
 endfunction
 
 function! s:path_to_name_controller(path)
-  return substitute(fnamemodify(a:path, ":t:r"), "_controller$", "", "")
+  if s:cakephp_version == 2
+    return substitute(fnamemodify(a:path, ":t:r"), "Controller$", "", "")
+  else
+    return s:camelize(substitute(fnamemodify(a:path, ":t:r"), "_controller$", "", ""))
+  endif
+
 endfunction
 
 function! s:path_to_name_model(path)
-  return substitute(fnamemodify(a:path, ":t:r"), "_model$", "", "")
+  if s:cakephp_version == 2
+    return s:path_to_name(a:path)
+  else
+    return s:camelize(substitute(fnamemodify(a:path, ":t:r"), "_model$", "", ""))
+  endif
 endfunction
 
 function! s:path_to_name_theme(path)
@@ -938,7 +1012,11 @@ endfunction
 " Functions: s:name_to_path_xxx() {{{
 " ============================================================
 function! s:name_to_path_controller(name)
-  return s:paths.controllers . a:name . "_controller.php"
+  if s:cakephp_version == 2
+    return s:paths.controllers . s:camelize(a:name) . "Controller.php"
+  else
+    return s:paths.controllers . a:name . "_controller.php"
+  endif
 endfunction
 
 function! s:name_to_path_model(name)
@@ -1011,9 +1089,16 @@ function! s:is_model(path)
 endfunction
 
 function! s:is_controller(path)
-  if filereadable(a:path) && match(a:path, s:paths.controllers) != -1 && match(a:path, "_controller\.php$") != -1
-    return 1
+  if s:cakephp_version == 2
+    if filereadable(a:path) && match(a:path, s:paths.controllers) != -1 && match(a:path, "Controller\.php$") != -1
+      return 1
+    endif
+  else
+    if filereadable(a:path) && match(a:path, s:paths.controllers) != -1 && match(a:path, "_controller\.php$") != -1
+      return 1
+    endif
   endif
+
   return 0
 endfunction
 
@@ -1124,6 +1209,20 @@ function! s:pluralize(word)
   let word = substitute(word, '\v\Cersons$','eople', '')
 
   return word
+endfunction
+" }}}
+" Function: s:camelize() {{{
+" ============================================================
+function! s:camelize(word)
+
+  let word = a:word
+  if word == ''
+    return word
+  endif
+
+  " To Upper Camel Case
+  return join(map(split(word, '_'), 'toupper(v:val[0]) . tolower(v:val[1:])'), '')
+
 endfunction
 " }}}
 
@@ -1792,6 +1891,13 @@ if exists('g:loaded_unite')
 
 endif
 " }}}
+
+command! -n=0 Test :call s:test()
+function! s:test()
+  echo s:get_cakephp_version()
+endfunction
+
+
 
 let &cpo = s:save_cpo
 unlet s:save_cpo

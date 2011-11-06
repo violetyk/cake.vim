@@ -1,6 +1,6 @@
 *cake.txt*  Utility for CakePHP developpers.
 
-Version: 1.4.0
+Version: 2.0
 Author: Yuhei Kagaya <yuhei.kagaya@gmail.com>
 English Documentation Author: Takahiro Jinno <takahiro.jinno@gmail.com>
 Repository: https://github.com/violetyk/cake.vim
@@ -95,7 +95,7 @@ INTRODUCTION							*cake-introduction*
 
 Requirements:
 - Vim ver.7.0 or heigher
-- CakePHP ver.1.3.x
+- CakePHP ver.1.3.x or ver.2.0
 
 
 ==============================================================================
@@ -400,6 +400,9 @@ BUGS								*cake-bugs*
 
 ==============================================================================
 CHANGE LOG							*cake-changelog*
+
+2.0.0   2011-11-06
+     - Support CakePHP 2.0.
 
 1.4.0   2011-11-04
      - Add unite-sources.
