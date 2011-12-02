@@ -1,7 +1,6 @@
 " cake.vim - Utility for CakePHP developpers.
 " Maintainer:  Yuhei Kagaya <yuhei.kagaya@gmail.com>
 " License:     This file is placed in the public domain.
-" Last Change: 2011/12/01
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -354,9 +353,9 @@ function! cake#factory(path_app)
     let view_name = a:2
 
     if a:0 >= 3
-      let theme = 'themed/' . a:3 . '/'
+      let theme = a:3
     else
-      let theme = (exists("g:cakephp_use_theme") && g:cakephp_use_theme != '')? 'themed/' . g:cakephp_use_theme . '/' : ''
+      let theme = (exists("g:cakephp_use_theme") && g:cakephp_use_theme != '')? g:cakephp_use_theme : ''
     endif
 
     let controller_name = self.path_to_name_controller(expand("%:p"))

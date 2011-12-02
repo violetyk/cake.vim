@@ -1,7 +1,6 @@
 " cake.vim - Utility for CakePHP developpers.
 " Maintainer:  Yuhei Kagaya <yuhei.kagaya@gmail.com>
 " License:     This file is placed in the public domain.
-" Last Change: 2011/12/01
 
 let s:save_cpo = &cpo
 set cpo&vim

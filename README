@@ -11,9 +11,6 @@ At the first, specified the app directory of your CakePHP.
 
 :Cakephp /path/to/cakephp_app/
 
-
-When you run this command, it will be cached controller and
-model name internally.
 If you write the following key-mappings in your .vimrc, it will
 perform automatically at startup.
 
