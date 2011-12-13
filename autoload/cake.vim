@@ -105,7 +105,7 @@ function! cake#factory(path_app)
   endfunction
   " }}}
 
-  " Functions: self.get_dictionary()
+  " Functions: get_dictionary()
   " [object_name : path]
   " ============================================================
   function! self.get_behaviors() "{{{
@@ -829,6 +829,58 @@ function! cake#factory(path_app)
 
   endfunction
   "}}}
+  function! self.smart_jump(...) "{{{
+    let option = a:1
+    let path = expand("%:p")
+    let line = getline('.')
+    let word = expand('<cword>')
+    " echo expand('<cWORD>')
+
+    if self.is_controller(path)
+      let controller_name = self.path_to_name_controller(path)
+
+      " search view
+      if match(line, 'function')
+        let views = []
+        let s = matchend(line, "\s*function\s*.")
+        let e = match(line, "(")
+        let view_name = util#strtrim(strpart(line, s, e-s))
+        let themes = keys(self.get_themes())
+        let themes = insert(themes, '') "no theme
+        for theme_name in themes
+          let view_path = self.name_to_path_view(controller_name, view_name, theme_name)
+          if filereadable(view_path)
+            call add(views, view_path)
+          endif
+        endfor
+
+        let i = len(views)
+        if i == 0
+          return
+        elseif i == 1
+          call util#open_file(views[0], option, 0)
+          return
+        elseif i > 1
+          let n = 1
+          let tmp_choices = []
+          for str in views
+            let str = n . ": " . substitute(str, self.paths.views, "", "")
+            call add(tmp_choices, str)
+            let n = n + 1
+          endfor
+          let choices = join(tmp_choices,"\n")
+          let c = confirm('Which file do you jump to?', choices, 0)
+          if c > 0
+            let index = c - 1
+            call util#open_file(views[index], option, 0)
+            return
+          endif
+        endif
+      endif
+
+
+    endif
+  endfunction "}}}
   " ============================================================
 
   " Functions: common functions
@@ -860,6 +912,8 @@ function! self.tail_log(log_name)
   call util#open_tail_log_window(g:cakephp_log[a:log_name], g:cakephp_log_window_size)
 endfunction "}}}
   " ============================================================
+
+
 
 
   return self

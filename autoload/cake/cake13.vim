@@ -70,7 +70,7 @@ function! cake#cake13#factory(path_app)
 
       let s = matchend(line, "\s*function\s*.")
       let e = match(line, "(")
-      let func_name = strpart(line, s, e-s)
+      let func_name = util#strtrim(strpart(line, s, e-s))
 
       " Callback functions are not eligible.
       if func_name !~ "^_" && func_name !=? "beforeFilter" && func_name !=? "beforeRender" && func_name !=? "afterFilter"

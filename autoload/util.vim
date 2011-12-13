@@ -218,7 +218,10 @@ function! util#reload_buffer()
 endfunction
 " }}}
 
-
+" Function: util#strtrim(string) {{{
+function! util#strtrim(string)
+  return substitute(substitute(a:string, '^\s\+', "", ""), '\s\+$', "", "")
+endfunction " }}}
 
 let &cpo = s:save_cpo
 unlet s:save_cpo

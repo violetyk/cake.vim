@@ -1,8 +1,8 @@
 " cake.vim - Utility for CakePHP developpers.
 " Maintainer:  Yuhei Kagaya <yuhei.kagaya@gmail.com>
 " License:     This file is placed in the public domain.
-" Last Change: 2011/12/02
-" Version:     2.0.1
+" Last Change: 2011/12/13
+" Version:     2.1.0
 
 if exists('g:loaded_cake_vim')
   finish
@@ -59,9 +59,11 @@ function! s:initialize(path)
   if isdirectory(a:path_app . 'Controller') && isdirectory(a:path_app . 'Model') && isdirectory(a:path_app . 'View')
     let s:cake = cake#cake20#factory(a:path_app)
     let s:is_initialized = 1
+    call s:map_commands()
   elseif isdirectory(a:path_app . 'controllers') && isdirectory(a:path_app . 'models') && isdirectory(a:path_app . 'views')
     let s:cake = cake#cake13#factory(a:path_app)
     let s:is_initialized = 1
+    call s:map_commands()
   else
     call util#echo_warning("[cake.vim] Please set g:cakephp_app or :Cakephp {app}.")
     let s:is_initialized = 0
@@ -71,7 +73,28 @@ function! s:initialize(path)
   call s:cake.set_log(g:cakephp_log)
 endfunction
 " }}}
+function! s:map_commands() "{{{
+  if s:is_initialized == 0
+    return
+  endif
 
+  nnoremap <buffer> <silent> <Plug>CakeJump       :<C-u>call <SID>smart_jump('n')<CR>
+  nnoremap <buffer> <silent> <Plug>CakeSplitJump  :<C-u>call <SID>smart_jump('s')<CR>
+  nnoremap <buffer> <silent> <Plug>CakeTabJump    :<C-u>call <SID>smart_jump('t')<CR>
+  if !hasmapto('<Plug>CakeJump')
+    nmap <buffer> gf <Plug>CakeJump
+  endif
+  if !hasmapto('<Plug>CakeSplitJump')
+    nmap <buffer> <C-w>f <Plug>CakeSplitJump
+  endif
+  if !hasmapto('<Plug>CakeTabJump')
+    nmap <buffer> <C-w>gf <Plug>CakeTabJump
+  endif
+
+endfunction "}}}
+function! s:smart_jump(option) "{{{
+  call s:cake.smart_jump(a:option)
+endfunction "}}}
 " Function: s:find_app() {{{
 " ============================================================
 function! s:find_app()
@@ -171,13 +194,13 @@ function! s:get_complelist_log(ArgLead, CmdLine, CursorPos) " {{{
 endfunction " }}}
 " ============================================================
 
-
 " SECTION: Auto commands {{{
 "============================================================
-if exists("g:cakephp_auto_set_project") && g:cakephp_auto_set_project == 1
+if s:is_initialized == 0 && exists("g:cakephp_auto_set_project") && g:cakephp_auto_set_project == 1
   autocmd VimEnter * call s:initialize('')
 endif
 
+autocmd FileType php,ctp,htmlcake call s:map_commands()
 " }}}
 " SECTION: Commands {{{
 " ============================================================
@@ -582,6 +605,8 @@ if exists('g:loaded_unite')
 
 endif
 " }}}
+
+
 
 let &cpo = s:save_cpo
 unlet s:save_cpo
