@@ -1,6 +1,6 @@
 *cake.txt*  Utility for CakePHP developpers.
 
-Version: 2.0.1
+Version: 2.1.0
 Author: Yuhei Kagaya <yuhei.kagaya@gmail.com>
 English Documentation Author: Takahiro Jinno <takahiro.jinno@gmail.com>
 Repository: https://github.com/violetyk/cake.vim
@@ -400,6 +400,11 @@ BUGS								*cake-bugs*
 
 ==============================================================================
 CHANGE LOG							*cake-changelog*
+
+2.1.0   2011-12-15
+     - Fix a few bugs.
+     - Add gf algorithm.
+     - Open the plural files at a time.
 
 2.0.1   2011-12-02
      - Fix a few bugs.

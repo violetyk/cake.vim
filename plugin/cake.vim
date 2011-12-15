@@ -210,18 +210,18 @@ command! -n=? -complete=dir Cakephp :call s:initialize(<f-args>)
 " * -> Controller
 " Argument is Controller.
 " When the Model or View is open, if no arguments are inferred from the currently opened file.
-command! -n=? -complete=customlist,s:get_complelist_controller Ccontroller call s:cake.jump_controller('n', <f-args>)
-command! -n=? -complete=customlist,s:get_complelist_controller Ccontrollersp call s:cake.jump_controller('s', <f-args>)
-command! -n=? -complete=customlist,s:get_complelist_controller Ccontrollervsp call s:cake.jump_controller('v', <f-args>)
-command! -n=? -complete=customlist,s:get_complelist_controller Ccontrollertab call s:cake.jump_controller('t', <f-args>)
+command! -n=* -complete=customlist,s:get_complelist_controller Ccontroller call s:cake.jump_controller('n', <f-args>)
+command! -n=* -complete=customlist,s:get_complelist_controller Ccontrollersp call s:cake.jump_controller('s', <f-args>)
+command! -n=* -complete=customlist,s:get_complelist_controller Ccontrollervsp call s:cake.jump_controller('v', <f-args>)
+command! -n=* -complete=customlist,s:get_complelist_controller Ccontrollertab call s:cake.jump_controller('t', <f-args>)
 
 " * -> Model
 " Argument is Model.
 " When the Controller is open, if no arguments are inferred from the currently opened file.
-command! -n=? -complete=customlist,s:get_complelist_model Cmodel call s:cake.jump_model('n', <f-args>)
-command! -n=? -complete=customlist,s:get_complelist_model Cmodelsp call s:cake.jump_model('s', <f-args>)
-command! -n=? -complete=customlist,s:get_complelist_model Cmodelvsp call s:cake.jump_model('v', <f-args>)
-command! -n=? -complete=customlist,s:get_complelist_model Cmodeltab call s:cake.jump_model('t', <f-args>)
+command! -n=* -complete=customlist,s:get_complelist_model Cmodel call s:cake.jump_model('n', <f-args>)
+command! -n=* -complete=customlist,s:get_complelist_model Cmodelsp call s:cake.jump_model('s', <f-args>)
+command! -n=* -complete=customlist,s:get_complelist_model Cmodelvsp call s:cake.jump_model('v', <f-args>)
+command! -n=* -complete=customlist,s:get_complelist_model Cmodeltab call s:cake.jump_model('t', <f-args>)
 
 " Controller -> View
 " Argument is View (,Theme).
@@ -239,80 +239,80 @@ command! -n=+ -complete=customlist,s:get_complelist_controllerview Ccontrollervi
 
 " * -> Config
 " Argument is Config.
-command! -n=1 -complete=customlist,s:get_complelist_config Cconfig call s:cake.jump_config('n', <f-args>)
-command! -n=1 -complete=customlist,s:get_complelist_config Cconfigsp call s:cake.jump_config('s', <f-args>)
-command! -n=1 -complete=customlist,s:get_complelist_config Cconfigvsp call s:cake.jump_config('v', <f-args>)
-command! -n=1 -complete=customlist,s:get_complelist_config Cconfigtab call s:cake.jump_config('t', <f-args>)
+command! -n=+ -complete=customlist,s:get_complelist_config Cconfig call s:cake.jump_config('n', <f-args>)
+command! -n=+ -complete=customlist,s:get_complelist_config Cconfigsp call s:cake.jump_config('s', <f-args>)
+command! -n=+ -complete=customlist,s:get_complelist_config Cconfigvsp call s:cake.jump_config('v', <f-args>)
+command! -n=+ -complete=customlist,s:get_complelist_config Cconfigtab call s:cake.jump_config('t', <f-args>)
 
 " * -> Component
 " Argument is Component.
-command! -n=? -complete=customlist,s:get_complelist_component Ccomponent call s:cake.jump_component('n', <f-args>)
-command! -n=? -complete=customlist,s:get_complelist_component Ccomponentsp call s:cake.jump_component('s', <f-args>)
-command! -n=? -complete=customlist,s:get_complelist_component Ccomponentvsp call s:cake.jump_component('v', <f-args>)
-command! -n=? -complete=customlist,s:get_complelist_component Ccomponenttab call s:cake.jump_component('t', <f-args>)
+command! -n=* -complete=customlist,s:get_complelist_component Ccomponent call s:cake.jump_component('n', <f-args>)
+command! -n=* -complete=customlist,s:get_complelist_component Ccomponentsp call s:cake.jump_component('s', <f-args>)
+command! -n=* -complete=customlist,s:get_complelist_component Ccomponentvsp call s:cake.jump_component('v', <f-args>)
+command! -n=* -complete=customlist,s:get_complelist_component Ccomponenttab call s:cake.jump_component('t', <f-args>)
 
 " * -> Shell
 " Argument is Shell.
-command! -n=1 -complete=customlist,s:get_complelist_shell Cshell call s:cake.jump_shell('n', <f-args>)
-command! -n=1 -complete=customlist,s:get_complelist_shell Cshellsp call s:cake.jump_shell('s', <f-args>)
-command! -n=1 -complete=customlist,s:get_complelist_shell Cshellvsp call s:cake.jump_shell('v', <f-args>)
-command! -n=1 -complete=customlist,s:get_complelist_shell Cshelltab call s:cake.jump_shell('t', <f-args>)
+command! -n=+ -complete=customlist,s:get_complelist_shell Cshell call s:cake.jump_shell('n', <f-args>)
+command! -n=+ -complete=customlist,s:get_complelist_shell Cshellsp call s:cake.jump_shell('s', <f-args>)
+command! -n=+ -complete=customlist,s:get_complelist_shell Cshellvsp call s:cake.jump_shell('v', <f-args>)
+command! -n=+ -complete=customlist,s:get_complelist_shell Cshelltab call s:cake.jump_shell('t', <f-args>)
 
 " * -> Task
 " Argument is Task.
-command! -n=1 -complete=customlist,s:get_complelist_task Ctask call s:cake.jump_task('n', <f-args>)
-command! -n=1 -complete=customlist,s:get_complelist_task Ctasksp call s:cake.jump_task('s', <f-args>)
-command! -n=1 -complete=customlist,s:get_complelist_task Ctaskvsp call s:cake.jump_task('v', <f-args>)
-command! -n=1 -complete=customlist,s:get_complelist_task Ctasktab call s:cake.jump_task('t', <f-args>)
+command! -n=+ -complete=customlist,s:get_complelist_task Ctask call s:cake.jump_task('n', <f-args>)
+command! -n=+ -complete=customlist,s:get_complelist_task Ctasksp call s:cake.jump_task('s', <f-args>)
+command! -n=+ -complete=customlist,s:get_complelist_task Ctaskvsp call s:cake.jump_task('v', <f-args>)
+command! -n=+ -complete=customlist,s:get_complelist_task Ctasktab call s:cake.jump_task('t', <f-args>)
 
 " * -> Behavior
 " Argument is Behavior.
-command! -n=? -complete=customlist,s:get_complelist_behavior Cbehavior call s:cake.jump_behavior('n', <f-args>)
-command! -n=? -complete=customlist,s:get_complelist_behavior Cbehaviorsp call s:cake.jump_behavior('s', <f-args>)
-command! -n=? -complete=customlist,s:get_complelist_behavior Cbehaviorvsp call s:cake.jump_behavior('v', <f-args>)
-command! -n=? -complete=customlist,s:get_complelist_behavior Cbehaviortab call s:cake.jump_behavior('t', <f-args>)
+command! -n=* -complete=customlist,s:get_complelist_behavior Cbehavior call s:cake.jump_behavior('n', <f-args>)
+command! -n=* -complete=customlist,s:get_complelist_behavior Cbehaviorsp call s:cake.jump_behavior('s', <f-args>)
+command! -n=* -complete=customlist,s:get_complelist_behavior Cbehaviorvsp call s:cake.jump_behavior('v', <f-args>)
+command! -n=* -complete=customlist,s:get_complelist_behavior Cbehaviortab call s:cake.jump_behavior('t', <f-args>)
 
 " * -> Helper
 " Argument is Helper.
-command! -n=? -complete=customlist,s:get_complelist_helper Chelper call s:cake.jump_helper('n', <f-args>)
-command! -n=? -complete=customlist,s:get_complelist_helper Chelpersp call s:cake.jump_helper('s', <f-args>)
-command! -n=? -complete=customlist,s:get_complelist_helper Chelpervsp call s:cake.jump_helper('v', <f-args>)
-command! -n=? -complete=customlist,s:get_complelist_helper Chelpertab call s:cake.jump_helper('t', <f-args>)
+command! -n=* -complete=customlist,s:get_complelist_helper Chelper call s:cake.jump_helper('n', <f-args>)
+command! -n=* -complete=customlist,s:get_complelist_helper Chelpersp call s:cake.jump_helper('s', <f-args>)
+command! -n=* -complete=customlist,s:get_complelist_helper Chelpervsp call s:cake.jump_helper('v', <f-args>)
+command! -n=* -complete=customlist,s:get_complelist_helper Chelpertab call s:cake.jump_helper('t', <f-args>)
 
 " * -> Test of Model
 " Argument is Test of Model.
-command! -n=? -complete=customlist,s:get_complelist_testmodel Ctestmodel call s:cake.jump_testmodel('n', <f-args>)
-command! -n=? -complete=customlist,s:get_complelist_testmodel Ctestmodelsp call s:cake.jump_testmodel('s', <f-args>)
-command! -n=? -complete=customlist,s:get_complelist_testmodel Ctestmodelvsp call s:cake.jump_testmodel('v', <f-args>)
-command! -n=? -complete=customlist,s:get_complelist_testmodel Ctestmodeltab call s:cake.jump_testmodel('t', <f-args>)
+command! -n=* -complete=customlist,s:get_complelist_testmodel Ctestmodel call s:cake.jump_testmodel('n', <f-args>)
+command! -n=* -complete=customlist,s:get_complelist_testmodel Ctestmodelsp call s:cake.jump_testmodel('s', <f-args>)
+command! -n=* -complete=customlist,s:get_complelist_testmodel Ctestmodelvsp call s:cake.jump_testmodel('v', <f-args>)
+command! -n=* -complete=customlist,s:get_complelist_testmodel Ctestmodeltab call s:cake.jump_testmodel('t', <f-args>)
 
 " * -> Test of Behavior
 " Argument is Test of Behavior.
-command! -n=? -complete=customlist,s:get_complelist_testbehavior Ctestbehavior call s:cake.jump_testbehavior('n', <f-args>)
-command! -n=? -complete=customlist,s:get_complelist_testbehavior Ctestbehaviorsp call s:cake.jump_testbehavior('s', <f-args>)
-command! -n=? -complete=customlist,s:get_complelist_testbehavior Ctestbehaviorvsp call s:cake.jump_testbehavior('v', <f-args>)
-command! -n=? -complete=customlist,s:get_complelist_testbehavior Ctestbehaviortab call s:cake.jump_testbehavior('t', <f-args>)
+command! -n=* -complete=customlist,s:get_complelist_testbehavior Ctestbehavior call s:cake.jump_testbehavior('n', <f-args>)
+command! -n=* -complete=customlist,s:get_complelist_testbehavior Ctestbehaviorsp call s:cake.jump_testbehavior('s', <f-args>)
+command! -n=* -complete=customlist,s:get_complelist_testbehavior Ctestbehaviorvsp call s:cake.jump_testbehavior('v', <f-args>)
+command! -n=* -complete=customlist,s:get_complelist_testbehavior Ctestbehaviortab call s:cake.jump_testbehavior('t', <f-args>)
 
 " * -> Test of Component
 " Argument is Test of Component.
-command! -n=? -complete=customlist,s:get_complelist_testcomponent Ctestcomponent call s:cake.jump_testcomponent('n', <f-args>)
-command! -n=? -complete=customlist,s:get_complelist_testcomponent Ctestcomponentsp call s:cake.jump_testcomponent('s', <f-args>)
-command! -n=? -complete=customlist,s:get_complelist_testcomponent Ctestcomponentvsp call s:cake.jump_testcomponent('v', <f-args>)
-command! -n=? -complete=customlist,s:get_complelist_testcomponent Ctestcomponenttab call s:cake.jump_testcomponent('t', <f-args>)
+command! -n=* -complete=customlist,s:get_complelist_testcomponent Ctestcomponent call s:cake.jump_testcomponent('n', <f-args>)
+command! -n=* -complete=customlist,s:get_complelist_testcomponent Ctestcomponentsp call s:cake.jump_testcomponent('s', <f-args>)
+command! -n=* -complete=customlist,s:get_complelist_testcomponent Ctestcomponentvsp call s:cake.jump_testcomponent('v', <f-args>)
+command! -n=* -complete=customlist,s:get_complelist_testcomponent Ctestcomponenttab call s:cake.jump_testcomponent('t', <f-args>)
 
 " * -> Test of Controller
 " Argument is Test of Controller.
-command! -n=? -complete=customlist,s:get_complelist_testcontroller Ctestcontroller call s:cake.jump_testcontroller('n', <f-args>)
-command! -n=? -complete=customlist,s:get_complelist_testcontroller Ctestcontrollersp call s:cake.jump_testcontroller('s', <f-args>)
-command! -n=? -complete=customlist,s:get_complelist_testcontroller Ctestcontrollervsp call s:cake.jump_testcontroller('v', <f-args>)
-command! -n=? -complete=customlist,s:get_complelist_testcontroller Ctestcontrollertab call s:cake.jump_testcontroller('t', <f-args>)
+command! -n=* -complete=customlist,s:get_complelist_testcontroller Ctestcontroller call s:cake.jump_testcontroller('n', <f-args>)
+command! -n=* -complete=customlist,s:get_complelist_testcontroller Ctestcontrollersp call s:cake.jump_testcontroller('s', <f-args>)
+command! -n=* -complete=customlist,s:get_complelist_testcontroller Ctestcontrollervsp call s:cake.jump_testcontroller('v', <f-args>)
+command! -n=* -complete=customlist,s:get_complelist_testcontroller Ctestcontrollertab call s:cake.jump_testcontroller('t', <f-args>)
 
 " * -> Test of Helper
 " Argument is Test of Helper.
-command! -n=? -complete=customlist,s:get_complelist_testhelper Ctesthelper call s:cake.jump_testhelper('n', <f-args>)
-command! -n=? -complete=customlist,s:get_complelist_testhelper Ctesthelpersp call s:cake.jump_testhelper('s', <f-args>)
-command! -n=? -complete=customlist,s:get_complelist_testhelper Ctesthelpervsp call s:cake.jump_testhelper('v', <f-args>)
-command! -n=? -complete=customlist,s:get_complelist_testhelper Ctesthelpertab call s:cake.jump_testhelper('t', <f-args>)
+command! -n=* -complete=customlist,s:get_complelist_testhelper Ctesthelper call s:cake.jump_testhelper('n', <f-args>)
+command! -n=* -complete=customlist,s:get_complelist_testhelper Ctesthelpersp call s:cake.jump_testhelper('s', <f-args>)
+command! -n=* -complete=customlist,s:get_complelist_testhelper Ctesthelpervsp call s:cake.jump_testhelper('v', <f-args>)
+command! -n=* -complete=customlist,s:get_complelist_testhelper Ctesthelpertab call s:cake.jump_testhelper('t', <f-args>)
 
 " * -> Test of any
 command! -n=0  Ctest call s:cake.jump_test('n', <f-args>)
@@ -322,10 +322,10 @@ command! -n=0  Ctesttab call s:cake.jump_test('t', <f-args>)
 
 " * -> Fixture
 " Argument is Fixture.
-command! -n=? -complete=customlist,s:get_complelist_fixture Cfixture call s:cake.jump_fixture('n', <f-args>)
-command! -n=? -complete=customlist,s:get_complelist_fixture Cfixturesp call s:cake.jump_fixture('s', <f-args>)
-command! -n=? -complete=customlist,s:get_complelist_fixture Cfixturevsp call s:cake.jump_fixture('v', <f-args>)
-command! -n=? -complete=customlist,s:get_complelist_fixture Cfixturetab call s:cake.jump_fixture('t', <f-args>)
+command! -n=* -complete=customlist,s:get_complelist_fixture Cfixture call s:cake.jump_fixture('n', <f-args>)
+command! -n=* -complete=customlist,s:get_complelist_fixture Cfixturesp call s:cake.jump_fixture('s', <f-args>)
+command! -n=* -complete=customlist,s:get_complelist_fixture Cfixturevsp call s:cake.jump_fixture('v', <f-args>)
+command! -n=* -complete=customlist,s:get_complelist_fixture Cfixturetab call s:cake.jump_fixture('t', <f-args>)
 
 " * -> Log
 " Argument is Log name.

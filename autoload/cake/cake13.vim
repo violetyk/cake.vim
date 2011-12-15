@@ -65,6 +65,20 @@ function! cake#cake13#factory(path_app)
 
   endfunction
   " }}}
+  function! self.get_helpers() "{{{
+    let helpers = {}
+
+    for path in split(globpath(self.paths.helpers, "*.php"), "\n")
+      let name = self.path_to_name_helper(path)
+      let helpers[name] = path
+    endfor
+
+    for path in split(globpath(self.paths.app, "*_helper.php"), "\n")
+      let helpers[self.path_to_name_helper(path)] = path
+    endfor
+
+    return helpers
+  endfunction " }}}
   function! self.get_views(controller_name) "{{{
 
     let views = []
@@ -113,7 +127,7 @@ function! cake#cake13#factory(path_app)
     return util#camelize(fnamemodify(a:path, ":t:r"))
   endfunction "}}}
   function! self.path_to_name_helper(path) "{{{
-    return util#camelize(fnamemodify(a:path, ":t:r"))
+    return util#camelize(substitute(fnamemodify(a:path, ":t:r"), "_helper$", "", ""))
   endfunction "}}}
   function! self.path_to_name_testcontroller(path) "{{{
     return util#camelize(substitute(fnamemodify(a:path, ":t:r"), "_controller.test$", "", ""))
@@ -196,11 +210,15 @@ function! cake#cake13#factory(path_app)
   function! self.is_model(path) "{{{
     if filereadable(a:path) && match(a:path, self.paths.models) != -1 && fnamemodify(a:path, ":e") == "php"
       return 1
+    elseif filereadable(a:path) && match(a:path, self.paths.app) != -1 && match(a:path, "_model\.php$") != -1
+      return 1
     endif
     return 0
   endfunction "}}}
   function! self.is_controller(path) "{{{
     if filereadable(a:path) && match(a:path, self.paths.controllers) != -1 && match(a:path, "_controller\.php$") != -1
+      return 1
+    elseif filereadable(a:path) && match(a:path, self.paths.app) != -1 && match(a:path, "_controller\.php$") != -1
       return 1
     endif
     return 0
@@ -225,6 +243,8 @@ function! cake#cake13#factory(path_app)
   endfunction "}}}
   function! self.is_helper(path) "{{{
     if filereadable(a:path) && match(a:path, self.paths.helpers) != -1 && fnamemodify(a:path, ":e") == "php"
+      return 1
+    elseif filereadable(a:path) && match(a:path, self.paths.app) != -1 && match(a:path, "_helper\.php$") != -1
       return 1
     endif
     return 0
@@ -255,6 +275,18 @@ function! cake#cake13#factory(path_app)
   endfunction "}}}
   function! self.is_testhelper(path) "{{{
     if filereadable(a:path) && match(a:path, self.paths.testhelpers) != -1 && match(a:path, "\.test\.php$") != -1
+      return 1
+    endif
+    return 0
+  endfunction "}}}
+  function! self.is_shell(path) "{{{
+    if filereadable(a:path) && match(a:path, self.paths.shells) != -1 && fnamemodify(a:path, ":e") == "php"
+      return 1
+    endif
+    return 0
+  endfunction "}}}
+  function! self.is_task(path) "{{{
+    if filereadable(a:path) && match(a:path, self.paths.tasks) != -1 && fnamemodify(a:path, ":e") == "php"
       return 1
     endif
     return 0

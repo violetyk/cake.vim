@@ -265,6 +265,18 @@ function! cake#cake20#factory(path_app)
     endif
     return 0
   endfunction "}}}
+  function! self.is_shell(path) "{{{
+    if filereadable(a:path) && match(a:path, self.paths.shells) != -1 && match(a:path, "Shell\.php$") != -1
+      return 1
+    endif
+    return 0
+  endfunction "}}}
+  function! self.is_task(path) "{{{
+    if filereadable(a:path) && match(a:path, self.paths.tasks) != -1 && match(a:path, "Task\.php$") != -1
+      return 1
+    endif
+    return 0
+  endfunction "}}}
   " ============================================================
 
   return self

@@ -104,6 +104,10 @@ function! cake#factory(path_app)
   endfunction
   function! self.is_testhelper(path)
   endfunction
+  function! self.is_shell(path)
+  endfunction
+  function! self.is_task(path)
+  endfunction
   " }}}
 
   " Functions: get_dictionary()
@@ -251,96 +255,107 @@ function! cake#factory(path_app)
   function! self.jump_controller(...) "{{{
 
     let split_option = a:1
-    let target = ''
+    " let target = ''
+    let targets = []
     let func_name = ''
     let controllers = self.get_controllers()
 
     if a:0 >= 2
       " Controller name is specified in the argument.
-      let target = a:2
+      " let target = a:2
+      let targets = self.args_to_targets(a:000)
     else
       " Controller name is inferred from the currently opened file (view or model or testcontroller).
       let path = expand("%:p")
 
       if self.is_view(path)
-        let target = expand("%:p:h:t")
+        " let target = expand("%:p:h:t")
+        call add(targets, expand("%:p:h:t"))
         let func_name = expand("%:p:t:r")
       elseif self.is_model(path)
-        let target = util#pluralize(self.path_to_name_model(path))
+        " let target = util#pluralize(self.path_to_name_model(path))
+        call add(targets, util#pluralize(self.path_to_name_model(path)))
       elseif self.is_testcontroller(path)
-        let target = self.path_to_name_testcontroller(path)
+        " let target = self.path_to_name_testcontroller(path)
+        call add(targets, self.path_to_name_testcontroller(path))
       else
         return
       endif
     endif
 
-    let target = util#camelize(target)
+    for target in targets
+      let target = util#camelize(target)
 
-    if !has_key(controllers, target)
+      if !has_key(controllers, target)
 
-      " If the file does not exist, ask whether to create a new file.
-      if util#confirm_create_file(self.name_to_path_controller(target))
-        let controllers[target] = self.name_to_path_controller(target)
-      else
-        call util#echo_warning(target . "Controller is not found.")
-        return
+        " If the file does not exist, ask whether to create a new file.
+        if util#confirm_create_file(self.name_to_path_controller(target))
+          let controllers[target] = self.name_to_path_controller(target)
+        else
+          call util#echo_warning(target . "Controller is not found.")
+          return
+        endif
       endif
-    endif
 
-
-    " Jump to the line that corresponds to the view's function.
-    let line = 0
-    if func_name != ''
-      let cmd = 'grep -n -E "^\s*function\s*' . func_name . '\s*\(" ' . self.name_to_path_controller(target) . ' | cut -f 1'
-      " Extract line number from grep result.
-      let n = matchstr(system(cmd), '\(^\d\+\)')
-      if strlen(n) > 0
-        let line = str2nr(n)
+      " Jump to the line that corresponds to the view's function.
+      let line = 0
+      if func_name != ''
+        let cmd = 'grep -n -E "^\s*function\s*' . func_name . '\s*\(" ' . self.name_to_path_controller(target) . ' | cut -f 1'
+        " Extract line number from grep result.
+        let n = matchstr(system(cmd), '\(^\d\+\)')
+        if strlen(n) > 0
+          let line = str2nr(n)
+        endif
       endif
-    endif
 
-    call util#open_file(controllers[target], split_option, line)
+      call util#open_file(controllers[target], split_option, line)
+    endfor
 
   endfunction "}}}
   function! self.jump_model(...) "{{{
 
     let split_option = a:1
-    let target = ''
+    let targets = []
     let models = self.get_models()
 
     if a:0 >= 2
       " Model name is specified in the argument.
-      let target = a:2
+      let targets = self.args_to_targets(a:000)
     else
       " Model name is inferred from the currently opened controller file.
       let path = expand("%:p")
 
       if self.is_controller(path)
-        let target = util#singularize(substitute(util#camelize(expand("%:p:t:r")), "Controller$", "", ""))
+        " let target = util#singularize(substitute(util#camelize(expand("%:p:t:r")), "Controller$", "", ""))
+        call add(targets, util#singularize(substitute(util#camelize(expand("%:p:t:r")), "Controller$", "", "")))
       elseif self.is_testmodel(path)
-        let target = self.path_to_name_testmodel(path)
+        " let target = self.path_to_name_testmodel(path)
+        call add(targets, self.path_to_name_testmodel(path))
       elseif self.is_fixture(path)
-        let target = self.path_to_name_fixture(path)
+        " let target = self.path_to_name_fixture(path)
+        call add(targets, self.path_to_name_fixture(path))
       else
         return
       endif
     endif
 
-    let target = util#camelize(target)
+    for target in targets
+      let target = util#camelize(target)
 
-    if !has_key(models, target)
+      if !has_key(models, target)
 
-      " If the file does not exist, ask whether to create a new file.
-      if util#confirm_create_file(self.name_to_path_model(target))
-        let models[target] = self.name_to_path_model(target)
-      else
-        call util#echo_warning(target . "Model is not found.")
-        return
+        " If the file does not exist, ask whether to create a new file.
+        if util#confirm_create_file(self.name_to_path_model(target))
+          let models[target] = self.name_to_path_model(target)
+        else
+          call util#echo_warning(target . "Model is not found.")
+          return
+        endif
       endif
-    endif
 
-    let line = 0
-    call util#open_file(models[target], split_option, line)
+      let line = 0
+      call util#open_file(models[target], split_option, line)
+    endfor
 
   endfunction "}}}
   function! self.jump_view(...) " {{{
@@ -404,352 +419,377 @@ function! cake#factory(path_app)
   function! self.jump_config(...) " {{{
 
     let split_option = a:1
-    let target = a:2
+    let targets = self.args_to_targets(a:000)
     let configs = self.get_configs()
 
-    if !has_key(configs, target)
-      " If the file does not exist, ask whether to create a new file.
-      if util#confirm_create_file(self.name_to_path_config(target))
-        let configs[target] = self.name_to_path_config(target)
-      else
-        call util#echo_warning(target . " is not found.")
-        return
+    for target in targets
+      if !has_key(configs, target)
+        " If the file does not exist, ask whether to create a new file.
+        if util#confirm_create_file(self.name_to_path_config(target))
+          let configs[target] = self.name_to_path_config(target)
+        else
+          call util#echo_warning(target . " is not found.")
+          return
+        endif
       endif
-    endif
 
-    let line = 0
-    call util#open_file(configs[target], split_option, line)
+      let line = 0
+      call util#open_file(configs[target], split_option, line)
+    endfor
 
   endfunction "}}}
   function! self.jump_component(...) "{{{
 
     let split_option = a:1
-    let target = ''
+    let targets = []
     let components = self.get_components()
 
     if a:0 >= 2
       " Component name is specified in the argument.
-      let target = a:2
+      let targets = self.args_to_targets(a:000)
     else
       " Component name is inferred from the currently opened testcomponent file.
       let path = expand("%:p")
 
       if self.is_testcomponent(path)
-        let target = self.path_to_name_testcomponent(path)
+        call add(targets, self.path_to_name_testcomponent(path))
       else
         return
       endif
     endif
 
-    let target = util#camelize(target)
+    for target in targets
+      let target = util#camelize(target)
 
-    if !has_key(components, target)
-      " If the file does not exist, ask whether to create a new file.
-      if util#confirm_create_file(self.name_to_path_component(target))
-        let components[target] = self.name_to_path_component(target)
-      else
-        call util#echo_warning(target . " is not found.")
-        return
+      if !has_key(components, target)
+        " If the file does not exist, ask whether to create a new file.
+        if util#confirm_create_file(self.name_to_path_component(target))
+          let components[target] = self.name_to_path_component(target)
+        else
+          call util#echo_warning(target . " is not found.")
+          return
+        endif
       endif
-    endif
 
-    let line = 0
-    call util#open_file(components[target], split_option, line)
+      let line = 0
+      call util#open_file(components[target], split_option, line)
+    endfor
 
   endfunction "}}}
   function! self.jump_shell(...) "{{{
 
     let split_option = a:1
-    let target = util#camelize(a:2)
+    let targets = self.args_to_targets(a:000)
     let shells = self.get_shells()
 
-    if !has_key(shells, target)
-      " If the file does not exist, ask whether to create a new file.
-      if util#confirm_create_file(self.name_to_path_shell(target))
-        let shells[target] = self.name_to_path_shell(target)
-      else
-        call util#echo_warning(target . " is not found.")
-        return
+    for target in targets
+      let target = util#camelize(target)
+      if !has_key(shells, target)
+        " If the file does not exist, ask whether to create a new file.
+        if util#confirm_create_file(self.name_to_path_shell(target))
+          let shells[target] = self.name_to_path_shell(target)
+        else
+          call util#echo_warning(target . " is not found.")
+          return
+        endif
       endif
-    endif
 
-    let line = 0
-    call util#open_file(shells[target], split_option, line)
+      let line = 0
+      call util#open_file(shells[target], split_option, line)
+    endfor
+
 
   endfunction
   "}}}
   function! self.jump_task(...) "{{{
 
     let split_option = a:1
-    let target = util#camelize(a:2)
+    let targets = self.args_to_targets(a:000)
     let tasks = self.get_tasks()
 
-    if !has_key(tasks, target)
-      " If the file does not exist, ask whether to create a new file.
-      if util#confirm_create_file(self.name_to_path_task(target))
-        let tasks[target] = self.name_to_path_task(target)
-      else
-        call util#echo_warning(target . " is not found.")
-        return
+    for target in targets
+      let target = util#camelize(target)
+      if !has_key(tasks, target)
+        " If the file does not exist, ask whether to create a new file.
+        if util#confirm_create_file(self.name_to_path_task(target))
+          let tasks[target] = self.name_to_path_task(target)
+        else
+          call util#echo_warning(target . " is not found.")
+          return
+        endif
       endif
-    endif
 
-    let line = 0
-    call util#open_file(tasks[target], split_option, line)
+      let line = 0
+      call util#open_file(tasks[target], split_option, line)
+    endfor
 
   endfunction "}}}
   function! self.jump_behavior(...) "{{{
 
     let split_option = a:1
-    let target = ''
+    let targets = []
     let behaviors = self.get_behaviors()
 
     if a:0 >= 2
       " Behaivior name is specified in the argument.
-      let target = a:2
+      let targets = self.args_to_targets(a:000)
     else
       " Behaivior name is inferred from the currently opened testbehavior file.
       let path = expand("%:p")
 
       if self.is_testbehavior(path)
-        let target = self.path_to_name_testbehavior(path)
+        call add(targets, self.path_to_name_testbehavior(path))
       else
         return
       endif
     endif
 
-    let target = util#camelize(target)
+    for target in targets
+      let target = util#camelize(target)
 
-    if !has_key(behaviors, target)
-      " If the file does not exist, ask whether to create a new file.
-      if util#confirm_create_file(self.name_to_path_behavior(target))
-        let behaviors[target] = self.name_to_path_behavior(target)
-      else
-        call util#echo_warning(target . " is not found.")
-        return
+      if !has_key(behaviors, target)
+        " If the file does not exist, ask whether to create a new file.
+        if util#confirm_create_file(self.name_to_path_behavior(target))
+          let behaviors[target] = self.name_to_path_behavior(target)
+        else
+          call util#echo_warning(target . " is not found.")
+          return
+        endif
       endif
-    endif
 
-    let line = 0
-    call util#open_file(behaviors[target], split_option, line)
+      let line = 0
+      call util#open_file(behaviors[target], split_option, line)
+    endfor
 
   endfunction "}}}
   function! self.jump_helper(...) "{{{
 
     let split_option = a:1
-    let target = ''
+    let targets = []
     let helpers = self.get_helpers()
 
     if a:0 >= 2
       " Helper name is specified in the argument.
-      let target = a:2
+      let targets = self.args_to_targets(a:000)
     else
       " Helper name is inferred from the currently opened testhelper file.
       let path = expand("%:p")
 
       if self.is_testhelper(path)
-        let target = self.path_to_name_testhelper(path)
+        call add(targets, self.path_to_name_testhelper(path))
       else
         return
       endif
     endif
 
-    let target = util#camelize(target)
+    for target in targets
+      let target = util#camelize(target)
 
-    if !has_key(helpers, target)
-      " If the file does not exist, ask whether to create a new file.
-      if util#confirm_create_file(self.name_to_path_helper(target))
-        let helpers[target] = self.name_to_path_helper(target)
-      else
-        call util#echo_warning(target . " is not found.")
-        return
+      if !has_key(helpers, target)
+        " If the file does not exist, ask whether to create a new file.
+        if util#confirm_create_file(self.name_to_path_helper(target))
+          let helpers[target] = self.name_to_path_helper(target)
+        else
+          call util#echo_warning(target . " is not found.")
+          return
+        endif
       endif
-    endif
 
-    let line = 0
-    call util#open_file(helpers[target], split_option, line)
+      let line = 0
+      call util#open_file(helpers[target], split_option, line)
+    endfor
 
   endfunction "}}}
   function! self.jump_testmodel(...) "{{{
 
     let split_option = a:1
-    let target = ''
+    let targets = []
     let testmodels = self.get_testmodels()
 
     if a:0 >= 2
       " Model name is specified in the argument.
-      let target = a:2
+      let targets = self.args_to_targets(a:000)
     else
       " Model name is inferred from the currently opened controller file.
       let path = expand("%:p")
 
       if self.is_model(path)
-        let target = self.path_to_name_model(path)
+        call add(targets, self.path_to_name_model(path))
       elseif self.is_fixture(path)
-        let target = self.path_to_name_fixture(path)
+        call add(targets, self.path_to_name_fixture(path))
       else
         return
       endif
     endif
 
-    let target = util#camelize(target)
+    for target in targets
+      let target = util#camelize(target)
 
-    if !has_key(testmodels, target)
-      " If the file does not exist, ask whether to create a new file.
-      if util#confirm_create_file(self.name_to_path_testmodel(target))
-        let testmodels[target] = self.name_to_path_testmodel(target)
-      else
-        call util#echo_warning(target . " is not found.")
-        return
+      if !has_key(testmodels, target)
+        " If the file does not exist, ask whether to create a new file.
+        if util#confirm_create_file(self.name_to_path_testmodel(target))
+          let testmodels[target] = self.name_to_path_testmodel(target)
+        else
+          call util#echo_warning(target . " is not found.")
+          return
+        endif
       endif
-    endif
 
-    let line = 0
-    call util#open_file(testmodels[target], split_option, line)
+      let line = 0
+      call util#open_file(testmodels[target], split_option, line)
+    endfor
 
   endfunction "}}}
   function! self.jump_testbehavior(...) "{{{
 
     let split_option = a:1
-    let target = ''
+    let targets = []
     let testbehaviors = self.get_testbehaviors()
 
     if a:0 >= 2
       " Behaivior name is specified in the argument.
-      let target = a:2
+      let targets = self.args_to_targets(a:000)
     else
       " Behaivior name is inferred from the currently opened behavior file.
       let path = expand("%:p")
 
       if self.is_behavior(path)
-        let target = self.path_to_name_behavior(path)
+        call add(targets, self.path_to_name_behavior(path))
       else
         return
       endif
     endif
 
-    let target = util#camelize(target)
+    for target in targets
+      let target = util#camelize(target)
 
-    if !has_key(testbehaviors, target)
-      " If the file does not exist, ask whether to create a new file.
-      if util#confirm_create_file(self.name_to_path_testbehavior(target))
-        let testbehaviors[target] = self.name_to_path_testbehavior(target)
-      else
-        call util#echo_warning(target . " is not found.")
-        return
+      if !has_key(testbehaviors, target)
+        " If the file does not exist, ask whether to create a new file.
+        if util#confirm_create_file(self.name_to_path_testbehavior(target))
+          let testbehaviors[target] = self.name_to_path_testbehavior(target)
+        else
+          call util#echo_warning(target . " is not found.")
+          return
+        endif
       endif
-    endif
 
-    let line = 0
-    call util#open_file(testbehaviors[target], split_option, line)
+      let line = 0
+      call util#open_file(testbehaviors[target], split_option, line)
+    endfor
 
   endfunction "}}}
   function! self.jump_testcomponent(...) "{{{
 
     let split_option = a:1
-    let target = ''
+    let targets = []
     let testcomponents = self.get_testcomponents()
 
     if a:0 >= 2
       " Component name is specified in the argument.
-      let target = a:2
+      let targets = self.args_to_targets(a:000)
     else
       " Componen tname is inferred from the currently opened component file.
       let path = expand("%:p")
 
       if self.is_component(path)
-        let target = self.path_to_name_component(path)
+        call add(targets, self.path_to_name_component(path))
       else
         return
       endif
     endif
 
-    let target = util#camelize(target)
+    for target in targets
+      let target = util#camelize(target)
 
-    if !has_key(testcomponents, target)
-      " If the file does not exist, ask whether to create a new file.
-      if util#confirm_create_file(self.name_to_path_testcomponent(target))
-        let testcomponents[target] = self.name_to_path_testcomponent(target)
-      else
-        call util#echo_warning(target . " is not found.")
-        return
+      if !has_key(testcomponents, target)
+        " If the file does not exist, ask whether to create a new file.
+        if util#confirm_create_file(self.name_to_path_testcomponent(target))
+          let testcomponents[target] = self.name_to_path_testcomponent(target)
+        else
+          call util#echo_warning(target . " is not found.")
+          return
+        endif
       endif
-    endif
 
-    let line = 0
-    call util#open_file(testcomponents[target], split_option, line)
+      let line = 0
+      call util#open_file(testcomponents[target], split_option, line)
+    endfor
 
   endfunction "}}}
   function! self.jump_testcontroller(...) "{{{
 
     let split_option = a:1
-    let target = ''
+    let targets = []
     let testcontrollers = self.get_testcontrollers()
 
     if a:0 >= 2
       " Controller name is specified in the argument.
-      let target = a:2
+      let targets = self.args_to_targets(a:000)
     else
       " Controller name is inferred from the currently opened controllers file.
       let path = expand("%:p")
 
       if self.is_controller(path)
-        let target = self.path_to_name_controller(path)
+        call add(targets, self.path_to_name_controller(path))
       else
         return
       endif
     endif
 
-    let target = util#camelize(target)
+    for target in targets
+      let target = util#camelize(target)
 
-    if !has_key(testcontrollers, target)
-      " If the file does not exist, ask whether to create a new file.
-      if util#confirm_create_file(self.name_to_path_testcontroller(target))
-        let testcontrollers[target] = self.name_to_path_testcontroller(target)
-      else
-        call util#echo_warning(target . " is not found.")
-        return
+      if !has_key(testcontrollers, target)
+        " If the file does not exist, ask whether to create a new file.
+        if util#confirm_create_file(self.name_to_path_testcontroller(target))
+          let testcontrollers[target] = self.name_to_path_testcontroller(target)
+        else
+          call util#echo_warning(target . " is not found.")
+          return
+        endif
       endif
-    endif
 
-    let line = 0
-    call util#open_file(testcontrollers[target], split_option, line)
+      let line = 0
+      call util#open_file(testcontrollers[target], split_option, line)
+    endfor
 
   endfunction "}}}
   function! self.jump_testhelper(...) "{{{
 
     let split_option = a:1
-    let target = ''
+    let targets = []
     let testhelpers = self.get_testhelpers()
 
     if a:0 >= 2
       " Helper name is specified in the argument.
-      let target = a:2
+      let targets = self.args_to_targets(a:000)
     else
       " Helper name is inferred from the currently opened helper file.
       let path = expand("%:p")
 
       if self.is_helper(path)
-        let target = self.path_to_name_helper(path)
+        call add(targets, self.path_to_name_helper(path))
       else
         return
       endif
     endif
 
-    let target = util#camelize(target)
+    for target in targets
+      let target = util#camelize(target)
 
-    if !has_key(testhelpers, target)
-      " If the file does not exist, ask whether to create a new file.
-      if util#confirm_create_file(self.name_to_path_testhelper(target))
-        let testhelpers[target] = self.name_to_path_testhelper(target)
-      else
-        call util#echo_warning(target . " is not found.")
-        return
+      if !has_key(testhelpers, target)
+        " If the file does not exist, ask whether to create a new file.
+        if util#confirm_create_file(self.name_to_path_testhelper(target))
+          let testhelpers[target] = self.name_to_path_testhelper(target)
+        else
+          call util#echo_warning(target . " is not found.")
+          return
+        endif
       endif
-    endif
 
-    let line = 0
-    call util#open_file(testhelpers[target], split_option, line)
+      let line = 0
+      call util#open_file(testhelpers[target], split_option, line)
+    endfor
 
   endfunction "}}}
   function! self.jump_test(...) "{{{
@@ -794,39 +834,41 @@ function! cake#factory(path_app)
   function! self.jump_fixture(...) "{{{
 
     let split_option = a:1
-    let target = ''
+    let targets = []
     let fixtures = self.get_fixtures()
 
     if a:0 >= 2
       " fixture name is specified in the argument.
-      let target = a:2
+      let targets = self.args_to_targets(a:000)
     else
       " fixture name is inferred from the currently opened model file.
       let path = expand("%:p")
 
       if self.is_model(path)
-        let target = self.path_to_name_model(path)
+        call add(targets, self.path_to_name_model(path))
       elseif self.is_testmodel(path)
-        let target = self.path_to_name_test(path)
+        call add(targets, self.path_to_name_test(path))
       else
         return
       endif
     endif
 
-    let target = util#camelize(target)
+    for target in targets
+      let target = util#camelize(target)
 
-    if !has_key(fixtures, target)
-      " If the file does not exist, ask whether to create a new file.
-      if util#confirm_create_file(self.name_to_path_fixture(target))
-        let fixtures[target] = self.name_to_path_fixture(target)
-      else
-        call util#echo_warning(target . " is not found.")
-        return
+      if !has_key(fixtures, target)
+        " If the file does not exist, ask whether to create a new file.
+        if util#confirm_create_file(self.name_to_path_fixture(target))
+          let fixtures[target] = self.name_to_path_fixture(target)
+        else
+          call util#echo_warning(target . " is not found.")
+          return
+        endif
       endif
-    endif
 
-    let line = 0
-    call util#open_file(fixtures[target], split_option, line)
+      let line = 0
+      call util#open_file(fixtures[target], split_option, line)
+    endfor
 
   endfunction
   "}}}
@@ -837,10 +879,7 @@ function! cake#factory(path_app)
     let word = expand('<cword>')
     let l_word = expand('<cWORD>')
 
-    " let debug = line . '/' . word  . '/' . l_word
-    " echo debug
-
-    " in Controller
+    " in Controller "{{{
     if self.is_controller(path)
       let controller_name = self.path_to_name_controller(path)
 
@@ -869,9 +908,46 @@ function! cake#factory(path_app)
         call self.smart_jump_layout(layout_name, option)
         return
       endif
-    endif
 
-    " in View(layout)
+
+      " Controller -> Model or Behavior or Component or Helper
+      if self.is_model(self.name_to_path_model(word))
+        call self.jump_model(option, word)
+        return
+      elseif self.is_behavior(self.name_to_path_behavior(word))
+        call self.jump_behavior(option, word)
+        return
+      elseif self.is_component(self.name_to_path_component(word))
+        call self.jump_component(option, word)
+        return
+      elseif self.is_helper(self.name_to_path_helper(word))
+        call self.jump_helper(option, word)
+        return
+      elseif self.is_controller(self.name_to_path_controller(util#pluralize(word)))
+        call self.jump_controller(option, util#pluralize(word))
+        return
+      endif
+
+    endif
+    "}}}
+    " in Model "{{{
+    if self.is_model(path)
+
+      " Model -> Model or Behavior or Controller
+      if self.is_model(self.name_to_path_model(word))
+        call self.jump_model(option, word)
+        return
+      elseif self.is_behavior(self.name_to_path_behavior(word))
+        call self.jump_behavior(option, word)
+        return
+      elseif self.is_controller(self.name_to_path_controller(util#pluralize(word)))
+        call self.jump_controller(option, util#pluralize(word))
+        return
+      endif
+
+    endif
+    "}}}
+    " in View(layout) "{{{
     if self.is_view(path)
       " let name = matchstr(l_word, '\(["'']\)\zs[0-9A-Za-z/_.]\+\ze\(["'']\)' )
       " View / $this->element('xxx') -> element
@@ -905,8 +981,174 @@ function! cake#factory(path_app)
         return
       endif
 
-    endif
+      " View -> Helper or Model or Controller
+      if self.is_helper(self.name_to_path_helper(word))
+        call self.jump_helper(option, word)
+        return
+      elseif self.is_model(self.name_to_path_model(word))
+        call self.jump_model(option, word)
+        return
+      elseif self.is_controller(self.name_to_path_controller(util#pluralize(word)))
+        call self.jump_controller(option, util#pluralize(word))
+        return
+      endif
 
+    endif
+    " }}}
+    " in Component "{{{
+    if self.is_component(path)
+
+      " Component -> Model or Behavior or Component or Controller
+      if self.is_model(self.name_to_path_model(word))
+        call self.jump_model(option, word)
+        return
+      elseif self.is_behavior(self.name_to_path_behavior(word))
+        call self.jump_behavior(option, word)
+        return
+      elseif self.is_component(self.name_to_path_component(word))
+        call self.jump_component(option, word)
+        return
+      elseif self.is_controller(self.name_to_path_controller(util#pluralize(word)))
+        call self.jump_controller(option, util#pluralize(word))
+        return
+      endif
+
+    endif
+    "}}}
+    " in Behavior "{{{
+    if self.is_behavior(path)
+
+      " Behavior -> Model or Behavior
+      if self.is_model(self.name_to_path_model(word))
+        call self.jump_model(option, word)
+        return
+      elseif self.is_behavior(self.name_to_path_behavior(word))
+        call self.jump_behavior(option, word)
+        return
+      endif
+
+    endif
+    "}}}
+    " in Helper {{{
+    if self.is_helper(path)
+
+      " Helper -> Helper or Model or Behavior or Controller
+      if self.is_helper(self.name_to_path_helper(word))
+        call self.jump_helper(option, word)
+        return
+      elseif self.is_controller(self.name_to_path_controller(util#pluralize(word)))
+        call self.jump_controller(option, util#pluralize(word))
+        return
+      endif
+
+    endif
+    " }}}
+    " in TestController "{{{
+    if self.is_testcontroller(path)
+      " TestController -> Fixture or Controller
+      if self.is_fixture(self.name_to_path_fixture(word))
+        call self.jump_fixture(option, word)
+        return
+      elseif self.is_controller(self.name_to_path_controller(util#pluralize(word)))
+        call self.jump_controller(option, util#pluralize(word))
+        return
+      endif
+    endif
+    " }}}
+    " in TestModel "{{{
+    if self.is_testmodel(path)
+      " TestModel -> Fixture or Model
+      if self.is_fixture(self.name_to_path_fixture(word))
+        call self.jump_fixture(option, word)
+        return
+      elseif self.is_model(self.name_to_path_model(word))
+        call self.jump_model(option, word)
+        return
+      endif
+    endif
+    " }}}
+    " in TestBehavior "{{{
+    if self.is_testbehavior(path)
+      " TestBehavior -> Fixture or Behavior
+      if self.is_fixture(self.name_to_path_fixture(word))
+        call self.jump_fixture(option, word)
+        return
+      elseif self.is_behavior(self.name_to_path_behavior(word))
+        call self.jump_behavior(option, word)
+        return
+      endif
+    endif
+    " }}}
+    " in TestComponent "{{{
+    if self.is_testcomponent(path)
+      " TestComponent -> Fixture or Component
+      if self.is_fixture(self.name_to_path_fixture(word))
+        call self.jump_fixture(option, word)
+        return
+      elseif self.is_component(self.name_to_path_component(word))
+        call self.jump_component(option, word)
+        return
+      endif
+    endif
+    " }}}
+    " in TestHelper "{{{
+    if self.is_testhelper(path)
+      " TestHelper -> Fixture or Helper
+      if self.is_fixture(self.name_to_path_fixture(word))
+        call self.jump_fixture(option, word)
+        return
+      elseif self.is_helper(self.name_to_path_helper(word))
+        call self.jump_helper(option, word)
+        return
+      endif
+    endif
+    " }}}
+    " in Fixture "{{{
+    if self.is_fixture(path)
+
+      " Fixture -> Model
+      if self.is_model(self.name_to_path_model(word))
+        call self.jump_model(option, word)
+        return
+      endif
+
+    endif
+    "}}}
+    " in Shell "{{{
+    if self.is_shell(path)
+
+      " Shell -> Task, Model
+      if self.is_task(self.name_to_path_task(word))
+        call self.jump_task(option, word)
+        return
+      elseif self.is_model(self.name_to_path_model(word))
+        call self.jump_model(option, word)
+        return
+      endif
+
+    endif
+    "}}}
+    " in Task "{{{
+    if self.is_task(path)
+
+      " Task -> Model
+      if self.is_model(self.name_to_path_model(word))
+        call self.jump_model(option, word)
+        return
+      endif
+
+    endif
+    "}}}
+
+
+    " Global {{{
+    " Configure::load('xxx'); -> config
+    let config_name = matchstr(line, '\(Configure::load(\s*["'']\)\zs[0-9A-Za-z/_.]\+\ze\(["'']\s*)\)')
+    if strlen(config_name) > 0 && filereadable(self.paths.configs . config_name . '.php')
+      call self.jump_config(option, config_name)
+      return
+    endif
+    " }}}
 
 
   endfunction "}}}
@@ -1108,6 +1350,16 @@ function! cake#factory(path_app)
 
   " Functions: common functions
   " ============================================================
+  function! self.args_to_targets(args) "{{{
+    let targets = []
+    for arg in a:args
+      if arg == 'n' || arg == 's' || arg == 'v' || arg == 't'
+        continue
+      endif
+      call add(targets, arg)
+    endfor
+    return targets
+  endfunction "}}}
   function! self.abbreviate(path) "{{{
     if self.is_view(a:path)
       return substitute(a:path, self.paths.views, "", "")
@@ -1139,9 +1391,6 @@ function! cake#factory(path_app)
     call util#open_tail_log_window(g:cakephp_log[a:log_name], g:cakephp_log_window_size)
   endfunction "}}}
   " ============================================================
-
-
-
 
   return self
 endfunction
