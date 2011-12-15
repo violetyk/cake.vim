@@ -9,6 +9,7 @@ function! cake#factory(path_app)
 
   let self = {}
   let self.paths = {}
+  let self.vars = {}
 
   " Functions: abstract methods.(These implement it in a subclass.) {{{
   " ============================================================
@@ -834,57 +835,285 @@ function! cake#factory(path_app)
     let path = expand("%:p")
     let line = getline('.')
     let word = expand('<cword>')
-    " echo expand('<cWORD>')
+    let l_word = expand('<cWORD>')
 
+    " let debug = line . '/' . word  . '/' . l_word
+    " echo debug
+
+    " in Controller
     if self.is_controller(path)
       let controller_name = self.path_to_name_controller(path)
 
-      " search view
-      if match(line, 'function')
-        let views = []
-        let s = matchend(line, "\s*function\s*.")
-        let e = match(line, "(")
-        let view_name = util#strtrim(strpart(line, s, e-s))
-        let themes = keys(self.get_themes())
-        let themes = insert(themes, '') "no theme
-        for theme_name in themes
-          let view_path = self.name_to_path_view(controller_name, view_name, theme_name)
-          if filereadable(view_path)
-            call add(views, view_path)
-          endif
-        endfor
-
-        let i = len(views)
-        if i == 0
-          return
-        elseif i == 1
-          call util#open_file(views[0], option, 0)
-          return
-        elseif i > 1
-          let n = 1
-          let tmp_choices = []
-          for str in views
-            let str = n . ": " . substitute(str, self.paths.views, "", "")
-            call add(tmp_choices, str)
-            let n = n + 1
-          endfor
-          let choices = join(tmp_choices,"\n")
-          let c = confirm('Which file do you jump to?', choices, 0)
-          if c > 0
-            let index = c - 1
-            call util#open_file(views[index], option, 0)
-            return
-          endif
-        endif
+      " Controller / function xxx() -> View
+      let view_name = matchstr(line, '\(function\s\+\)\zs\w\+\ze\(\s*(\)')
+      if strlen(view_name) > 0
+        call self.smart_jump_view(controller_name, view_name, option)
+        return
+      endif
+      " Controller / $this->render('xxx') -> View
+      let view_name = matchstr(line, '\(\$this->render(\s*["'']\)\zs\w\+\ze\(["'']\s*)\)')
+      if strlen(view_name) > 0
+        call self.smart_jump_view(controller_name, view_name, option)
+        return
       endif
 
+      " Controller / var $layout = 'xxx'; -> layout
+      let layout_name = matchstr(line, '\(var\s\+\$layout\s*=\s*["'']\)\zs\w\+\ze\(["''];\)' )
+      if strlen(layout_name) > 0
+        call self.smart_jump_layout(layout_name, option)
+        return
+      endif
+      " Controller / $this->layout = 'xxx'; -> layout
+      let layout_name = matchstr(line, '\(\$this->layout\s*=\s*["'']\)\zs\w\+\ze\(["''];\)' )
+      if strlen(layout_name) > 0
+        call self.smart_jump_layout(layout_name, option)
+        return
+      endif
+    endif
 
+    " in View(layout)
+    if self.is_view(path)
+      " let name = matchstr(l_word, '\(["'']\)\zs[0-9A-Za-z/_.]\+\ze\(["'']\)' )
+      " View / $this->element('xxx') -> element
+      let element_name = matchstr(line, '\(\$this->element(\s*["'']\)\zs[0-9A-Za-z/_.]\+\ze\(["'']\)' )
+      if strlen(element_name) > 0
+        call self.smart_jump_element(element_name, option)
+        return
+      endif
+      " View / $this->Html->css('xxx') -> css
+      let stylesheet_name = matchstr(line, '\(\$this->Html->css(\s*["'']\)\zs[0-9A-Za-z/_.]\+\ze\(["'']\)' )
+      if strlen(stylesheet_name) > 0
+        call self.smart_jump_stylesheet(stylesheet_name, option)
+        return
+      endif
+      " View / $html->css('xxx') -> css
+      let stylesheet_name = matchstr(line, '\(\$html->css(\s*["'']\)\zs[0-9A-Za-z/_.]\+\ze\(["'']\)' )
+      if strlen(stylesheet_name) > 0
+        call self.smart_jump_stylesheet(stylesheet_name, option)
+        return
+      endif
+      " View / $this->Html->script('xxx') -> script
+      let script_name = matchstr(line, '\(\$this->Html->script(\s*["'']\)\zs[0-9A-Za-z/_.]\+\ze\(["'']\)' )
+      if strlen(script_name) > 0
+        call self.smart_jump_script(script_name, option)
+        return
+      endif
+      " View / $html->script('xxx') -> script
+      let script_name = matchstr(line, '\(\$html->script(\s*["'']\)\zs[0-9A-Za-z/_.]\+\ze\(["'']\)' )
+      if strlen(script_name) > 0
+        call self.smart_jump_script(script_name, option)
+        return
+      endif
+
+    endif
+
+
+
+  endfunction "}}}
+  function! self.smart_jump_script(script_name, option) "{{{
+    let scripts = []
+
+    " default
+    let script_path = self.paths.app . 'webroot/js/' . a:script_name . '.js'
+    if filereadable(script_path)
+      call add(scripts , script_path)
+    endif
+
+    let themes = keys(self.get_themes())
+    for theme_name in themes
+      let script_path = self.paths.themes . theme_name . '/webroot/js/' . a:script_name . '.js'
+      if filereadable(script_path)
+        call add(scripts, script_path)
+      endif
+    endfor
+
+    let i = len(scripts)
+    if i == 0
+      return
+    elseif i == 1
+      call util#open_file(scripts[0], a:option, 0)
+      return
+    elseif i > 1
+      let n = 1
+      let tmp_choices = []
+      for str in scripts
+        let str = n . ": " . self.abbreviate(str)
+        call add(tmp_choices, str)
+        let n = n + 1
+      endfor
+      let choices = join(tmp_choices,"\n")
+      let c = confirm('Which file do you jump to?', choices, 0)
+      if c > 0
+        let index = c - 1
+        call util#open_file(scripts[index], a:option, 0)
+        return
+      endif
+    endif
+  endfunction "}}}
+  function! self.smart_jump_stylesheet(stylesheet_name, option) "{{{
+    let stylesheets = []
+
+    " default
+    let stylesheet_path = self.paths.app . 'webroot/css/' . a:stylesheet_name . '.css'
+    if filereadable(stylesheet_path)
+      call add(stylesheets , stylesheet_path)
+    endif
+
+    let themes = keys(self.get_themes())
+    for theme_name in themes
+      let stylesheet_path = self.paths.themes . theme_name . '/webroot/css/' . a:stylesheet_name . '.css'
+      if filereadable(stylesheet_path)
+        call add(stylesheets, stylesheet_path)
+      endif
+    endfor
+
+    let i = len(stylesheets)
+    if i == 0
+      return
+    elseif i == 1
+      call util#open_file(stylesheets[0], a:option, 0)
+      return
+    elseif i > 1
+      let n = 1
+      let tmp_choices = []
+      for str in stylesheets
+        let str = n . ": " . self.abbreviate(str)
+        call add(tmp_choices, str)
+        let n = n + 1
+      endfor
+      let choices = join(tmp_choices,"\n")
+      let c = confirm('Which file do you jump to?', choices, 0)
+      if c > 0
+        let index = c - 1
+        call util#open_file(stylesheets[index], a:option, 0)
+        return
+      endif
+    endif
+  endfunction "}}}
+  function! self.smart_jump_element(element_name, option) "{{{
+    let elements = []
+
+    " default
+    let element_path = self.paths.views . self.vars.element_dir . a:element_name . '.ctp'
+    if filereadable(element_path)
+      call add(elements , element_path)
+    endif
+
+    let themes = keys(self.get_themes())
+    for theme_name in themes
+      let element_path = self.paths.themes . theme_name . '/' . self.vars.element_dir . a:element_name . '.ctp'
+      if filereadable(element_path)
+        call add(elements, element_path)
+      endif
+    endfor
+
+    let i = len(elements)
+    if i == 0
+      return
+    elseif i == 1
+      call util#open_file(elements[0], a:option, 0)
+      return
+    elseif i > 1
+      let n = 1
+      let tmp_choices = []
+      for str in elements
+        let str = n . ": " . self.abbreviate(str)
+        call add(tmp_choices, str)
+        let n = n + 1
+      endfor
+      let choices = join(tmp_choices,"\n")
+      let c = confirm('Which file do you jump to?', choices, 0)
+      if c > 0
+        let index = c - 1
+        call util#open_file(elements[index], a:option, 0)
+        return
+      endif
+    endif
+  endfunction "}}}
+  function! self.smart_jump_layout(layout_name, option) "{{{
+    let layouts = []
+
+    " default
+    let layout_path = self.paths.views . self.vars.layout_dir . a:layout_name . '.ctp'
+    if filereadable(layout_path)
+      call add(layouts, layout_path)
+    endif
+
+    let themes = keys(self.get_themes())
+    for theme_name in themes
+      let layout_path = self.paths.themes . theme_name . '/' . self.vars.layout_dir . a:layout_name . '.ctp'
+      if filereadable(layout_path)
+        call add(layouts, layout_path)
+      endif
+    endfor
+
+    let i = len(layouts)
+    if i == 0
+      return
+    elseif i == 1
+      call util#open_file(layouts[0], a:option, 0)
+      return
+    elseif i > 1
+      let n = 1
+      let tmp_choices = []
+      for str in layouts
+        let str = n . ": " . self.abbreviate(str)
+        call add(tmp_choices, str)
+        let n = n + 1
+      endfor
+      let choices = join(tmp_choices,"\n")
+      let c = confirm('Which file do you jump to?', choices, 0)
+      if c > 0
+        let index = c - 1
+        call util#open_file(layouts[index], a:option, 0)
+        return
+      endif
+    endif
+  endfunction "}}}
+  function! self.smart_jump_view(controller_name, view_name, option) "{{{
+    let views = []
+    let themes = keys(self.get_themes())
+    let themes = insert(themes, '') "no theme
+    for theme_name in themes
+      let view_path = self.name_to_path_view(a:controller_name, a:view_name, theme_name)
+      if filereadable(view_path)
+        call add(views, view_path)
+      endif
+    endfor
+
+    let i = len(views)
+    if i == 0
+      return
+    elseif i == 1
+      call util#open_file(views[0], a:option, 0)
+      return
+    elseif i > 1
+      let n = 1
+      let tmp_choices = []
+      for str in views
+        let str = n . ": " . self.abbreviate(str)
+        call add(tmp_choices, str)
+        let n = n + 1
+      endfor
+      let choices = join(tmp_choices,"\n")
+      let c = confirm('Which file do you jump to?', choices, 0)
+      if c > 0
+        let index = c - 1
+        call util#open_file(views[index], a:option, 0)
+        return
+      endif
     endif
   endfunction "}}}
   " ============================================================
 
   " Functions: common functions
   " ============================================================
+  function! self.abbreviate(path) "{{{
+    if self.is_view(a:path)
+      return substitute(a:path, self.paths.views, "", "")
+    endif
+    return a:path
+  endfunction "}}}
   function! self.show_cakephp_app() "{{{
     echo '[cake.vim] ' . self.paths.app
   endfunction "}}}
@@ -901,16 +1130,14 @@ function! cake#factory(path_app)
   function! self.name_to_path_config(name) "{{{
     return self.paths.configs . a:name . ".php"
   endfunction "}}}
-" Function: self.tail_log() {{{
-" ============================================================
-function! self.tail_log(log_name)
-  if !has_key(g:cakephp_log, a:log_name)
-    call util#echo_warning(a:log_name . " is not found. please set g:cakephp_log['" . a:log_name . "'] = '/path/to/log_name.log'.")
-    return
-  endif
+  function! self.tail_log(log_name) "{{{
+    if !has_key(g:cakephp_log, a:log_name)
+      call util#echo_warning(a:log_name . " is not found. please set g:cakephp_log['" . a:log_name . "'] = '/path/to/log_name.log'.")
+      return
+    endif
 
-  call util#open_tail_log_window(g:cakephp_log[a:log_name], g:cakephp_log_window_size)
-endfunction "}}}
+    call util#open_tail_log_window(g:cakephp_log[a:log_name], g:cakephp_log_window_size)
+  endfunction "}}}
   " ============================================================
 
 

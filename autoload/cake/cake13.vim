@@ -30,6 +30,11 @@ function! cake#cake13#factory(path_app)
         \ 'fixtures'        : a:path_app . 'tests/fixtures/',
         \}
 
+  let self.vars =  {
+        \ 'layout_dir'      : 'layouts/',
+        \ 'element_dir'     : 'elements/',
+        \}
+
 
   " Functions: self.get_dictionary()
   " [object_name : path]
