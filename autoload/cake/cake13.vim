@@ -89,7 +89,7 @@ function! cake#cake13#factory(path_app)
 
       let s = matchend(line, "\s*function\s*.")
       let e = match(line, "(")
-      let func_name = util#strtrim(strpart(line, s, e-s))
+      let func_name = cake#util#strtrim(strpart(line, s, e-s))
 
       " Callback functions are not eligible.
       if func_name !~ "^_" && func_name !=? "beforeFilter" && func_name !=? "beforeRender" && func_name !=? "afterFilter"
@@ -106,43 +106,43 @@ function! cake#cake13#factory(path_app)
   " Functions: self.path_to_name_xxx()
   " ============================================================
   function! self.path_to_name_controller(path) "{{{
-    return util#camelize(substitute(fnamemodify(a:path, ":t:r"), "_controller$", "", ""))
+    return cake#util#camelize(substitute(fnamemodify(a:path, ":t:r"), "_controller$", "", ""))
   endfunction "}}}
   function! self.path_to_name_model(path) "{{{
-    return util#camelize(substitute(fnamemodify(a:path, ":t:r"), "_model$", "", ""))
+    return cake#util#camelize(substitute(fnamemodify(a:path, ":t:r"), "_model$", "", ""))
   endfunction "}}}
   function! self.path_to_name_fixture(path) "{{{
-    return util#camelize(substitute(fnamemodify(a:path, ":t:r"), "_fixture$", "", ""))
+    return cake#util#camelize(substitute(fnamemodify(a:path, ":t:r"), "_fixture$", "", ""))
   endfunction "}}}
   function! self.path_to_name_component(path) "{{{
-    return util#camelize(fnamemodify(a:path, ":t:r"))
+    return cake#util#camelize(fnamemodify(a:path, ":t:r"))
   endfunction "}}}
   function! self.path_to_name_shell(path) "{{{
-    return util#camelize(fnamemodify(a:path, ":t:r"))
+    return cake#util#camelize(fnamemodify(a:path, ":t:r"))
   endfunction "}}}
   function! self.path_to_name_task(path) "{{{
-    return util#camelize(fnamemodify(a:path, ":t:r"))
+    return cake#util#camelize(fnamemodify(a:path, ":t:r"))
   endfunction "}}}
   function! self.path_to_name_behavior(path) "{{{
-    return util#camelize(fnamemodify(a:path, ":t:r"))
+    return cake#util#camelize(fnamemodify(a:path, ":t:r"))
   endfunction "}}}
   function! self.path_to_name_helper(path) "{{{
-    return util#camelize(substitute(fnamemodify(a:path, ":t:r"), "_helper$", "", ""))
+    return cake#util#camelize(substitute(fnamemodify(a:path, ":t:r"), "_helper$", "", ""))
   endfunction "}}}
   function! self.path_to_name_testcontroller(path) "{{{
-    return util#camelize(substitute(fnamemodify(a:path, ":t:r"), "_controller.test$", "", ""))
+    return cake#util#camelize(substitute(fnamemodify(a:path, ":t:r"), "_controller.test$", "", ""))
   endfunction "}}}
   function! self.path_to_name_testmodel(path) "{{{
-    return util#camelize(substitute(fnamemodify(a:path, ":t:r"), ".test$", "", ""))
+    return cake#util#camelize(substitute(fnamemodify(a:path, ":t:r"), ".test$", "", ""))
   endfunction "}}}
   function! self.path_to_name_testcomponent(path) "{{{
-    return util#camelize(substitute(fnamemodify(a:path, ":t:r"), ".test$", "", ""))
+    return cake#util#camelize(substitute(fnamemodify(a:path, ":t:r"), ".test$", "", ""))
   endfunction "}}}
   function! self.path_to_name_testbehavior(path) "{{{
-    return util#camelize(substitute(fnamemodify(a:path, ":t:r"), ".test$", "", ""))
+    return cake#util#camelize(substitute(fnamemodify(a:path, ":t:r"), ".test$", "", ""))
   endfunction "}}}
   function! self.path_to_name_testhelper(path) "{{{
-    return util#camelize(substitute(fnamemodify(a:path, ":t:r"), ".test$", "", ""))
+    return cake#util#camelize(substitute(fnamemodify(a:path, ":t:r"), ".test$", "", ""))
   endfunction "}}}
   function! self.path_to_name_theme(path) "{{{
       return fnamemodify(a:path, ":p:h:t")
@@ -152,49 +152,49 @@ function! cake#cake13#factory(path_app)
   " Functions: self.name_to_path_xxx()
   " ============================================================
   function! self.name_to_path_controller(name) "{{{
-    return self.paths.controllers . util#decamelize(a:name) . "_controller.php"
+    return self.paths.controllers . cake#util#decamelize(a:name) . "_controller.php"
   endfunction "}}}
   function! self.name_to_path_model(name) "{{{
-    return self.paths.models . util#decamelize(a:name) . ".php"
+    return self.paths.models . cake#util#decamelize(a:name) . ".php"
   endfunction "}}}
   function! self.name_to_path_component(name) "{{{
-    return self.paths.components . util#decamelize(a:name) . ".php"
+    return self.paths.components . cake#util#decamelize(a:name) . ".php"
   endfunction "}}}
   function! self.name_to_path_shell(name) "{{{
-    return self.paths.shells . util#decamelize(a:name) . ".php"
+    return self.paths.shells . cake#util#decamelize(a:name) . ".php"
   endfunction "}}}
   function! self.name_to_path_task(name) "{{{
-    return self.paths.tasks . util#decamelize(a:name) . ".php"
+    return self.paths.tasks . cake#util#decamelize(a:name) . ".php"
   endfunction "}}}
   function! self.name_to_path_behavior(name) "{{{
-    return self.paths.behaviors . util#decamelize(a:name) . ".php"
+    return self.paths.behaviors . cake#util#decamelize(a:name) . ".php"
   endfunction "}}}
   function! self.name_to_path_helper(name) "{{{
-    return self.paths.helpers . util#decamelize(a:name) . ".php"
+    return self.paths.helpers . cake#util#decamelize(a:name) . ".php"
   endfunction "}}}
   function! self.name_to_path_testmodel(name) "{{{
-    return self.paths.testmodels . util#decamelize(a:name) . ".test.php"
+    return self.paths.testmodels . cake#util#decamelize(a:name) . ".test.php"
   endfunction "}}}
   function! self.name_to_path_testbehavior(name) "{{{
-    return self.paths.testbehaviors . util#decamelize(a:name) . ".test.php"
+    return self.paths.testbehaviors . cake#util#decamelize(a:name) . ".test.php"
   endfunction "}}}
   function! self.name_to_path_testcomponent(name) "{{{
-    return self.paths.testcomponents . util#decamelize(a:name) . ".test.php"
+    return self.paths.testcomponents . cake#util#decamelize(a:name) . ".test.php"
   endfunction "}}}
   function! self.name_to_path_testcontroller(name) "{{{
-    return self.paths.testcontrollers . util#decamelize(a:name) . "_controller.test.php"
+    return self.paths.testcontrollers . cake#util#decamelize(a:name) . "_controller.test.php"
   endfunction "}}}
   function! self.name_to_path_testhelper(name) "{{{
-    return self.paths.testhelpers . util#decamelize(a:name) . ".test.php"
+    return self.paths.testhelpers . cake#util#decamelize(a:name) . ".test.php"
   endfunction "}}}
   function! self.name_to_path_fixture(name) "{{{
-    return self.paths.fixtures. util#decamelize(a:name) . "_fixture.php"
+    return self.paths.fixtures. cake#util#decamelize(a:name) . "_fixture.php"
   endfunction "}}}
   function! self.name_to_path_view(controller_name, view_name, theme_name) "{{{
     if a:theme_name == ''
-      return self.paths.views . util#decamelize(a:controller_name) . "/" . a:view_name . ".ctp"
+      return self.paths.views . cake#util#decamelize(a:controller_name) . "/" . a:view_name . ".ctp"
     else
-      return self.paths.themes . a:theme_name . '/' . util#decamelize(a:controller_name) . "/" . a:view_name . ".ctp"
+      return self.paths.themes . a:theme_name . '/' . cake#util#decamelize(a:controller_name) . "/" . a:view_name . ".ctp"
     endif
   endfunction "}}}
   " ============================================================

@@ -273,8 +273,8 @@ function! cake#factory(path_app)
         call add(targets, expand("%:p:h:t"))
         let func_name = expand("%:p:t:r")
       elseif self.is_model(path)
-        " let target = util#pluralize(self.path_to_name_model(path))
-        call add(targets, util#pluralize(self.path_to_name_model(path)))
+        " let target = cake#util#pluralize(self.path_to_name_model(path))
+        call add(targets, cake#util#pluralize(self.path_to_name_model(path)))
       elseif self.is_testcontroller(path)
         " let target = self.path_to_name_testcontroller(path)
         call add(targets, self.path_to_name_testcontroller(path))
@@ -284,15 +284,15 @@ function! cake#factory(path_app)
     endif
 
     for target in targets
-      let target = util#camelize(target)
+      let target = cake#util#camelize(target)
 
       if !has_key(controllers, target)
 
         " If the file does not exist, ask whether to create a new file.
-        if util#confirm_create_file(self.name_to_path_controller(target))
+        if cake#util#confirm_create_file(self.name_to_path_controller(target))
           let controllers[target] = self.name_to_path_controller(target)
         else
-          call util#echo_warning(target . "Controller is not found.")
+          call cake#util#echo_warning(target . "Controller is not found.")
           return
         endif
       endif
@@ -308,7 +308,7 @@ function! cake#factory(path_app)
         endif
       endif
 
-      call util#open_file(controllers[target], split_option, line)
+      call cake#util#open_file(controllers[target], split_option, line)
     endfor
 
   endfunction "}}}
@@ -326,8 +326,8 @@ function! cake#factory(path_app)
       let path = expand("%:p")
 
       if self.is_controller(path)
-        " let target = util#singularize(substitute(util#camelize(expand("%:p:t:r")), "Controller$", "", ""))
-        call add(targets, util#singularize(substitute(util#camelize(expand("%:p:t:r")), "Controller$", "", "")))
+        " let target = cake#util#singularize(substitute(cake#util#camelize(expand("%:p:t:r")), "Controller$", "", ""))
+        call add(targets, cake#util#singularize(substitute(cake#util#camelize(expand("%:p:t:r")), "Controller$", "", "")))
       elseif self.is_testmodel(path)
         " let target = self.path_to_name_testmodel(path)
         call add(targets, self.path_to_name_testmodel(path))
@@ -340,28 +340,28 @@ function! cake#factory(path_app)
     endif
 
     for target in targets
-      let target = util#camelize(target)
+      let target = cake#util#camelize(target)
 
       if !has_key(models, target)
 
         " If the file does not exist, ask whether to create a new file.
-        if util#confirm_create_file(self.name_to_path_model(target))
+        if cake#util#confirm_create_file(self.name_to_path_model(target))
           let models[target] = self.name_to_path_model(target)
         else
-          call util#echo_warning(target . "Model is not found.")
+          call cake#util#echo_warning(target . "Model is not found.")
           return
         endif
       endif
 
       let line = 0
-      call util#open_file(models[target], split_option, line)
+      call cake#util#open_file(models[target], split_option, line)
     endfor
 
   endfunction "}}}
   function! self.jump_view(...) " {{{
 
     if !self.is_controller(expand("%:p"))
-      call util#echo_warning("No Controller in current buffer.")
+      call cake#util#echo_warning("No Controller in current buffer.")
       return
     endif
 
@@ -379,14 +379,14 @@ function! cake#factory(path_app)
 
     " If the file does not exist, ask whether to create a new file.
     if !filewritable(view_path)
-      if !util#confirm_create_file(view_path)
-        call util#echo_warning(view_path . " is not found.")
+      if !cake#util#confirm_create_file(view_path)
+        call cake#util#echo_warning(view_path . " is not found.")
         return
       endif
     endif
 
     let line = 0
-    call util#open_file(view_path, split_option, line)
+    call cake#util#open_file(view_path, split_option, line)
 
   endfunction "}}}
   function! self.jump_controllerview(...) " {{{
@@ -396,7 +396,7 @@ function! cake#factory(path_app)
     endif
 
     let split_option = a:1
-    let controller_name = util#camelize(a:2)
+    let controller_name = cake#util#camelize(a:2)
     let view_name = a:3
 
     if a:0 >= 4
@@ -408,12 +408,12 @@ function! cake#factory(path_app)
     let view_path = self.name_to_path_view(controller_name, view_name, theme_name)
 
     if !filewritable(view_path)
-      call util#echo_warning(view_path . " is not found.")
+      call cake#util#echo_warning(view_path . " is not found.")
       return
     endif
 
     let line = 0
-    call util#open_file(view_path, split_option, line)
+    call cake#util#open_file(view_path, split_option, line)
 
   endfunction "}}}
   function! self.jump_config(...) " {{{
@@ -425,16 +425,16 @@ function! cake#factory(path_app)
     for target in targets
       if !has_key(configs, target)
         " If the file does not exist, ask whether to create a new file.
-        if util#confirm_create_file(self.name_to_path_config(target))
+        if cake#util#confirm_create_file(self.name_to_path_config(target))
           let configs[target] = self.name_to_path_config(target)
         else
-          call util#echo_warning(target . " is not found.")
+          call cake#util#echo_warning(target . " is not found.")
           return
         endif
       endif
 
       let line = 0
-      call util#open_file(configs[target], split_option, line)
+      call cake#util#open_file(configs[target], split_option, line)
     endfor
 
   endfunction "}}}
@@ -459,20 +459,20 @@ function! cake#factory(path_app)
     endif
 
     for target in targets
-      let target = util#camelize(target)
+      let target = cake#util#camelize(target)
 
       if !has_key(components, target)
         " If the file does not exist, ask whether to create a new file.
-        if util#confirm_create_file(self.name_to_path_component(target))
+        if cake#util#confirm_create_file(self.name_to_path_component(target))
           let components[target] = self.name_to_path_component(target)
         else
-          call util#echo_warning(target . " is not found.")
+          call cake#util#echo_warning(target . " is not found.")
           return
         endif
       endif
 
       let line = 0
-      call util#open_file(components[target], split_option, line)
+      call cake#util#open_file(components[target], split_option, line)
     endfor
 
   endfunction "}}}
@@ -483,19 +483,19 @@ function! cake#factory(path_app)
     let shells = self.get_shells()
 
     for target in targets
-      let target = util#camelize(target)
+      let target = cake#util#camelize(target)
       if !has_key(shells, target)
         " If the file does not exist, ask whether to create a new file.
-        if util#confirm_create_file(self.name_to_path_shell(target))
+        if cake#util#confirm_create_file(self.name_to_path_shell(target))
           let shells[target] = self.name_to_path_shell(target)
         else
-          call util#echo_warning(target . " is not found.")
+          call cake#util#echo_warning(target . " is not found.")
           return
         endif
       endif
 
       let line = 0
-      call util#open_file(shells[target], split_option, line)
+      call cake#util#open_file(shells[target], split_option, line)
     endfor
 
 
@@ -508,19 +508,19 @@ function! cake#factory(path_app)
     let tasks = self.get_tasks()
 
     for target in targets
-      let target = util#camelize(target)
+      let target = cake#util#camelize(target)
       if !has_key(tasks, target)
         " If the file does not exist, ask whether to create a new file.
-        if util#confirm_create_file(self.name_to_path_task(target))
+        if cake#util#confirm_create_file(self.name_to_path_task(target))
           let tasks[target] = self.name_to_path_task(target)
         else
-          call util#echo_warning(target . " is not found.")
+          call cake#util#echo_warning(target . " is not found.")
           return
         endif
       endif
 
       let line = 0
-      call util#open_file(tasks[target], split_option, line)
+      call cake#util#open_file(tasks[target], split_option, line)
     endfor
 
   endfunction "}}}
@@ -545,20 +545,20 @@ function! cake#factory(path_app)
     endif
 
     for target in targets
-      let target = util#camelize(target)
+      let target = cake#util#camelize(target)
 
       if !has_key(behaviors, target)
         " If the file does not exist, ask whether to create a new file.
-        if util#confirm_create_file(self.name_to_path_behavior(target))
+        if cake#util#confirm_create_file(self.name_to_path_behavior(target))
           let behaviors[target] = self.name_to_path_behavior(target)
         else
-          call util#echo_warning(target . " is not found.")
+          call cake#util#echo_warning(target . " is not found.")
           return
         endif
       endif
 
       let line = 0
-      call util#open_file(behaviors[target], split_option, line)
+      call cake#util#open_file(behaviors[target], split_option, line)
     endfor
 
   endfunction "}}}
@@ -583,20 +583,20 @@ function! cake#factory(path_app)
     endif
 
     for target in targets
-      let target = util#camelize(target)
+      let target = cake#util#camelize(target)
 
       if !has_key(helpers, target)
         " If the file does not exist, ask whether to create a new file.
-        if util#confirm_create_file(self.name_to_path_helper(target))
+        if cake#util#confirm_create_file(self.name_to_path_helper(target))
           let helpers[target] = self.name_to_path_helper(target)
         else
-          call util#echo_warning(target . " is not found.")
+          call cake#util#echo_warning(target . " is not found.")
           return
         endif
       endif
 
       let line = 0
-      call util#open_file(helpers[target], split_option, line)
+      call cake#util#open_file(helpers[target], split_option, line)
     endfor
 
   endfunction "}}}
@@ -623,20 +623,20 @@ function! cake#factory(path_app)
     endif
 
     for target in targets
-      let target = util#camelize(target)
+      let target = cake#util#camelize(target)
 
       if !has_key(testmodels, target)
         " If the file does not exist, ask whether to create a new file.
-        if util#confirm_create_file(self.name_to_path_testmodel(target))
+        if cake#util#confirm_create_file(self.name_to_path_testmodel(target))
           let testmodels[target] = self.name_to_path_testmodel(target)
         else
-          call util#echo_warning(target . " is not found.")
+          call cake#util#echo_warning(target . " is not found.")
           return
         endif
       endif
 
       let line = 0
-      call util#open_file(testmodels[target], split_option, line)
+      call cake#util#open_file(testmodels[target], split_option, line)
     endfor
 
   endfunction "}}}
@@ -661,20 +661,20 @@ function! cake#factory(path_app)
     endif
 
     for target in targets
-      let target = util#camelize(target)
+      let target = cake#util#camelize(target)
 
       if !has_key(testbehaviors, target)
         " If the file does not exist, ask whether to create a new file.
-        if util#confirm_create_file(self.name_to_path_testbehavior(target))
+        if cake#util#confirm_create_file(self.name_to_path_testbehavior(target))
           let testbehaviors[target] = self.name_to_path_testbehavior(target)
         else
-          call util#echo_warning(target . " is not found.")
+          call cake#util#echo_warning(target . " is not found.")
           return
         endif
       endif
 
       let line = 0
-      call util#open_file(testbehaviors[target], split_option, line)
+      call cake#util#open_file(testbehaviors[target], split_option, line)
     endfor
 
   endfunction "}}}
@@ -699,20 +699,20 @@ function! cake#factory(path_app)
     endif
 
     for target in targets
-      let target = util#camelize(target)
+      let target = cake#util#camelize(target)
 
       if !has_key(testcomponents, target)
         " If the file does not exist, ask whether to create a new file.
-        if util#confirm_create_file(self.name_to_path_testcomponent(target))
+        if cake#util#confirm_create_file(self.name_to_path_testcomponent(target))
           let testcomponents[target] = self.name_to_path_testcomponent(target)
         else
-          call util#echo_warning(target . " is not found.")
+          call cake#util#echo_warning(target . " is not found.")
           return
         endif
       endif
 
       let line = 0
-      call util#open_file(testcomponents[target], split_option, line)
+      call cake#util#open_file(testcomponents[target], split_option, line)
     endfor
 
   endfunction "}}}
@@ -737,20 +737,20 @@ function! cake#factory(path_app)
     endif
 
     for target in targets
-      let target = util#camelize(target)
+      let target = cake#util#camelize(target)
 
       if !has_key(testcontrollers, target)
         " If the file does not exist, ask whether to create a new file.
-        if util#confirm_create_file(self.name_to_path_testcontroller(target))
+        if cake#util#confirm_create_file(self.name_to_path_testcontroller(target))
           let testcontrollers[target] = self.name_to_path_testcontroller(target)
         else
-          call util#echo_warning(target . " is not found.")
+          call cake#util#echo_warning(target . " is not found.")
           return
         endif
       endif
 
       let line = 0
-      call util#open_file(testcontrollers[target], split_option, line)
+      call cake#util#open_file(testcontrollers[target], split_option, line)
     endfor
 
   endfunction "}}}
@@ -775,20 +775,20 @@ function! cake#factory(path_app)
     endif
 
     for target in targets
-      let target = util#camelize(target)
+      let target = cake#util#camelize(target)
 
       if !has_key(testhelpers, target)
         " If the file does not exist, ask whether to create a new file.
-        if util#confirm_create_file(self.name_to_path_testhelper(target))
+        if cake#util#confirm_create_file(self.name_to_path_testhelper(target))
           let testhelpers[target] = self.name_to_path_testhelper(target)
         else
-          call util#echo_warning(target . " is not found.")
+          call cake#util#echo_warning(target . " is not found.")
           return
         endif
       endif
 
       let line = 0
-      call util#open_file(testhelpers[target], split_option, line)
+      call cake#util#open_file(testhelpers[target], split_option, line)
     endfor
 
   endfunction "}}}
@@ -854,20 +854,20 @@ function! cake#factory(path_app)
     endif
 
     for target in targets
-      let target = util#camelize(target)
+      let target = cake#util#camelize(target)
 
       if !has_key(fixtures, target)
         " If the file does not exist, ask whether to create a new file.
-        if util#confirm_create_file(self.name_to_path_fixture(target))
+        if cake#util#confirm_create_file(self.name_to_path_fixture(target))
           let fixtures[target] = self.name_to_path_fixture(target)
         else
-          call util#echo_warning(target . " is not found.")
+          call cake#util#echo_warning(target . " is not found.")
           return
         endif
       endif
 
       let line = 0
-      call util#open_file(fixtures[target], split_option, line)
+      call cake#util#open_file(fixtures[target], split_option, line)
     endfor
 
   endfunction
@@ -923,8 +923,8 @@ function! cake#factory(path_app)
       elseif self.is_helper(self.name_to_path_helper(word))
         call self.jump_helper(option, word)
         return
-      elseif self.is_controller(self.name_to_path_controller(util#pluralize(word)))
-        call self.jump_controller(option, util#pluralize(word))
+      elseif self.is_controller(self.name_to_path_controller(cake#util#pluralize(word)))
+        call self.jump_controller(option, cake#util#pluralize(word))
         return
       endif
 
@@ -940,8 +940,8 @@ function! cake#factory(path_app)
       elseif self.is_behavior(self.name_to_path_behavior(word))
         call self.jump_behavior(option, word)
         return
-      elseif self.is_controller(self.name_to_path_controller(util#pluralize(word)))
-        call self.jump_controller(option, util#pluralize(word))
+      elseif self.is_controller(self.name_to_path_controller(cake#util#pluralize(word)))
+        call self.jump_controller(option, cake#util#pluralize(word))
         return
       endif
 
@@ -988,8 +988,8 @@ function! cake#factory(path_app)
       elseif self.is_model(self.name_to_path_model(word))
         call self.jump_model(option, word)
         return
-      elseif self.is_controller(self.name_to_path_controller(util#pluralize(word)))
-        call self.jump_controller(option, util#pluralize(word))
+      elseif self.is_controller(self.name_to_path_controller(cake#util#pluralize(word)))
+        call self.jump_controller(option, cake#util#pluralize(word))
         return
       endif
 
@@ -1008,8 +1008,8 @@ function! cake#factory(path_app)
       elseif self.is_component(self.name_to_path_component(word))
         call self.jump_component(option, word)
         return
-      elseif self.is_controller(self.name_to_path_controller(util#pluralize(word)))
-        call self.jump_controller(option, util#pluralize(word))
+      elseif self.is_controller(self.name_to_path_controller(cake#util#pluralize(word)))
+        call self.jump_controller(option, cake#util#pluralize(word))
         return
       endif
 
@@ -1036,8 +1036,8 @@ function! cake#factory(path_app)
       if self.is_helper(self.name_to_path_helper(word))
         call self.jump_helper(option, word)
         return
-      elseif self.is_controller(self.name_to_path_controller(util#pluralize(word)))
-        call self.jump_controller(option, util#pluralize(word))
+      elseif self.is_controller(self.name_to_path_controller(cake#util#pluralize(word)))
+        call self.jump_controller(option, cake#util#pluralize(word))
         return
       endif
 
@@ -1049,8 +1049,8 @@ function! cake#factory(path_app)
       if self.is_fixture(self.name_to_path_fixture(word))
         call self.jump_fixture(option, word)
         return
-      elseif self.is_controller(self.name_to_path_controller(util#pluralize(word)))
-        call self.jump_controller(option, util#pluralize(word))
+      elseif self.is_controller(self.name_to_path_controller(cake#util#pluralize(word)))
+        call self.jump_controller(option, cake#util#pluralize(word))
         return
       endif
     endif
@@ -1173,7 +1173,7 @@ function! cake#factory(path_app)
     if i == 0
       return
     elseif i == 1
-      call util#open_file(scripts[0], a:option, 0)
+      call cake#util#open_file(scripts[0], a:option, 0)
       return
     elseif i > 1
       let n = 1
@@ -1187,7 +1187,7 @@ function! cake#factory(path_app)
       let c = confirm('Which file do you jump to?', choices, 0)
       if c > 0
         let index = c - 1
-        call util#open_file(scripts[index], a:option, 0)
+        call cake#util#open_file(scripts[index], a:option, 0)
         return
       endif
     endif
@@ -1213,7 +1213,7 @@ function! cake#factory(path_app)
     if i == 0
       return
     elseif i == 1
-      call util#open_file(stylesheets[0], a:option, 0)
+      call cake#util#open_file(stylesheets[0], a:option, 0)
       return
     elseif i > 1
       let n = 1
@@ -1227,7 +1227,7 @@ function! cake#factory(path_app)
       let c = confirm('Which file do you jump to?', choices, 0)
       if c > 0
         let index = c - 1
-        call util#open_file(stylesheets[index], a:option, 0)
+        call cake#util#open_file(stylesheets[index], a:option, 0)
         return
       endif
     endif
@@ -1253,7 +1253,7 @@ function! cake#factory(path_app)
     if i == 0
       return
     elseif i == 1
-      call util#open_file(elements[0], a:option, 0)
+      call cake#util#open_file(elements[0], a:option, 0)
       return
     elseif i > 1
       let n = 1
@@ -1267,7 +1267,7 @@ function! cake#factory(path_app)
       let c = confirm('Which file do you jump to?', choices, 0)
       if c > 0
         let index = c - 1
-        call util#open_file(elements[index], a:option, 0)
+        call cake#util#open_file(elements[index], a:option, 0)
         return
       endif
     endif
@@ -1293,7 +1293,7 @@ function! cake#factory(path_app)
     if i == 0
       return
     elseif i == 1
-      call util#open_file(layouts[0], a:option, 0)
+      call cake#util#open_file(layouts[0], a:option, 0)
       return
     elseif i > 1
       let n = 1
@@ -1307,7 +1307,7 @@ function! cake#factory(path_app)
       let c = confirm('Which file do you jump to?', choices, 0)
       if c > 0
         let index = c - 1
-        call util#open_file(layouts[index], a:option, 0)
+        call cake#util#open_file(layouts[index], a:option, 0)
         return
       endif
     endif
@@ -1327,7 +1327,7 @@ function! cake#factory(path_app)
     if i == 0
       return
     elseif i == 1
-      call util#open_file(views[0], a:option, 0)
+      call cake#util#open_file(views[0], a:option, 0)
       return
     elseif i > 1
       let n = 1
@@ -1341,7 +1341,7 @@ function! cake#factory(path_app)
       let c = confirm('Which file do you jump to?', choices, 0)
       if c > 0
         let index = c - 1
-        call util#open_file(views[index], a:option, 0)
+        call cake#util#open_file(views[index], a:option, 0)
         return
       endif
     endif
@@ -1384,13 +1384,14 @@ function! cake#factory(path_app)
   endfunction "}}}
   function! self.tail_log(log_name) "{{{
     if !has_key(g:cakephp_log, a:log_name)
-      call util#echo_warning(a:log_name . " is not found. please set g:cakephp_log['" . a:log_name . "'] = '/path/to/log_name.log'.")
+      call cake#util#echo_warning(a:log_name . " is not found. please set g:cakephp_log['" . a:log_name . "'] = '/path/to/log_name.log'.")
       return
     endif
 
-    call util#open_tail_log_window(g:cakephp_log[a:log_name], g:cakephp_log_window_size)
+    call cake#util#open_tail_log_window(g:cakephp_log[a:log_name], g:cakephp_log_window_size)
   endfunction "}}}
   " ============================================================
+
 
   return self
 endfunction

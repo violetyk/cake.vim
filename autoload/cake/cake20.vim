@@ -70,7 +70,7 @@ function! cake#cake20#factory(path_app)
 
       let s = matchend(line, "\s*function\s*.")
       let e = match(line, "(")
-      let func_name = util#strtrim(strpart(line, s, e-s))
+      let func_name = cake#util#strtrim(strpart(line, s, e-s))
 
       " Callback functions are not eligible.
       if func_name !~ "^_" && func_name !=? "beforeFilter" && func_name !=? "beforeRender" && func_name !=? "afterFilter"
@@ -98,7 +98,7 @@ function! cake#cake20#factory(path_app)
     endif
   endfunction "}}}
   function! self.path_to_name_fixture(path) "{{{
-    return util#camelize(substitute(fnamemodify(a:path, ":t:r"), "Fixture$", "", ""))
+    return cake#util#camelize(substitute(fnamemodify(a:path, ":t:r"), "Fixture$", "", ""))
   endfunction "}}}
   function! self.path_to_name_component(path) "{{{
     return substitute(fnamemodify(a:path, ":t:r"), "Component$", "", "")

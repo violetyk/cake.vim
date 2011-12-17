@@ -5,11 +5,11 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
-" Function: util#camelize(word) {{{
+" Function: cake#util#camelize(word) {{{
 " hoge_fuga -> HogeFuga
 " hogefuga -> Hogefuga
 " HogeFuga -> HogeFuga
-function! util#camelize(word)
+function! cake#util#camelize(word)
 
   let word = a:word
   if word == ''
@@ -24,10 +24,10 @@ function! util#camelize(word)
   return join(map(split(word, '_'), 'toupper(v:val[0]) . tolower(v:val[1:])'), '')
 
 endfunction "}}}
-" Function: util#decamelize(word) {{{
+" Function: cake#util#decamelize(word) {{{
 " HogeFuga -> hoge_fuga
 " HOGEFUGA -> hogefuga
-function! util#decamelize(word)
+function! cake#util#decamelize(word)
 
   let word = a:word
   if word == ''
@@ -57,11 +57,11 @@ function! util#decamelize(word)
 
 endfunction "}}}
 
-" Function: util#singularize(word) {{{
+" Function: cake#util#singularize(word) {{{
 " rails.vim(http://www.vim.org/scripts/script.php?script_id=1567)
 " rails#singularize
 " ============================================================
-function! util#singularize(word)
+function! cake#util#singularize(word)
 
   let word = a:word
   if word == ''
@@ -80,11 +80,11 @@ function! util#singularize(word)
   return word
 endfunction
 " }}}
-" Function: util#pluralize(word) {{{
+" Function: cake#util#pluralize(word) {{{
 " rails.vim(http://www.vim.org/scripts/script.php?script_id=1567)
 " rails#pluralize
 " ============================================================
-function! util#pluralize(word)
+function! cake#util#pluralize(word)
 
   let word = a:word
   if word == ''
@@ -102,14 +102,14 @@ function! util#pluralize(word)
 endfunction
 " }}}
 
-" Function: util#echo_warning(message) {{{
-function! util#echo_warning(message)
+" Function: cake#util#echo_warning(message) {{{
+function! cake#util#echo_warning(message)
   echohl WarningMsg | redraw | echo  a:message | echohl None
 endfunction " }}}
 
-" Function: util#open_file(path, option, line) {{{
+" Function: cake#util#open_file(path, option, line) {{{
 " ============================================================
-function! util#open_file(path, option, line)
+function! cake#util#open_file(path, option, line)
 
   if !bufexists(a:path)
     exec "badd " . a:path
@@ -138,9 +138,9 @@ function! util#open_file(path, option, line)
 endfunction
 " }}}
 
-" Function: util#confirm_create_file(path) {{{
+" Function: cake#util#confirm_create_file(path) {{{
 " ============================================================
-function! util#confirm_create_file(path)
+function! cake#util#confirm_create_file(path)
   let choice = confirm(a:path . " is not found. Do you make a file ?", "&Yes\n&No", 1)
 
   if choice == 0
@@ -151,7 +151,7 @@ function! util#confirm_create_file(path)
     let result1 = system("mkdir -p " . fnamemodify(a:path, ":p:h"))
     let result2 = system("touch " . a:path)
     if strlen(result1) != 0 && strlen(result2) != 0
-      call util#echo_warning(result2)
+      call cake#util#echo_warning(result2)
       return 0
     else
       return 1
@@ -162,13 +162,13 @@ function! util#confirm_create_file(path)
 endfunction
 " }}}
 
-" Function: util#open_tail_log_window() {{{
+" Function: cake#util#open_tail_log_window() {{{
 " ============================================================
 let s:log_buffers = {}
-function! util#open_tail_log_window(path,window_size)
+function! cake#util#open_tail_log_window(path,window_size)
 
   if !filereadable(a:path)
-    call util#echo_warning(a:path . " is not readable.")
+    call cake#util#echo_warning(a:path . " is not readable.")
     return
   endif
 
@@ -200,26 +200,26 @@ function! util#open_tail_log_window(path,window_size)
       exec "normal G"
 
       " auto reloadable setting.
-      autocmd CursorHold <buffer> call util#reload_buffer()
-      autocmd CursorHoldI <buffer> call util#reload_buffer()
-      autocmd FileChangedShell <buffer> call util#reload_buffer()
-      autocmd BufEnter <buffer> call util#reload_buffer()
+      autocmd CursorHold <buffer> call cake#util#reload_buffer()
+      autocmd CursorHoldI <buffer> call cake#util#reload_buffer()
+      autocmd FileChangedShell <buffer> call cake#util#reload_buffer()
+      autocmd BufEnter <buffer> call cake#util#reload_buffer()
     endif
   endif
 endfunction
 " }}}
 
-" Function: util#reload_buffer() {{{
+" Function: cake#util#reload_buffer() {{{
 " ============================================================
-function! util#reload_buffer()
+function! cake#util#reload_buffer()
   exec "silent edit"
   exec "normal G"
   echo bufname("%"). " -> Last Read: " . strftime("%Y/%m/%d %X")
 endfunction
 " }}}
 
-" Function: util#strtrim(string) {{{
-function! util#strtrim(string)
+" Function: cake#util#strtrim(string) {{{
+function! cake#util#strtrim(string)
   return substitute(substitute(a:string, '^\s\+', "", ""), '\s\+$', "", "")
 endfunction " }}}
 
