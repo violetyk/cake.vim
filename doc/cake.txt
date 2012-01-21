@@ -161,10 +161,15 @@ Initial setup
 		perform automatically at startup.
 
 >
-    let g:cakephp_auto_set_project = 1
+    let g:cakephp_enable_fix_mode = 1
     let g:cakephp_app = "/path/to/cakephp_app/"
 <
 
+		When you find a project from open file automatically,
+		please set it as follows.
+>
+    let g:cakephp_enable_auto_mode = 1
+<
 
 Jump to Model
 -------------
@@ -407,6 +412,12 @@ BUGS								*cake-bugs*
 
 ==============================================================================
 CHANGE LOG							*cake-changelog*
+
+2.2.0   2012-01-21
+     - Add the mode which automatically set a project.
+       (g:cakephp_enable_auto_mode)
+     - Add g:cakephp_enable_fix_mode
+     - Deprecated g:cakephp_auto_set_project
 
 2.1.1   2011-12-17
      - Fix a few bugs.

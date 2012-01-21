@@ -22,6 +22,7 @@ please set it as follows.
 
     let g:cakephp_enable_auto_mode = 1
 
+
 Edit the specified or current controller.
 :Ccontroller hogehoges
 It guess the Controller when current buffer is View or Model.
@@ -92,7 +93,7 @@ Edit the debug.log.
 1: Extract the file and Put files in your Vim directory
    (usually ~/.vim/).
 2: Execute |:Cakephp| <Space> /path/to/cakephp_app/ command or
-let g:cakephp_auto_set_project = 1
+let g:cakephp_enable_fix_mode = 1
 let g:cakephp_app = "/path/to/cakephp_app/"
 in your .vimrc.
 
