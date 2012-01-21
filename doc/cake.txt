@@ -1,6 +1,6 @@
 *cake.txt*  Utility for CakePHP developpers.
 
-Version: 2.1.1
+Version: 2.2.0
 Author: Yuhei Kagaya <yuhei.kagaya@gmail.com>
 English Documentation Author: Takahiro Jinno <takahiro.jinno@gmail.com>
 Repository: https://github.com/violetyk/cake.vim
@@ -103,10 +103,17 @@ INSTALL								*cake-install*
 
 1: Extract the file and Put files in your Vim directory
    (usually ~/.vim/).
-2: Execute |:Cakephp| <Space> /path/to/cakephp_app/ command or
-let g:cakephp_auto_set_project = 1
-let g:cakephp_app = "/path/to/cakephp_app/"
-in your .vimrc.
+2: Execute |:Cakephp| <Space> /path/to/cakephp_app/ command or in your .vimrc.
+>
+    let g:cakephp_enable_fix_mode = 1
+    let g:cakephp_app = "/path/to/cakephp_app/"
+<
+
+When you find a project from open file automatically,
+please set it as follows.
+>
+    let g:cakephp_enable_auto_mode = 1
+<
 
 
 And if you would like to use divided view themed such as "front" and "admin",

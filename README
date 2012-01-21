@@ -14,9 +14,13 @@ At the first, specified the app directory of your CakePHP.
 If you write the following key-mappings in your .vimrc, it will
 perform automatically at startup.
 
-    let g:cakephp_auto_set_project = 1
+    let g:cakephp_enable_fix_mode = 1
     let g:cakephp_app = "/path/to/cakephp_app/"
 
+When you find a project from open file automatically,
+please set it as follows.
+
+    let g:cakephp_enable_auto_mode = 1
 
 Edit the specified or current controller.
 :Ccontroller hogehoges
