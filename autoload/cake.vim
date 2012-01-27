@@ -951,31 +951,31 @@ function! cake#factory(path_app)
     if self.is_view(path)
       " let name = matchstr(l_word, '\(["'']\)\zs[0-9A-Za-z/_.]\+\ze\(["'']\)' )
       " View / $this->element('xxx') -> element
-      let element_name = matchstr(line, '\(\$this->element(\s*["'']\)\zs[0-9A-Za-z/_.]\+\ze\(["'']\)' )
+      let element_name = matchstr(line, '\(\$this->element(\s*["'']\)\zs[0-9A-Za-z/_.-]\+\ze\(["'']\)' )
       if strlen(element_name) > 0
         call self.smart_jump_element(element_name, option)
         return
       endif
       " View / $this->Html->css('xxx') -> css
-      let stylesheet_name = matchstr(line, '\(\$this->Html->css(\s*["'']\)\zs[0-9A-Za-z/_.]\+\ze\(["'']\)' )
+      let stylesheet_name = matchstr(line, '\(\$this->Html->css(\s*["'']\)\zs[0-9A-Za-z/_.-]\+\ze\(["'']\)' )
       if strlen(stylesheet_name) > 0
         call self.smart_jump_stylesheet(stylesheet_name, option)
         return
       endif
       " View / $html->css('xxx') -> css
-      let stylesheet_name = matchstr(line, '\(\$html->css(\s*["'']\)\zs[0-9A-Za-z/_.]\+\ze\(["'']\)' )
+      let stylesheet_name = matchstr(line, '\(\$html->css(\s*["'']\)\zs[0-9A-Za-z/_.-]\+\ze\(["'']\)' )
       if strlen(stylesheet_name) > 0
         call self.smart_jump_stylesheet(stylesheet_name, option)
         return
       endif
       " View / $this->Html->script('xxx') -> script
-      let script_name = matchstr(line, '\(\$this->Html->script(\s*["'']\)\zs[0-9A-Za-z/_.]\+\ze\(["'']\)' )
+      let script_name = matchstr(line, '\(\$this->Html->script(\s*["'']\)\zs[0-9A-Za-z/_.-]\+\ze\(["'']\)' )
       if strlen(script_name) > 0
         call self.smart_jump_script(script_name, option)
         return
       endif
       " View / $html->script('xxx') -> script
-      let script_name = matchstr(line, '\(\$html->script(\s*["'']\)\zs[0-9A-Za-z/_.]\+\ze\(["'']\)' )
+      let script_name = matchstr(line, '\(\$html->script(\s*["'']\)\zs[0-9A-Za-z/_.-]\+\ze\(["'']\)' )
       if strlen(script_name) > 0
         call self.smart_jump_script(script_name, option)
         return
