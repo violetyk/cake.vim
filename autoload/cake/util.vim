@@ -223,6 +223,16 @@ function! cake#util#strtrim(string)
   return substitute(substitute(a:string, '^\s\+', "", ""), '\s\+$', "", "")
 endfunction " }}}
 
+" Function: cake#util#get_topdir(path) {{{
+function! cake#util#get_topdir(path)
+  let h = fnamemodify(a:path, ":h")
+  if h == '.'
+    return a:path
+  else
+    return cake#util#get_topdir(h)
+  endif
+endfunction " }}}
+
 let &cpo = s:save_cpo
 unlet s:save_cpo
 " vim:set fenc=utf-8 ff=unix ft=vim fdm=marker:

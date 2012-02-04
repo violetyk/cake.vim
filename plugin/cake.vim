@@ -1,8 +1,8 @@
 " cake.vim - Utility for CakePHP developpers.
 " Maintainer:  Yuhei Kagaya <yuhei.kagaya@gmail.com>
 " License:     This file is placed in the public domain.
-" Last Change: 2012/01/27
-" Version:     2.2.1
+" Last Change: 2012/02/04
+" Version:     2.3.0
 
 if exists('g:loaded_cake_vim')
   finish
@@ -319,13 +319,17 @@ endif
 
 " fix setting of the app.
 if s:is_initialized == 0 && exists("g:cakephp_enable_fix_mode") && g:cakephp_enable_fix_mode == 1
-  autocmd VimEnter * call s:initialize('')
+  autocmd! VimEnter * call s:initialize('')
 elseif exists("g:cakephp_enable_auto_mode") && g:cakephp_enable_auto_mode == 1
   " automatically look for app and set it
-  autocmd BufEnter *.php,*.ctp,*.css,*.js call s:autoset_app()
+  autocmd! BufEnter *.php,*.ctp,*.css,*.js call s:autoset_app()
 endif
 
-autocmd FileType php,ctp,htmlcake call s:map_commands()
+autocmd! FileType php,ctp,htmlcake call s:map_commands()
+
+" Cut an element partially.
+" Argument is element name(,theme name).
+autocmd! FileType ctp,htmlcake command! -n=1 -bang -buffer -range Celement :<line1>,<line2>call g:cake.clip_element(<bang>0,<f-args>)
 " }}}
 " SECTION: Commands {{{
 " ============================================================
@@ -455,6 +459,7 @@ command! -n=* -complete=customlist,s:get_complelist_fixture Cfixturetab call g:c
 " * -> Log
 " Argument is Log name.
 command! -n=1 -complete=customlist,s:get_complelist_log Clog call g:cake.tail_log(<f-args>)
+
 " }}}
 
 

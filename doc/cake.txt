@@ -1,6 +1,6 @@
 *cake.txt*  Utility for CakePHP developpers.
 
-Version: 2.2.0
+Version: 2.3.0
 Author: Yuhei Kagaya <yuhei.kagaya@gmail.com>
 English Documentation Author: Takahiro Jinno <takahiro.jinno@gmail.com>
 Repository: https://github.com/violetyk/cake.vim
@@ -83,6 +83,7 @@ Commands		|cake-commands|
 			|:Cfixturevsp|
 			|:Cfixturetab|
     Open the Log	|:CLog|
+    Cut to Element	|:Celement|
 
 Bugs			|cake-bugs|
 Changelog		|cake-changelog|
@@ -401,7 +402,17 @@ Open the Log
 	  \ 'access': '/usr/local/apache2/logs/access_log'
 	  \ }
 
+Cut to Element
+------------
 
+:[range]Celement[!] [{element-namee}] [{theme-name})]		*:Celement*
+		Begin to write a chosen range as a element file.
+
+		{theme-name} is option.
+		When you appoint it explicitly, make a Element file
+		under the specific Theme's directory.
+		The default is the current Theme's directory which an opening View file
+		belongs to now.
 
 ==============================================================================
 BUGS								*cake-bugs*
@@ -412,6 +423,10 @@ BUGS								*cake-bugs*
 
 ==============================================================================
 CHANGE LOG							*cake-changelog*
+
+2.3.0   2012-02-04
+     - Add Commands.
+       |:Celement|
 
 2.2.0   2012-01-21
      - Add the mode which automatically set a project.
