@@ -1,8 +1,8 @@
 " cake.vim - Utility for CakePHP developpers.
 " Maintainer:  Yuhei Kagaya <yuhei.kagaya@gmail.com>
 " License:     This file is placed in the public domain.
-" Last Change: 2012/02/04
-" Version:     2.3.0
+" Last Change: 2012/02/06
+" Version:     2.3.1
 
 if exists('g:loaded_cake_vim')
   finish
@@ -329,7 +329,7 @@ autocmd! FileType php,ctp,htmlcake call s:map_commands()
 
 " Cut an element partially.
 " Argument is element name(,theme name).
-autocmd! FileType ctp,htmlcake command! -n=1 -bang -buffer -range Celement :<line1>,<line2>call g:cake.clip_element(<bang>0,<f-args>)
+autocmd! FileType php,ctp,htmlcake command! -n=1 -bang -buffer -range Celement :<line1>,<line2>call g:cake.clip_element(<bang>0,<f-args>)
 " }}}
 " SECTION: Commands {{{
 " ============================================================
