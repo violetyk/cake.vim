@@ -152,10 +152,19 @@ function! cake#cake13#factory(path_app)
   " Functions: self.name_to_path_xxx()
   " ============================================================
   function! self.name_to_path_controller(name) "{{{
-    return self.paths.controllers . cake#util#decamelize(a:name) . "_controller.php"
+    let controller_name = cake#util#decamelize(a:name) . "_controller.php"
+    if filereadable(self.paths.app . controller_name)
+      return self.paths.app . controller_name
+    else
+      return self.paths.controllers . controller_name
+    endif
   endfunction "}}}
   function! self.name_to_path_model(name) "{{{
-    return self.paths.models . cake#util#decamelize(a:name) . ".php"
+    if filereadable(self.paths.app . cake#util#decamelize(a:name) . "_model.php")
+      return self.paths.app . cake#util#decamelize(a:name) . "_model.php"
+    else
+      return self.paths.models . cake#util#decamelize(a:name) . ".php"
+    endif
   endfunction "}}}
   function! self.name_to_path_component(name) "{{{
     return self.paths.components . cake#util#decamelize(a:name) . ".php"
@@ -170,7 +179,11 @@ function! cake#cake13#factory(path_app)
     return self.paths.behaviors . cake#util#decamelize(a:name) . ".php"
   endfunction "}}}
   function! self.name_to_path_helper(name) "{{{
-    return self.paths.helpers . cake#util#decamelize(a:name) . ".php"
+    if filereadable(self.paths.app . cake#util#decamelize(a:name) . "_helper.php")
+      return self.paths.app . cake#util#decamelize(a:name) . "_helper.php"
+    else
+      return self.paths.helpers . cake#util#decamelize(a:name) . ".php"
+    endif
   endfunction "}}}
   function! self.name_to_path_testmodel(name) "{{{
     return self.paths.testmodels . cake#util#decamelize(a:name) . ".test.php"

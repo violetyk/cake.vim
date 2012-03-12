@@ -1,6 +1,6 @@
 *cake.txt*  Utility for CakePHP developpers.
 
-Version: 2.3.1
+Version: 2.3.2
 Author: Yuhei Kagaya <yuhei.kagaya@gmail.com>
 English Documentation Author: Takahiro Jinno <takahiro.jinno@gmail.com>
 Repository: https://github.com/violetyk/cake.vim
@@ -423,6 +423,11 @@ BUGS								*cake-bugs*
 
 ==============================================================================
 CHANGE LOG							*cake-changelog*
+
+2.3.2   2012-03-12
+     - Add New gf algorithm.
+     - in Controller, "class HogesController extends AppController" -> AppController
+     - in Model, "class Hoge extends AppModel"  -> AppModel
 
 2.3.1   2012-02-11
      - Fix a few bugs.

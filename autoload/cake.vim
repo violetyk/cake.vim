@@ -883,6 +883,7 @@ function! cake#factory(path_app)
     if self.is_controller(path)
       let controller_name = self.path_to_name_controller(path)
 
+
       " Controller / function xxx() -> View
       let view_name = matchstr(line, '\(function\s\+\)\zs\w\+\ze\(\s*(\)')
       if strlen(view_name) > 0
@@ -909,6 +910,16 @@ function! cake#factory(path_app)
         return
       endif
 
+      " Controller / class HogesController extends AppController -> AppController
+      let controller_name = matchstr(line, '\(class\s\w\+Controller\sextends\s\)\zs\w\+\ze\(Controller\)' )
+      if strlen(controller_name) > 0
+        let controller_name = cake#util#decamelize(controller_name)
+        if self.is_controller(self.name_to_path_controller(controller_name))
+          call self.jump_controller(option, controller_name)
+          return
+        endif
+      endif
+
 
       " Controller -> Model or Behavior or Component or Helper
       if self.is_model(self.name_to_path_model(word))
@@ -932,6 +943,16 @@ function! cake#factory(path_app)
     "}}}
     " in Model "{{{
     if self.is_model(path)
+
+      " Model / class Hoge extends AppModel  -> AppModel
+      let model_name = matchstr(line, '\(class\s\w\+\sextends\s\)\zs\w\+\ze\(Model\)' )
+      if strlen(model_name) > 0
+        let model_name = cake#util#decamelize(model_name)
+        if self.is_model(self.name_to_path_model(model_name))
+          call self.jump_model(option, model_name)
+          return
+        endif
+      endif
 
       " Model -> Model or Behavior or Controller
       if self.is_model(self.name_to_path_model(word))
