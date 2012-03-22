@@ -270,7 +270,11 @@ function! cake#factory(path_app)
 
       if self.is_view(path)
         " let target = expand("%:p:h:t")
-        call add(targets, expand("%:p:h:t"))
+        " call add(targets, expand("%:p:h:t"))
+
+        let pattern = '\(' . self.paths.views . '\)\zs\w\+\ze'
+        let target = matchstr(path, pattern)
+        call add(targets, target)
         let func_name = expand("%:p:t:r")
       elseif self.is_model(path)
         " let target = cake#util#pluralize(self.path_to_name_model(path))
