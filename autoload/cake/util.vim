@@ -233,6 +233,21 @@ function! cake#util#get_topdir(path)
   endif
 endfunction " }}}
 
+" Function: cake#util#dirname(path) {{{
+function! cake#util#dirname(...)
+  if a:0 != 1 || strlen(a:1) == 0
+    return ''
+  endif
+
+  let path = a:1
+  if path[strlen(path)-1:] == '/'
+    let path = path[0:strlen(path)-2]
+  endif
+
+  return fnamemodify(path, ":h")
+
+endfunction " }}}
+
 let &cpo = s:save_cpo
 unlet s:save_cpo
 " vim:set fenc=utf-8 ff=unix ft=vim fdm=marker:

@@ -1,6 +1,6 @@
 *cake.txt*  Utility for CakePHP developpers.
 
-Version: 2.3.2
+Version: 2.4
 Author: Yuhei Kagaya <yuhei.kagaya@gmail.com>
 English Documentation Author: Takahiro Jinno <takahiro.jinno@gmail.com>
 Repository: https://github.com/violetyk/cake.vim
@@ -82,6 +82,10 @@ Commands		|cake-commands|
 			|:Cfixturesp|
 			|:Cfixturevsp|
 			|:Cfixturetab|
+    Jump to Library	|:Clib|
+			|:Clibsp|
+			|:Clibvsp|
+			|:Clibtab|
     Open the Log	|:CLog|
     Cut to Element	|:Celement|
 
@@ -95,7 +99,7 @@ INTRODUCTION							*cake-introduction*
 *cake* is for easy jumping between Controller, Model and View files when developing in CakePHP.
 
 Requirements:
-- Vim ver.7.0 or heigher
+- Vim ver.7.3 or heigher
 - CakePHP ver.1.3.x or ver.2.0
 
 
@@ -390,6 +394,19 @@ Jump to Fixture
 		You can split editing vertically using |:Cfixturevsp|.
 		You can open new tab editing, using |:Cfixturetab|.
 
+Jump to Lib
+------------
+
+:Clib [{lib-name}]						*:Clib*
+:Clibsp [{lib-name}]						*:Clibsp*
+:Clibvsp [{lib-name}]						*:Clibvsp*
+:Clibtab [{lib-name}]						*:Clibtab*
+		Edit the CakePHP's Core Libraries.
+		You can split editing using |:Clibsp|.
+		You can split editing vertically using |:Clibvsp|.
+		You can open new tab editing, using |:Clibtab|.
+
+
 Open the Log
 ------------
 
@@ -423,6 +440,13 @@ BUGS								*cake-bugs*
 
 ==============================================================================
 CHANGE LOG							*cake-changelog*
+
+2.4.0   2012-04-04
+     - Add Commands.
+       |:Clib|
+       |:Clibsp|
+       |:Clibvsp|
+       |:Clibtab|
 
 2.3.2   2012-03-12
      - Add New gf algorithm.

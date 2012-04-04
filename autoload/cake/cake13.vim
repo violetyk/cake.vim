@@ -35,19 +35,109 @@ function! cake#cake13#factory(path_app)
         \ 'element_dir'     : 'elements/',
         \}
 
+  " cakephp core library's path
+  if exists("g:cakephp_core_path") && isdirectory(g:cakephp_core_path)
+    let path_core = g:cakephp_core_path
+  else
+    let path_core = cake#util#dirname(self.paths.app) . '/cake/'
+  endif
+
+  let cores = {
+        \ 'lib'         : path_core . 'libs/',
+        \ 'controllers' : path_core . 'libs/controller/',
+        \ 'components'  : path_core . 'libs/components/',
+        \ 'models'      : path_core . 'libs/model/',
+        \ 'behaviors'   : path_core . 'libs/model/behaviors/',
+        \ 'helpers'     : path_core . 'libs/view/helpers/',
+        \ 'shells'      : path_core . 'console/libs/',
+        \ 'tasks'       : path_core . 'console/libs/tasks/',
+        \}
+
+  let self.paths.cores = cores
+
 
   " Functions: self.get_dictionary()
   " [object_name : path]
   " ============================================================
-  function! self.get_controllers() "{{{
-    let controllers = {}
+  function! self.get_libs() "{{{
+    let libs = {}
 
-    for path in split(globpath(self.paths.app, "**/*_controller\.php"), "\n")
-      let name = self.path_to_name_controller(path)
-      let controllers[name] = path
+    " libs
+    for path in split(globpath(self.paths.cores.lib, "*\.php"), "\n")
+      let name = cake#util#camelize(fnamemodify(path, ":t:r"))
+      let libs[name] = path
+    endfor
+    " libs/cache
+    for path in split(globpath(self.paths.cores.lib . 'cache/', "*\.php"), "\n")
+      let name = cake#util#camelize(fnamemodify(path, ":t:r")) . 'Engine'
+      let libs[name] = path
+    endfor
+    " libs/controller
+    for path in split(globpath(self.paths.cores.controllers, "*\.php"), "\n")
+        let name = cake#util#camelize(fnamemodify(path, ":t:r"))
+      let libs[name] = path
+    endfor
+    " libs/controller/components
+    for path in split(globpath(self.paths.cores.components, "*\.php"), "\n")
+      let name = cake#util#camelize(fnamemodify(path, ":t:r")) . 'Component'
+      let libs[name] = path
+    endfor
+    " libs/log
+    for path in split(globpath(self.paths.cores.lib . 'log/', "*\.php"), "\n")
+      let name = cake#util#camelize(fnamemodify(path, ":t:r"))
+      let libs[name] = path
+    endfor
+    " libs/model
+    for path in split(globpath(self.paths.cores.models, "*\.php"), "\n")
+      if fnamemodify(path, ":t:r") == 'db_acl'
+        let name = 'AclNode'
+      else
+        let name = cake#util#camelize(fnamemodify(path, ":t:r"))
+      endif
+
+      let libs[name] = path
+    endfor
+    " libs/model/behaviors
+    for path in split(globpath(self.paths.cores.behaviors, "*\.php"), "\n")
+      let name = cake#util#camelize(fnamemodify(path, ":t:r")) . 'Behavior'
+      let libs[name] = path
+    endfor
+    " libs/model/datasources/*
+    for path in split(globpath(self.paths.cores.models . 'datasources/', "**/*\.php"), "\n")
+      let name = cake#util#camelize(fnamemodify(path, ":t:r"))
+      let libs[name] = path
+    endfor
+    " libs/model/view
+    let libs['Helper']    = self.paths.cores.lib . 'view/helper.php'
+    let libs['MediaView'] = self.paths.cores.lib . 'view/media.php'
+    let libs['ThemeView'] = self.paths.cores.lib . 'view/theme.php'
+    let libs['View']      = self.paths.cores.lib . 'view/view.php'
+    " libs/model/view/helpers
+    for path in split(globpath(self.paths.cores.helpers, "*\.php"), "\n")
+      if fnamemodify(path, ":t:r") == 'app_helper'
+        let name = cake#util#camelize(fnamemodify(path, ":t:r"))
+      else
+        let name = cake#util#camelize(fnamemodify(path, ":t:r")) . 'Helper'
+      endif
+
+      let libs[name] = path
+    endfor
+    " console/libs/
+    for path in split(globpath(self.paths.cores.shells, "*\.php"), "\n")
+      if fnamemodify(path, ":t:r") == 'shell'
+        let name = cake#util#camelize(fnamemodify(path, ":t:r"))
+      else
+        let name = cake#util#camelize(fnamemodify(path, ":t:r")) . 'Shell'
+      endif
+      let libs[name] = path
+    endfor
+    " console/libs/tasks
+    for path in split(globpath(self.paths.cores.tasks, "*\.php"), "\n")
+      let name = cake#util#camelize(fnamemodify(path, ":t:r")) . 'Task'
+      let libs[name] = path
     endfor
 
-    return controllers
+    return libs
   endfunction "}}}
   function! self.get_models() "{{{
 

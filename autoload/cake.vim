@@ -876,6 +876,22 @@ function! cake#factory(path_app)
 
   endfunction
   "}}}
+  function! self.jump_lib(...) " {{{
+
+    let split_option = a:1
+    let targets = self.args_to_targets(a:000)
+    let libs = self.get_libs()
+
+    for target in targets
+      if !has_key(libs, target)
+        call cake#util#echo_warning(target . " is not found.")
+      endif
+
+      let line = 0
+      call cake#util#open_file(libs[target], split_option, line)
+    endfor
+
+  endfunction "}}}
   function! self.smart_jump(...) "{{{
     let option = a:1
     let path = expand("%:p")
@@ -1165,7 +1181,6 @@ function! cake#factory(path_app)
     endif
     "}}}
 
-
     " Global {{{
     " Configure::load('xxx'); -> config
     let config_name = matchstr(line, '\(Configure::load(\s*["'']\)\zs[0-9A-Za-z/_.]\+\ze\(["'']\s*)\)')
@@ -1173,8 +1188,14 @@ function! cake#factory(path_app)
       call self.jump_config(option, config_name)
       return
     endif
-    " }}}
 
+    " jump to Core Libraries
+    if strlen(word) > 0
+      if has_key(self.get_libs(), word)
+        call self.jump_lib(option, word)
+      endif
+    endif
+    " }}}
 
   endfunction "}}}
   function! self.smart_jump_script(script_name, option) "{{{

@@ -1,8 +1,8 @@
 " cake.vim - Utility for CakePHP developpers.
 " Maintainer:  Yuhei Kagaya <yuhei.kagaya@gmail.com>
 " License:     This file is placed in the public domain.
-" Last Change: 2012/03/12
-" Version:     2.3.2
+" Last Change: 2012/04/04
+" Version:     2.4
 
 if exists('g:loaded_cake_vim')
   finish
@@ -73,7 +73,6 @@ function! s:initialize(path)
 
   call g:cake.set_log(g:cakephp_log)
 
-  " echo a:path_app
 endfunction
 " }}}
 " Function: s:autoset_app() {{{
@@ -141,6 +140,14 @@ function! s:get_complelist(dict,ArgLead) "{{{
   let list = sort(keys(a:dict))
   return filter(list, 'v:val =~ "^'. fnameescape(a:ArgLead) . '"')
 endfunction "}}}
+function! s:get_complelist_lib(ArgLead, CmdLine, CursorPos) "{{{
+  try
+    let list = s:get_complelist(g:cake.get_libs(), a:ArgLead)
+    return list
+  catch
+    call cake#util#echo_warning("[cake.vim] An application directory is not set. Please :Cakephp {app}.")
+  endtry
+endfunction " }}}
 function! s:get_complelist_controller(ArgLead, CmdLine, CursorPos) "{{{
   try
     let list = s:get_complelist(g:cake.get_controllers(), a:ArgLead)
@@ -460,6 +467,11 @@ command! -n=* -complete=customlist,s:get_complelist_fixture Cfixturetab call g:c
 " Argument is Log name.
 command! -n=1 -complete=customlist,s:get_complelist_log Clog call g:cake.tail_log(<f-args>)
 
+" * -> CakePHP Core Libraries.
+command! -n=* -complete=customlist,s:get_complelist_lib Clib call g:cake.jump_lib('n', <f-args>)
+command! -n=* -complete=customlist,s:get_complelist_lib Clibsp call g:cake.jump_lib('s', <f-args>)
+command! -n=* -complete=customlist,s:get_complelist_lib Clibvsp call g:cake.jump_lib('v', <f-args>)
+command! -n=* -complete=customlist,s:get_complelist_lib Clibtab call g:cake.jump_lib('t', <f-args>)
 " }}}
 
 
