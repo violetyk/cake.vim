@@ -139,6 +139,16 @@ function! cake#cake13#factory(path_app)
 
     return libs
   endfunction "}}}
+  function! self.get_controllers() "{{{
+    let controllers = {}
+
+    for path in split(globpath(self.paths.app, "**/*_controller\.php"), "\n")
+      let name = self.path_to_name_controller(path)
+      let controllers[name] = path
+    endfor
+
+    return controllers
+  endfunction "}}}
   function! self.get_models() "{{{
 
     let models = {}
