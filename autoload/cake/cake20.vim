@@ -35,9 +35,68 @@ function! cake#cake20#factory(path_app)
         \ 'element_dir'     : 'Elements/',
         \}
 
+  " cakephp core library's path
+  if exists("g:cakephp_core_path") && isdirectory(g:cakephp_core_path)
+    let path_core = g:cakephp_core_path
+  else
+    let path_core = cake#util#dirname(self.paths.app) . '/lib/'
+  endif
+
+  let cores = {
+        \ 'core'        : path_core,
+        \ 'lib'         : path_core . 'Cake/',
+        \ 'controllers' : path_core . 'Cake/Controller/',
+        \ 'components'  : path_core . 'Cake/Controller/Component/',
+        \ 'models'      : path_core . 'Cake/Model/',
+        \ 'behaviors'   : path_core . 'Cake/Model/Behavior/',
+        \ 'helpers'     : path_core . 'Cake/View/Helper/',
+        \ 'shells'      : path_core . 'Cake/Console/Command/',
+        \ 'tasks'       : path_core . 'Cake/Console/Command/Task/',
+        \}
+
+  let self.paths.cores = cores
+
+
   " Functions: self.get_dictionary()
   " [object_name : path]
   " ============================================================
+  function! self.get_libs() "{{{
+    let libs = {}
+
+    let directories = [
+          \ 'Cache',
+          \ 'Configure',
+          \ 'Controller',
+          \ 'Core',
+          \ 'Error',
+          \ 'I18n',
+          \ 'Log',
+          \ 'Model',
+          \ 'Network',
+          \ 'Routing',
+          \ 'Utility',
+          \ 'View',
+          \ ]
+
+    for dir in directories
+      for path in split(globpath(self.paths.cores.lib . dir,  "**/*\.php"), "\n")
+        let name = fnamemodify(path, ":t:r")
+        let libs[name] = path
+      endfor
+    endfor
+
+    " /Cake/Console
+    for path in split(globpath(self.paths.cores.lib . 'Console/',  "**/*\.php"), "\n")
+      let name = fnamemodify(path, ":t:r")
+      if name ==# 'cake' || match(path, '/Console/Templates/') > 0
+        continue
+      endif
+      let libs[name] = path
+    endfor
+
+    return libs
+  endfunction "}}}
+
   function! self.get_controllers() "{{{
     let controllers = {}
 

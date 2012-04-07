@@ -13,6 +13,8 @@ function! cake#factory(path_app)
 
   " Functions: abstract methods.(These implement it in a subclass.) {{{
   " ============================================================
+  function! self.get_libs()
+  endfunction
   function! self.get_controllers()
   endfunction
   function! self.get_models()
@@ -898,6 +900,7 @@ function! cake#factory(path_app)
     let line = getline('.')
     let word = expand('<cword>')
     let l_word = expand('<cWORD>')
+    let libs = {}
 
     " in Controller "{{{
     if self.is_controller(path)
@@ -959,6 +962,20 @@ function! cake#factory(path_app)
         return
       endif
 
+      " jump to Core Libraries
+      if len(libs) == 0
+        let libs = self.get_libs()
+      endif
+      let priority_order = ['', 'Behavior', 'Component', 'Helper']
+      for suffix in priority_order
+        let target = word . suffix
+        if has_key(libs, target)
+          call self.jump_lib(option, target)
+          return
+        endif
+      endfor
+
+
     endif
     "}}}
     " in Model "{{{
@@ -985,6 +1002,19 @@ function! cake#factory(path_app)
         call self.jump_controller(option, cake#util#pluralize(word))
         return
       endif
+
+      " jump to Core Libraries
+      if len(libs) == 0
+        let libs = self.get_libs()
+      endif
+      let priority_order = ['', 'Behavior']
+      for suffix in priority_order
+        let target = word . suffix
+        if has_key(libs, target)
+          call self.jump_lib(option, target)
+          return
+        endif
+      endfor
 
     endif
     "}}}
@@ -1034,6 +1064,19 @@ function! cake#factory(path_app)
         return
       endif
 
+      " jump to Core Libraries
+      if len(libs) == 0
+        let libs = self.get_libs()
+      endif
+      let priority_order = ['', 'Helper', 'Component', 'Behavior']
+      for suffix in priority_order
+        let target = word . suffix
+        if has_key(libs, target)
+          call self.jump_lib(option, target)
+          return
+        endif
+      endfor
+
     endif
     " }}}
     " in Component "{{{
@@ -1054,6 +1097,19 @@ function! cake#factory(path_app)
         return
       endif
 
+      " jump to Core Libraries
+      if len(libs) == 0
+        let libs = self.get_libs()
+      endif
+      let priority_order = ['', 'Behavior', 'Component']
+      for suffix in priority_order
+        let target = word . suffix
+        if has_key(libs, target)
+          call self.jump_lib(option, target)
+          return
+        endif
+      endfor
+
     endif
     "}}}
     " in Behavior "{{{
@@ -1068,12 +1124,25 @@ function! cake#factory(path_app)
         return
       endif
 
+      " jump to Core Libraries
+      if len(libs) == 0
+        let libs = self.get_libs()
+      endif
+      let priority_order = ['', 'Behavior']
+      for suffix in priority_order
+        let target = word . suffix
+        if has_key(libs, target)
+          call self.jump_lib(option, target)
+          return
+        endif
+      endfor
+
     endif
     "}}}
     " in Helper {{{
     if self.is_helper(path)
 
-      " Helper -> Helper or Model or Behavior or Controller
+      " Helper -> Helper Controller
       if self.is_helper(self.name_to_path_helper(word))
         call self.jump_helper(option, word)
         return
@@ -1081,6 +1150,19 @@ function! cake#factory(path_app)
         call self.jump_controller(option, cake#util#pluralize(word))
         return
       endif
+
+      " jump to Core Libraries
+      if len(libs) == 0
+        let libs = self.get_libs()
+      endif
+      let priority_order = ['', 'Helper']
+      for suffix in priority_order
+        let target = word . suffix
+        if has_key(libs, target)
+          call self.jump_lib(option, target)
+          return
+        endif
+      endfor
 
     endif
     " }}}
@@ -1167,6 +1249,19 @@ function! cake#factory(path_app)
         return
       endif
 
+      " jump to Core Libraries
+      if len(libs) == 0
+        let libs = self.get_libs()
+      endif
+      let priority_order = ['', 'Behavior', 'Component', 'Helper']
+      for suffix in priority_order
+        let target = word . suffix
+        if has_key(libs, target)
+          call self.jump_lib(option, target)
+          return
+        endif
+      endfor
+
     endif
     "}}}
     " in Task "{{{
@@ -1177,6 +1272,19 @@ function! cake#factory(path_app)
         call self.jump_model(option, word)
         return
       endif
+
+      " jump to Core Libraries
+      if len(libs) == 0
+        let libs = self.get_libs()
+      endif
+      let priority_order = ['', 'Behavior', 'Component', 'Helper']
+      for suffix in priority_order
+        let target = word . suffix
+        if has_key(libs, target)
+          call self.jump_lib(option, target)
+          return
+        endif
+      endfor
 
     endif
     "}}}

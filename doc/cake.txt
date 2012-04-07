@@ -406,6 +406,12 @@ Jump to Lib
 		You can split editing vertically using |:Clibvsp|.
 		You can open new tab editing, using |:Clibtab|.
 
+		A default is a library in the directories same as app directory.
+		The cases that moved a library of CakePHP please set a path.
+>
+    let g:cakephp_core_path  = '/path/to/cakephp_core/'
+<
+
 
 Open the Log
 ------------
@@ -415,9 +421,10 @@ Open the Log
 		MySQL and Apache logs to see the log quickly, and write the following.
 >
     let g:cakephp_log = {
-	  \ 'query' : '/var/log/mysqld-query.log',
-	  \ 'access': '/usr/local/apache2/logs/access_log'
-	  \ }
+        \ 'query' : '/var/log/mysqld-query.log',
+        \ 'access': '/usr/local/apache2/logs/access_log'
+        \ }
+<
 
 Cut to Element
 ------------
@@ -441,12 +448,16 @@ BUGS								*cake-bugs*
 ==============================================================================
 CHANGE LOG							*cake-changelog*
 
-2.4.0   2012-04-04
+2.4.0   2012-04-08
      - Add Commands.
        |:Clib|
        |:Clibsp|
        |:Clibvsp|
        |:Clibtab|
+     - Add New gf algorithm that could jump to a core of CakePHP.
+     - Improved Auto Mode.
+       At the time of auto_mode, it prevented you from losing sight of a path of app
+       when you opened the file except CakePHP once.
 
 2.3.2   2012-03-12
      - Add New gf algorithm.

@@ -1,7 +1,7 @@
 " cake.vim - Utility for CakePHP developpers.
 " Maintainer:  Yuhei Kagaya <yuhei.kagaya@gmail.com>
 " License:     This file is placed in the public domain.
-" Last Change: 2012/04/04
+" Last Change: 2012/04/08
 " Version:     2.4
 
 if exists('g:loaded_cake_vim')
@@ -19,9 +19,10 @@ set cpo&vim
 " SECTION: Global Variables {{{
 " Please write $MYVIMRC. (Also work to write.)
 " ============================================================
-" let g:cakephp_app = "/path/to/cakephp_root/app/"
+" let g:cakephp_app             = "/path/to/cakephp_root/app/"
 " let g:cakephp_enable_fix_mode = 1
-" let g:cakephp_use_theme = "admin"
+" let g:cakephp_use_theme       = "admin"
+" let g:cakephp_core_path       = "/path/to/cakephp_core/"
 if !exists('g:cakephp_log')
   let g:cakephp_log = {
         \ 'debug' : '',
@@ -41,6 +42,7 @@ let g:cake = {}
 " SECTION: Script Variables {{{
 " ============================================================
 let s:is_initialized = 0
+let s:last_app_path = ''
 " }}}
 
 " Function: s:initialize() {{{
@@ -81,14 +83,26 @@ function! s:autoset_app()
   " find Config/core.php
   let app_config_path  = finddir('Config', escape(expand("%:p:h"), ' \') . ';')
   if app_config_path != '' && filereadable(app_config_path . '/core.php')
-    call s:initialize(fnamemodify(app_config_path, ":h"))
+    let app_path = fnamemodify(app_config_path, ":h")
+    call s:initialize(app_path)
+    let s:last_app_path = app_path
+    return
   endif
 
   " find config/core.php
   let app_config_path  = finddir('config', escape(expand("%:p:h"), ' \') . ';')
   if app_config_path != '' && filereadable(app_config_path . '/core.php')
-    call s:initialize(fnamemodify(app_config_path, ":h"))
+    let app_path = fnamemodify(app_config_path, ":h")
+    call s:initialize(app_path)
+    let s:last_app_path = app_path
+    return
   endif
+
+  " retry
+  if s:last_app_path != '' && isdirectory(s:last_app_path)
+    call s:initialize(s:last_app_path)
+  endif
+
 endfunction
 " }}}
 " Function: s:is_cake13() {{{

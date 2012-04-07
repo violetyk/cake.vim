@@ -43,9 +43,10 @@ function! cake#cake13#factory(path_app)
   endif
 
   let cores = {
+        \ 'core'        : path_core,
         \ 'lib'         : path_core . 'libs/',
         \ 'controllers' : path_core . 'libs/controller/',
-        \ 'components'  : path_core . 'libs/components/',
+        \ 'components'  : path_core . 'libs/controller/components/',
         \ 'models'      : path_core . 'libs/model/',
         \ 'behaviors'   : path_core . 'libs/model/behaviors/',
         \ 'helpers'     : path_core . 'libs/view/helpers/',
@@ -61,6 +62,9 @@ function! cake#cake13#factory(path_app)
   " ============================================================
   function! self.get_libs() "{{{
     let libs = {}
+
+    " dispatcher
+    let libs['Dispatcher'] = self.paths.cores.core . 'dispatcher.php'
 
     " libs
     for path in split(globpath(self.paths.cores.lib, "*\.php"), "\n")
