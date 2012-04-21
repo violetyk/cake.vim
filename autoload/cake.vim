@@ -1301,9 +1301,13 @@ function! cake#factory(path_app)
     if strlen(word) > 0
       if has_key(self.get_libs(), word)
         call self.jump_lib(option, word)
+        return
       endif
     endif
     " }}}
+
+    " Default action
+    call self.gf(option)
 
   endfunction "}}}
   function! self.smart_jump_script(script_name, option) "{{{
@@ -1345,6 +1349,9 @@ function! cake#factory(path_app)
         return
       endif
     endif
+
+    " Default action
+    call self.gf(option)
   endfunction "}}}
   function! self.smart_jump_stylesheet(stylesheet_name, option) "{{{
     let stylesheets = []
@@ -1385,6 +1392,9 @@ function! cake#factory(path_app)
         return
       endif
     endif
+
+    " Default action
+    call self.gf(option)
   endfunction "}}}
   function! self.smart_jump_element(element_name, option) "{{{
     let elements = []
@@ -1425,6 +1435,9 @@ function! cake#factory(path_app)
         return
       endif
     endif
+
+    " Default action
+    call self.gf(option)
   endfunction "}}}
   function! self.smart_jump_layout(layout_name, option) "{{{
     let layouts = []
@@ -1465,6 +1478,9 @@ function! cake#factory(path_app)
         return
       endif
     endif
+
+    " Default action
+    call self.gf(option)
   endfunction "}}}
   function! self.smart_jump_view(controller_name, view_name, option) "{{{
     let views = []
@@ -1499,7 +1515,20 @@ function! cake#factory(path_app)
         return
       endif
     endif
+
+    " Default action
+    call self.gf(option)
   endfunction "}}}
+  function! self.gf(option) "{{{
+    if a:option == 'n'
+      exec "normal! gf"
+    elseif a:option == 's'
+      exec "normal! \<C-w>f"
+    elseif a:option == 't'
+      exec "normal! \<C-w>gf"
+    endif
+  endfunction "}}}
+
   " ============================================================
 
   " Functions: common functions

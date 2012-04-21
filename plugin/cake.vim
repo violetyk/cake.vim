@@ -1,8 +1,8 @@
 " cake.vim - Utility for CakePHP developpers.
 " Maintainer:  Yuhei Kagaya <yuhei.kagaya@gmail.com>
 " License:     This file is placed in the public domain.
-" Last Change: 2012/04/08
-" Version:     2.4
+" Last Change: 2012/04/21
+" Version:     2.4.1
 
 if exists('g:loaded_cake_vim')
   finish

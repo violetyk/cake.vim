@@ -1,6 +1,6 @@
 *cake.txt*  Utility for CakePHP developpers.
 
-Version: 2.4
+Version: 2.4.1
 Author: Yuhei Kagaya <yuhei.kagaya@gmail.com>
 English Documentation Author: Takahiro Jinno <takahiro.jinno@gmail.com>
 Repository: https://github.com/violetyk/cake.vim
@@ -447,6 +447,10 @@ BUGS								*cake-bugs*
 
 ==============================================================================
 CHANGE LOG							*cake-changelog*
+
+2.4.1   2012-04-21
+     - When an object was not found by gf command, I did the gf command of the default.
+     - Fix a few bugs.
 
 2.4.0   2012-04-08
      - Add Commands.

@@ -130,8 +130,8 @@ function! cake#util#open_file(path, option, line)
 
     if type(a:line) == type(0) && a:line > 0
       exec a:line
-      exec "normal z\<CR>"
-      exec "normal ^"
+      exec "normal! z\<CR>"
+      exec "normal! ^"
     endif
 
   endif
@@ -177,7 +177,7 @@ function! cake#util#open_tail_log_window(path,window_size)
     " If the window is not open, open & move.
     if winnr() != win_no
       exec win_no . "wincmd w"
-      exec "normal G"
+      exec "normal! G"
     endif
   else
     " create single scratch buffer.
@@ -197,7 +197,7 @@ function! cake#util#open_tail_log_window(path,window_size)
       exec "setlocal noreadonly"
       " exec "setlocal updatetime=1000"
       exec "setlocal autoread"
-      exec "normal G"
+      exec "normal! G"
 
       " auto reloadable setting.
       autocmd CursorHold <buffer> call cake#util#reload_buffer()
@@ -213,7 +213,7 @@ endfunction
 " ============================================================
 function! cake#util#reload_buffer()
   exec "silent edit"
-  exec "normal G"
+  exec "normal! G"
   echo bufname("%"). " -> Last Read: " . strftime("%Y/%m/%d %X")
 endfunction
 " }}}
