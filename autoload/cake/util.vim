@@ -202,7 +202,7 @@ function! cake#util#open_tail_log_window(path,window_size)
       " auto reloadable setting.
       autocmd CursorHold <buffer> call cake#util#reload_buffer()
       autocmd CursorHoldI <buffer> call cake#util#reload_buffer()
-      autocmd FileChangedShell <buffer> call cake#util#reload_buffer()
+      " autocmd FileChangedShell <buffer> call cake#util#reload_buffer()
       autocmd BufEnter <buffer> call cake#util#reload_buffer()
     endif
   endif

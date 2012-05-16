@@ -914,20 +914,20 @@ function! cake#factory(path_app)
         return
       endif
       " Controller / $this->render('xxx') -> View
-      let view_name = matchstr(line, '\(\$this->render(\s*["'']\)\zs\w\+\ze\(["'']\s*)\)')
+      let view_name = matchstr(line, '\(\$this->render(\s*["'']\)\zs[0-9A-Za-z/_.-]\+\ze\(["'']\s*)\)')
       if strlen(view_name) > 0
         call self.smart_jump_view(controller_name, view_name, option)
         return
       endif
 
       " Controller / var $layout = 'xxx'; -> layout
-      let layout_name = matchstr(line, '\(var\s\+\$layout\s*=\s*["'']\)\zs\w\+\ze\(["''];\)' )
+      let layout_name = matchstr(line, '\(var\s\+\$layout\s*=\s*["'']\)\zs[0-9A-Za-z/_.-]\+\ze\(["''];\)' )
       if strlen(layout_name) > 0
         call self.smart_jump_layout(layout_name, option)
         return
       endif
       " Controller / $this->layout = 'xxx'; -> layout
-      let layout_name = matchstr(line, '\(\$this->layout\s*=\s*["'']\)\zs\w\+\ze\(["''];\)' )
+      let layout_name = matchstr(line, '\(\$this->layout\s*=\s*["'']\)\zs[0-9A-Za-z/_.-]\+\ze\(["''];\)' )
       if strlen(layout_name) > 0
         call self.smart_jump_layout(layout_name, option)
         return
@@ -1441,19 +1441,30 @@ function! cake#factory(path_app)
   endfunction "}}}
   function! self.smart_jump_layout(layout_name, option) "{{{
     let layouts = []
+    let themes = keys(self.get_themes())
 
-    " default
-    let layout_path = self.paths.views . self.vars.layout_dir . a:layout_name . '.ctp'
-    if filereadable(layout_path)
-      call add(layouts, layout_path)
+    if match(a:layout_name, '/') > 0
+      let layout_dir = self.vars.layout_dir . a:layout_name[:strridx(a:layout_name, '/')]
+      let layout_name = a:layout_name[strridx(a:layout_name, '/')+1:]
+    else
+      let layout_dir = self.vars.layout_dir
+      let layout_name = a:layout_name
     endif
 
-    let themes = keys(self.get_themes())
-    for theme_name in themes
-      let layout_path = self.paths.themes . theme_name . '/' . self.vars.layout_dir . a:layout_name . '.ctp'
+    " in default
+    for layout_path in split(globpath(self.paths.views . layout_dir, layout_name . ".ctp"), "\n")
       if filereadable(layout_path)
         call add(layouts, layout_path)
       endif
+    endfor
+
+    " in themes
+    for theme_name in themes
+      for layout_path in split(globpath(self.paths.themes . theme_name . '/' . layout_dir, layout_name . ".ctp"), "\n")
+        if filereadable(layout_path)
+          call add(layouts, layout_path)
+        endif
+      endfor
     endfor
 
     let i = len(layouts)
