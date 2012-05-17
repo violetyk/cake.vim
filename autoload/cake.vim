@@ -1313,19 +1313,32 @@ function! cake#factory(path_app)
   function! self.smart_jump_script(script_name, option) "{{{
     let scripts = []
 
-    " default
-    let script_path = self.paths.app . 'webroot/js/' . a:script_name . '.js'
-    if filereadable(script_path)
-      call add(scripts , script_path)
+    if match(a:script_name, '/') > 0
+      let script_dir = 'webroot/js/' . a:script_name[:strridx(a:script_name, '/')]
+      let script_name = a:script_name[strridx(a:script_name, '/')+1:]
+    else
+      let script_dir = 'webroot/js/'
+      let script_name = a:script_name
     endif
 
-    let themes = keys(self.get_themes())
-    for theme_name in themes
-      let script_path = self.paths.themes . theme_name . '/webroot/js/' . a:script_name . '.js'
+
+    " default
+    for script_path in split(globpath(self.paths.app . script_dir, "**/" . script_name . ".js"), "\n")
       if filereadable(script_path)
         call add(scripts, script_path)
       endif
     endfor
+
+    " in themes
+    let themes = keys(self.get_themes())
+    for theme_name in themes
+      for script_path in split(globpath(self.paths.themes . theme_name . '/' . script_dir, "**/" . script_name . ".js"), "\n")
+        if filereadable(script_path)
+          call add(scripts, script_path)
+        endif
+      endfor
+    endfor
+
 
     let i = len(scripts)
     if i == 0
@@ -1356,18 +1369,30 @@ function! cake#factory(path_app)
   function! self.smart_jump_stylesheet(stylesheet_name, option) "{{{
     let stylesheets = []
 
-    " default
-    let stylesheet_path = self.paths.app . 'webroot/css/' . a:stylesheet_name . '.css'
-    if filereadable(stylesheet_path)
-      call add(stylesheets , stylesheet_path)
+    if match(a:stylesheet_name, '/') > 0
+      let stylesheet_dir = 'webroot/css/' . a:stylesheet_name[:strridx(a:stylesheet_name, '/')]
+      let stylesheet_name = a:stylesheet_name[strridx(a:stylesheet_name, '/')+1:]
+    else
+      let stylesheet_dir = 'webroot/css/'
+      let stylesheet_name = a:stylesheet_name
     endif
 
-    let themes = keys(self.get_themes())
-    for theme_name in themes
-      let stylesheet_path = self.paths.themes . theme_name . '/webroot/css/' . a:stylesheet_name . '.css'
+
+    " default
+    for stylesheet_path in split(globpath(self.paths.app . stylesheet_dir, "**/" . stylesheet_name . ".css"), "\n")
       if filereadable(stylesheet_path)
         call add(stylesheets, stylesheet_path)
       endif
+    endfor
+
+    " in themes
+    let themes = keys(self.get_themes())
+    for theme_name in themes
+      for stylesheet_path in split(globpath(self.paths.themes . theme_name . '/' . stylesheet_dir, "**/" . stylesheet_name . ".css"), "\n")
+        if filereadable(stylesheet_path)
+          call add(stylesheets, stylesheet_path)
+        endif
+      endfor
     endfor
 
     let i = len(stylesheets)

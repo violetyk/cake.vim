@@ -1,6 +1,6 @@
 *cake.txt*  Utility for CakePHP developpers.
 
-Version: 2.4.1
+Version: 2.5.0
 Author: Yuhei Kagaya <yuhei.kagaya@gmail.com>
 English Documentation Author: Takahiro Jinno <takahiro.jinno@gmail.com>
 Repository: https://github.com/violetyk/cake.vim
@@ -448,6 +448,10 @@ BUGS								*cake-bugs*
 ==============================================================================
 CHANGE LOG							*cake-changelog*
 
+2.5.0   2012-05-17
+     - Update gf algorithm. Searched for view files, script files, CSS files recursively.
+     - Fix a few bugs.
+
 2.4.1   2012-04-21
      - When an object was not found by gf command, I did the gf command of the default.
      - Fix a few bugs.
@@ -548,7 +552,7 @@ CHANGE LOG							*cake-changelog*
        |:Cfixturevsp|
        |:Cfixturetab|
 
-1.2.0	2011-06-07
+1.2.0   2011-06-07
      - Fix a few bugs.
      - g:cakephp_root was removed. g:cakephp_app was added instead. 
        Thanks to Valentina Rossi.
@@ -575,13 +579,13 @@ CHANGE LOG							*cake-changelog*
        |:Ctasktab|
        |:Clog|
 
-1.1.0	2011-05-09
+1.1.0   2011-05-09
      - Add Commands, thanks to Kenichi Kimura.
        |:Cmodeltab|
        |:Cviewtab|
        |:Ccontrollertab|
 
-1.0.0	2011-05-07
+1.0.0   2011-05-07
      - Initial version.
 
 ==============================================================================
