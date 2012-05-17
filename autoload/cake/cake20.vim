@@ -250,7 +250,7 @@ function! cake#cake20#factory(path_app)
   endfunction "}}}
   function! self.name_to_path_viewdir(controller_name, view_name, theme_name) "{{{
     if match(a:view_name, '/') > 0
-      let dir = a:view_name[strridx(a:view_name, '/')+1:] . '/'
+      let dir = a:view_name[:strridx(a:view_name, '/')] . '/'
     else
       let dir = ''
     endif
