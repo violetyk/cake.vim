@@ -1409,7 +1409,7 @@ function! cake#factory(path_app)
 
 
     " default
-    for element_path in split(globpath(self.paths.views . element_dir, element_name . ".ctp"), "\n")
+    for element_path in split(globpath(self.paths.views . element_dir, "**/" . element_name . ".ctp"), "\n")
       if filereadable(element_path)
         call add(elements, element_path)
       endif
@@ -1418,7 +1418,7 @@ function! cake#factory(path_app)
     " in themes
     let themes = keys(self.get_themes())
     for theme_name in themes
-      for element_path in split(globpath(self.paths.themes . theme_name . '/' . element_dir, element_name . ".ctp"), "\n")
+      for element_path in split(globpath(self.paths.themes . theme_name . '/' . element_dir, "**/" . element_name . ".ctp"), "\n")
         if filereadable(element_path)
           call add(elements, element_path)
         endif
@@ -1464,7 +1464,7 @@ function! cake#factory(path_app)
     endif
 
     " in default
-    for layout_path in split(globpath(self.paths.views . layout_dir, layout_name . ".ctp"), "\n")
+    for layout_path in split(globpath(self.paths.views . layout_dir, "**/" . layout_name . ".ctp"), "\n")
       if filereadable(layout_path)
         call add(layouts, layout_path)
       endif
@@ -1473,7 +1473,7 @@ function! cake#factory(path_app)
     " in themes
     let themes = keys(self.get_themes())
     for theme_name in themes
-      for layout_path in split(globpath(self.paths.themes . theme_name . '/' . layout_dir, layout_name . ".ctp"), "\n")
+      for layout_path in split(globpath(self.paths.themes . theme_name . '/' . layout_dir, "**/" . layout_name . ".ctp"), "\n")
         if filereadable(layout_path)
           call add(layouts, layout_path)
         endif
@@ -1519,8 +1519,7 @@ function! cake#factory(path_app)
     let themes = insert(themes, '') "no theme
 
     for theme_name in themes
-      for view_path in split(globpath(self.name_to_path_viewdir(a:controller_name, a:view_name, theme_name), view_name . ".ctp"), "\n")
-        echo view_path
+      for view_path in split(globpath(self.name_to_path_viewdir(a:controller_name, a:view_name, theme_name), "**/" . view_name . ".ctp"), "\n")
         if filereadable(view_path)
           call add(views, view_path)
         endif
