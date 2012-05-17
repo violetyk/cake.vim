@@ -1399,19 +1399,32 @@ function! cake#factory(path_app)
   function! self.smart_jump_element(element_name, option) "{{{
     let elements = []
 
-    " default
-    let element_path = self.paths.views . self.vars.element_dir . a:element_name . '.ctp'
-    if filereadable(element_path)
-      call add(elements , element_path)
+    if match(a:element_name, '/') > 0
+      let element_dir = self.vars.element_dir . a:element_name[:strridx(a:element_name, '/')]
+      let element_name = a:element_name[strridx(a:element_name, '/')+1:]
+    else
+      let element_dir = self.vars.element_dir
+      let element_name = a:element_name
     endif
 
-    let themes = keys(self.get_themes())
-    for theme_name in themes
-      let element_path = self.paths.themes . theme_name . '/' . self.vars.element_dir . a:element_name . '.ctp'
+
+    " default
+    for element_path in split(globpath(self.paths.views . element_dir, element_name . ".ctp"), "\n")
       if filereadable(element_path)
         call add(elements, element_path)
       endif
     endfor
+
+    " in themes
+    let themes = keys(self.get_themes())
+    for theme_name in themes
+      for element_path in split(globpath(self.paths.themes . theme_name . '/' . element_dir, element_name . ".ctp"), "\n")
+        if filereadable(element_path)
+          call add(elements, element_path)
+        endif
+      endfor
+    endfor
+
 
     let i = len(elements)
     if i == 0
@@ -1441,7 +1454,6 @@ function! cake#factory(path_app)
   endfunction "}}}
   function! self.smart_jump_layout(layout_name, option) "{{{
     let layouts = []
-    let themes = keys(self.get_themes())
 
     if match(a:layout_name, '/') > 0
       let layout_dir = self.vars.layout_dir . a:layout_name[:strridx(a:layout_name, '/')]
@@ -1459,6 +1471,7 @@ function! cake#factory(path_app)
     endfor
 
     " in themes
+    let themes = keys(self.get_themes())
     for theme_name in themes
       for layout_path in split(globpath(self.paths.themes . theme_name . '/' . layout_dir, layout_name . ".ctp"), "\n")
         if filereadable(layout_path)
@@ -1495,13 +1508,23 @@ function! cake#factory(path_app)
   endfunction "}}}
   function! self.smart_jump_view(controller_name, view_name, option) "{{{
     let views = []
+
+    if match(a:view_name, '/') > 0
+      let view_name = a:view_name[strridx(a:view_name, '/')+1:]
+    else
+      let view_name = a:view_name
+    endif
+
     let themes = keys(self.get_themes())
     let themes = insert(themes, '') "no theme
+
     for theme_name in themes
-      let view_path = self.name_to_path_view(a:controller_name, a:view_name, theme_name)
-      if filereadable(view_path)
-        call add(views, view_path)
-      endif
+      for view_path in split(globpath(self.name_to_path_viewdir(a:controller_name, a:view_name, theme_name), view_name . ".ctp"), "\n")
+        echo view_path
+        if filereadable(view_path)
+          call add(views, view_path)
+        endif
+      endfor
     endfor
 
     let i = len(views)

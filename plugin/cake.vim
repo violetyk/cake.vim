@@ -1,14 +1,14 @@
 " cake.vim - Utility for CakePHP developpers.
 " Maintainer:  Yuhei Kagaya <yuhei.kagaya@gmail.com>
 " License:     This file is placed in the public domain.
-" Last Change: 2012/05/16
-" Version:     2.4.2
+" Last Change: 2012/05/17
+" Version:     2.5
 
 if exists('g:loaded_cake_vim')
   finish
 endif
-if v:version < 700
-  echoerr "[cake.vim] this plugin requires vim >= 7. Thank you for trying to use this plugin."
+if v:version < 703
+  echoerr "[cake.vim] this plugin requires vim >= 703 Thank you for trying to use this plugin."
   finish
 endif
 let g:loaded_cake_vim = 1

@@ -248,6 +248,19 @@ function! cake#cake20#factory(path_app)
       return self.paths.themes . a:theme_name . '/' . a:controller_name . "/" . a:view_name . ".ctp"
     endif
   endfunction "}}}
+  function! self.name_to_path_viewdir(controller_name, view_name, theme_name) "{{{
+    if match(a:view_name, '/') > 0
+      let dir = a:view_name[strridx(a:view_name, '/')+1:] . '/'
+    else
+      let dir = ''
+    endif
+
+    if a:theme_name == ''
+      return self.paths.views . a:controller_name . "/" . dir
+    else
+      return self.paths.themes . a:theme_name . '/' . a:controller_name . "/" . dir
+    endif
+  endfunction "}}}
   " ============================================================
 
   " Functions: self.is_xxx()
