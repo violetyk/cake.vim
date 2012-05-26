@@ -894,6 +894,21 @@ function! cake#factory(path_app)
     endfor
 
   endfunction "}}}
+  function! self.describe_table(...) " {{{
+    if exists("g:loaded_dbext")
+      if a:0 > 0
+        let target = a:1
+      else
+        let target = expand('<cword>')
+      endif
+
+      let models = self.get_models()
+
+      if has_key(models, target)
+        call dbext#DB_describeTable(cake#util#pluralize(cake#util#decamelize(target)))
+      endif
+    endif
+  endfunction "}}}
   function! self.smart_jump(...) "{{{
     let option = a:1
     let path = expand("%:p")

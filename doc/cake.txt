@@ -1,6 +1,6 @@
 *cake.txt*  Utility for CakePHP developpers.
 
-Version: 2.5.0
+Version: 2.6.0
 Author: Yuhei Kagaya <yuhei.kagaya@gmail.com>
 English Documentation Author: Takahiro Jinno <takahiro.jinno@gmail.com>
 Repository: https://github.com/violetyk/cake.vim
@@ -447,6 +447,11 @@ BUGS								*cake-bugs*
 
 ==============================================================================
 CHANGE LOG							*cake-changelog*
+
+2.6.0   2012-05-26
+     - Add Command.
+       |:Cdesc|
+       Describe table structure of the model by calling dbext.vim internally.
 
 2.5.0   2012-05-17
      - Update gf algorithm. Searched for view files, script files, CSS files recursively.
