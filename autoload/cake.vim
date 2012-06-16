@@ -895,18 +895,76 @@ function! cake#factory(path_app)
 
   endfunction "}}}
   function! self.describe_table(...) " {{{
-    if exists("g:loaded_dbext")
-      if a:0 > 0
-        let target = a:1
-      else
-        let target = expand('<cword>')
+    if !executable('php')
+      call cake#util#echo_warning('[cake.vim] php is not executable.')
+      return
+    endif
+
+    if !executable('grep')
+      call cake#util#echo_warning('[cake.vim] no grep in $PATH.')
+      return
+    endif
+
+    if !exists("g:loaded_dbext")
+      call cake#util#echo_warning('[cake.vim] dbext.vim is not found.')
+      return
+    endif
+
+    if a:0 > 0
+      let target = a:1
+    else
+      let target = expand('<cword>')
+    endif
+
+    let models = self.get_models()
+
+    if has_key(models, target)
+
+
+      " useDbConfig
+      let cmd = 'grep -E ''^\s*var\s*\$useDbConfig\s*='' ' . self.name_to_path_model(target)
+      let line = system(cmd)
+      let db_config = matchstr(line, '\(var\s\+\$useDbConfig\s*=\s*["'']\)\zs\w\+\ze\(["''];\)')
+      if  db_config == ''
+        let db_config = 'default'
       endif
 
-      let models = self.get_models()
+      try
+        let config_path = self.paths.configs . 'database.php'
+        let php_code =
+              \ 'require_once("' . config_path . '");' .
+              \ '$ref = new ReflectionClass("DATABASE_CONFIG");
+              \ $DatabaseConfig = $ref->newInstance();
+              \ $config = "' . db_config . '";
+              \ $con = $DatabaseConfig->$config;
+              \ $user = $con["login"];
+              \ $password = $con["password"];
+              \ $host = $con["host"];
+              \ $dbname = $con["database"];
+              \ echo sprintf("{\"user\":\"%s\", \"password\":\"%s\", \"host\":\"%s\", \"dbname\":\"%s\"}", $con["login"], $con["password"], $con["host"], $con["database"]);'
 
-      if has_key(models, target)
-        call dbext#DB_describeTable(cake#util#pluralize(cake#util#decamelize(target)))
-      endif
+        let cmd = 'php -r ''' . php_code . ''''
+        let params = system(cmd)
+        let p = eval(params)
+
+        let options = 'type=' . g:cakephp_db_type . ':user=' . p.user . ':passwd=' . p.password . ':dbname=' . p.dbname . ':host=' . p.host . ':port=' . g:cakephp_db_port . ':buffer_lines=' . g:cakephp_db_buffer_lines
+        call dbext#DB_setMultipleOptions(options)
+
+        " useTable
+        let cmd = 'grep -E ''^\s*var\s*\$useTable\s*='' ' . self.name_to_path_model(target)
+        let line = system(cmd)
+        let table = matchstr(line, '\(var\s\+\$useTable\s*=\s*["'']\)\zs\w\+\ze\(["''];\)')
+        if table == ''
+          let table = cake#util#pluralize(cake#util#decamelize(target))
+        endif
+
+        call dbext#DB_describeTable(table)
+
+      catch
+        call cake#util#echo_warning("[cake.vim] Can't connect to Database. Please check database.php and $useDbConfig.")
+        return
+      endtry
+
     endif
   endfunction "}}}
   function! self.smart_jump(...) "{{{

@@ -1,8 +1,8 @@
 " cake.vim - Utility for CakePHP developpers.
 " Maintainer:  Yuhei Kagaya <yuhei.kagaya@gmail.com>
 " License:     This file is placed in the public domain.
-" Last Change: 2012/05/26
-" Version:     2.6
+" Last Change: 2012/06/17
+" Version:     2.7
 
 if exists('g:loaded_cake_vim')
   finish
@@ -36,6 +36,9 @@ endif
 " SECTION: Default Settings
 " ============================================================
 let g:cakephp_log_window_size = 15
+let g:cakephp_db_type         = 'MySQL'
+let g:cakephp_db_port         = 3306
+let g:cakephp_db_buffer_lines = 20
 
 let g:cake = {}
 " }}}

@@ -1,6 +1,6 @@
 *cake.txt*  Utility for CakePHP developpers.
 
-Version: 2.6.0
+Version: 2.7.0
 Author: Yuhei Kagaya <yuhei.kagaya@gmail.com>
 English Documentation Author: Takahiro Jinno <takahiro.jinno@gmail.com>
 Repository: https://github.com/violetyk/cake.vim
@@ -88,6 +88,7 @@ Commands		|cake-commands|
 			|:Clibtab|
     Open the Log	|:CLog|
     Cut to Element	|:Celement|
+    Describe Table	|:Cdesc|
 
 Bugs			|cake-bugs|
 Changelog		|cake-changelog|
@@ -438,6 +439,16 @@ Cut to Element
 		The default is the current Theme's directory which an opening View file
 		belongs to now.
 
+
+Describe Table
+-------------
+
+:Cdesc [{model-name}]						*:Cdesc*
+		If dbext.vim is installed, Describe table.
+		If you do not specify {model-name} deduced from <cword>.
+		PHP version 5 or more are necessary.
+
+
 ==============================================================================
 BUGS								*cake-bugs*
 
@@ -447,6 +458,10 @@ BUGS								*cake-bugs*
 
 ==============================================================================
 CHANGE LOG							*cake-changelog*
+
+2.7.0   2012-06-17
+     - |:Cdesc| performed setting of the database connection automatically.
+       It look up $useDbConfig, $useTable, and database.php .
 
 2.6.0   2012-05-26
      - Add Command.
