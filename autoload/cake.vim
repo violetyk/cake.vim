@@ -259,7 +259,7 @@ function! cake#factory(path_app)
     let split_option = a:1
     " let target = ''
     let targets = []
-    let func_name = ''
+    let action_name = ''
     let controllers = self.get_controllers()
 
     if a:0 >= 2
@@ -271,18 +271,21 @@ function! cake#factory(path_app)
       let path = expand("%:p")
 
       if self.is_view(path)
-        " let target = expand("%:p:h:t")
-        " call add(targets, expand("%:p:h:t"))
 
-        let pattern = '\(' . self.paths.views . '\)\zs\w\+\ze'
+        if self.in_theme(path)
+          let pattern = '\(' . self.paths.themes . self.get_viewtheme(path) . '/\)\zs\w\+\ze'
+        else
+          let pattern = '\(' . self.paths.views . '\)\zs\w\+\ze'
+        endif
+        echo pattern
+
         let target = matchstr(path, pattern)
         call add(targets, target)
-        let func_name = expand("%:p:t:r")
+
+        let action_name = expand("%:p:t:r")
       elseif self.is_model(path)
-        " let target = cake#util#pluralize(self.path_to_name_model(path))
         call add(targets, cake#util#pluralize(self.path_to_name_model(path)))
       elseif self.is_testcontroller(path)
-        " let target = self.path_to_name_testcontroller(path)
         call add(targets, self.path_to_name_testcontroller(path))
       else
         return
@@ -304,15 +307,7 @@ function! cake#factory(path_app)
       endif
 
       " Jump to the line that corresponds to the view's function.
-      let line = 0
-      if func_name != ''
-        let cmd = 'grep -n -E "^\s*function\s*' . func_name . '\s*\(" ' . self.name_to_path_controller(target) . ' | cut -f 1'
-        " Extract line number from grep result.
-        let n = matchstr(system(cmd), '\(^\d\+\)')
-        if strlen(n) > 0
-          let line = str2nr(n)
-        endif
-      endif
+      let line = self.get_line_in_controller(target, action_name)
 
       call cake#util#open_file(controllers[target], split_option, line)
     endfor
@@ -1379,6 +1374,30 @@ function! cake#factory(path_app)
     endif
     " }}}
 
+
+
+    " Combination Pattern (I lowered priority most. Because it might conflict with other patterns.)
+    
+    " array('controller' => 'Hoge', 'action' => 'fuga') ->  HogeController::fuga()
+    " array('controller' => 'Hoge', 'action' => 'fuga', 'admin' => true) -> HogeController::admin_fuga()
+    let controller_name = matchstr(line, '\(array(.*["'']controller["'']\s*=>\s*["'']\)\zs\w\+\ze\(["''].*)\)')
+    let action_name = matchstr(line, '\(array(.*["'']action["'']\s*=>\s*["'']\)\zs\w\+\ze\(["''].*)\)')
+    let controllers = self.get_controllers()
+
+    if strlen(controller_name) > 0 && strlen(action_name) > 0
+
+      let controller_name = cake#util#camelize(controller_name)
+      if strlen(matchstr(line, 'array(.*["'']admin["'']\s*=>\s*true.*)')) > 0
+        let action_name = 'admin_' . action_name
+      endif
+
+      if has_key(controllers, controller_name)
+        call cake#util#open_file(controllers[controller_name], option, self.get_line_in_controller(controller_name, action_name))
+        return
+      endif
+
+    endif
+
     " Default action
     call self.gf(option)
 
@@ -1664,6 +1683,20 @@ function! cake#factory(path_app)
 
   " Functions: common functions
   " ============================================================
+  function! self.get_line_in_controller(controller_name, action_name) "{{{
+    let line = 0
+
+    if a:action_name != ''
+      let cmd = 'grep -n -E "^\s*function\s*' . a:action_name . '\s*\(" ' . self.name_to_path_controller(a:controller_name) . ' | cut -f 1'
+      " Extract line number from grep result.
+      let n = matchstr(system(cmd), '\(^\d\+\)')
+      if strlen(n) > 0
+        let line = str2nr(n)
+      endif
+    endif
+
+    return line
+  endfunction "}}}
   function! self.args_to_targets(args) "{{{
     let targets = []
     for arg in a:args

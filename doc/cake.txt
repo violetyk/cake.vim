@@ -1,6 +1,6 @@
 *cake.txt*  Utility for CakePHP developpers.
 
-Version: 2.7.0
+Version: 2.8.0
 Author: Yuhei Kagaya <yuhei.kagaya@gmail.com>
 English Documentation Author: Takahiro Jinno <takahiro.jinno@gmail.com>
 Repository: https://github.com/violetyk/cake.vim
@@ -458,6 +458,15 @@ BUGS								*cake-bugs*
 
 ==============================================================================
 CHANGE LOG							*cake-changelog*
+
+2.8.0   2012-07-16
+     - Add New gf pattern.
+       "array('controller' => 'Hoge', 'action' => 'fuga') " jump to 
+       "HogeController::fuga()" .
+       "array('controller' => 'Hoge', 'action' => 'fuga', 'admin' => true)" jump to 
+       "HogeController::admin_fuga()" .
+     - Fix a few bugs.
+
 
 2.7.0   2012-06-17
      - |:Cdesc| performed setting of the database connection automatically.
