@@ -1002,7 +1002,7 @@ function! cake#factory(path_app)
       endif
 
       " Controller / class HogesController extends AppController -> AppController
-      let controller_name = matchstr(line, '\(class\s\w\+Controller\sextends\s\)\zs\w\+\ze\(Controller\)' )
+      let controller_name = matchstr(line, '\(class\s\+\w\+Controller\s\+extends\s\+\)\zs\w\+\ze\(Controller\)' )
       if strlen(controller_name) > 0
         let controller_name = cake#util#decamelize(controller_name)
         if self.is_controller(self.name_to_path_controller(controller_name))
