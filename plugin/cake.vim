@@ -1,8 +1,8 @@
 " cake.vim - Utility for CakePHP developpers.
 " Maintainer:  Yuhei Kagaya <yuhei.kagaya@gmail.com>
 " License:     This file is placed in the public domain.
-" Last Change: 2012/08/13
-" Version:     2.8.1
+" Last Change: 2012/10/23
+" Version:     2.8.2
 
 if exists('g:loaded_cake_vim')
   finish
@@ -32,6 +32,10 @@ if !exists('g:cakephp_log')
         \ }
 endif
 
+" default mode
+if !exists('g:cakephp_enable_fix_mode') && !exists('g:cakephp_enable_auto_mode')
+  let g:cakephp_enable_auto_mode = 1
+endif
 
 " SECTION: Default Settings
 " ============================================================
