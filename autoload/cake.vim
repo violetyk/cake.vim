@@ -1321,7 +1321,8 @@ function! cake#factory(path_app)
       if len(libs) == 0
         let libs = self.get_libs()
       endif
-      let priority_order = ['', 'Behavior', 'Component', 'Helper']
+
+      let priority_order = ['Task', '', 'Behavior', 'Component', 'Helper']
       for suffix in priority_order
         let target = word . suffix
         if has_key(libs, target)
