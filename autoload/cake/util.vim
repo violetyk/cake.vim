@@ -248,6 +248,19 @@ function! cake#util#dirname(...)
 
 endfunction " }}}
 
+" Function: cake#util#eval_json_file(path) {{{
+function! cake#util#eval_json_file(path)
+  let dic = {}
+
+  if filereadable(a:path)
+    let dic = eval(join(readfile(a:path), ''))
+  endif
+
+  return dic
+endfunction
+"}}}
+
+
 let &cpo = s:save_cpo
 unlet s:save_cpo
 " vim:set fenc=utf-8 ff=unix ft=vim fdm=marker:
