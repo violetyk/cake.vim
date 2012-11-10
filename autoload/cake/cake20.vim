@@ -115,6 +115,15 @@ function! cake#cake20#factory(path_app)
       let models[self.path_to_name_model(path)] = path
     endfor
 
+    for build_path in self.get_build_paths('models')
+      for path in split(globpath(build_path, "*.php"), "\n")
+        let name = self.path_to_name_model(path)
+        if !has_key(models, name)
+          let models[name] = path
+        endif
+      endfor
+    endfor
+
     return models
 
   endfunction

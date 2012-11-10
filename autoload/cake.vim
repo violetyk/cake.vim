@@ -133,6 +133,15 @@ function! cake#factory(path_app)
       let components[name] = path
     endfor
 
+    for build_path in self.get_build_paths('components')
+      for path in split(globpath(build_path, "*.php"), "\n")
+        let name = self.path_to_name_component(path)
+        if !has_key(components, name)
+          let components[name] = path
+        endif
+      endfor
+    endfor
+
     return components
   endfunction "}}}
   function! self.get_helpers() "{{{
@@ -1797,6 +1806,14 @@ function! cake#factory(path_app)
 
     echo 'Save Element: '. output_file
 
+  endfunction "}}}
+  function! self.get_build_paths(name) "{{{
+    let paths = []
+    let app_config = cake#util#eval_json_file(self.paths.app . g:cakephp_app_config_file)
+    if has_key(app_config, 'build_path') && has_key(app_config.build_path, a:name)
+      let paths = app_config.build_path[a:name]
+    endif
+    return paths
   endfunction "}}}
   " ============================================================
 
