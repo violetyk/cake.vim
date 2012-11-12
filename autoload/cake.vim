@@ -123,6 +123,16 @@ function! cake#factory(path_app)
       let behaviors[name] = path
     endfor
 
+    for build_path in self.get_build_paths('behaviors')
+      for path in split(globpath(build_path, "*.php"), "\n")
+        let name = self.path_to_name_behavior(path)
+        if !has_key(behaviors, name)
+          let behaviors[name] = path
+        endif
+      endfor
+    endfor
+
+
     return behaviors
   endfunction " }}}
   function! self.get_components() "{{{
@@ -150,6 +160,15 @@ function! cake#factory(path_app)
     for path in split(globpath(self.paths.helpers, "*.php"), "\n")
       let name = self.path_to_name_helper(path)
       let helpers[name] = path
+    endfor
+
+    for build_path in self.get_build_paths('helpers')
+      for path in split(globpath(build_path, "*.php"), "\n")
+        let name = self.path_to_name_helper(path)
+        if !has_key(helpers, name)
+          let helpsers[name] = path
+        endif
+      endfor
     endfor
 
     return helpers
@@ -338,7 +357,7 @@ function! cake#factory(path_app)
       if self.is_controller(path)
         " let target = cake#util#singularize(substitute(cake#util#camelize(expand("%:p:t:r")), "Controller$", "", ""))
         call add(targets, cake#util#singularize(substitute(cake#util#camelize(expand("%:p:t:r")), "Controller$", "", "")))
-      elseif self.is_testmodel(path)
+      elseif self.is_testmodel(path);
         " let target = self.path_to_name_testmodel(path)
         call add(targets, self.path_to_name_testmodel(path))
       elseif self.is_fixture(path)
@@ -1022,16 +1041,16 @@ function! cake#factory(path_app)
 
 
       " Controller -> Model or Behavior or Component or Helper
-      if self.is_model(self.name_to_path_model(word))
+      if self.is_model(self.name_to_path_model(word)) || self.in_build_path_model(word)
         call self.jump_model(option, word)
         return
-      elseif self.is_behavior(self.name_to_path_behavior(word))
+      elseif self.is_behavior(self.name_to_path_behavior(word)) || self.in_build_path_behavior(word)
         call self.jump_behavior(option, word)
         return
-      elseif self.is_component(self.name_to_path_component(word))
+      elseif self.is_component(self.name_to_path_component(word)) || self.in_build_path_component(word)
         call self.jump_component(option, word)
         return
-      elseif self.is_helper(self.name_to_path_helper(word))
+      elseif self.is_helper(self.name_to_path_helper(word)) || self.in_build_path_helper(word)
         call self.jump_helper(option, word)
         return
       elseif self.is_controller(self.name_to_path_controller(cake#util#pluralize(word)))
@@ -1069,10 +1088,10 @@ function! cake#factory(path_app)
       endif
 
       " Model -> Model or Behavior or Controller
-      if self.is_model(self.name_to_path_model(word))
+      if self.is_model(self.name_to_path_model(word)) || self.in_build_path_model(word)
         call self.jump_model(option, word)
         return
-      elseif self.is_behavior(self.name_to_path_behavior(word))
+      elseif self.is_behavior(self.name_to_path_behavior(word)) || self.in_build_path_behavior(word)
         call self.jump_behavior(option, word)
         return
       elseif self.is_controller(self.name_to_path_controller(cake#util#pluralize(word)))
@@ -1130,10 +1149,10 @@ function! cake#factory(path_app)
       endif
 
       " View -> Helper or Model or Controller
-      if self.is_helper(self.name_to_path_helper(word))
+      if self.is_helper(self.name_to_path_helper(word)) || self.in_build_path_helper(word)
         call self.jump_helper(option, word)
         return
-      elseif self.is_model(self.name_to_path_model(word))
+      elseif self.is_model(self.name_to_path_model(word)) || self.in_build_path_model(word)
         call self.jump_model(option, word)
         return
       elseif self.is_controller(self.name_to_path_controller(cake#util#pluralize(word)))
@@ -1160,13 +1179,13 @@ function! cake#factory(path_app)
     if self.is_component(path)
 
       " Component -> Model or Behavior or Component or Controller
-      if self.is_model(self.name_to_path_model(word))
+      if self.is_model(self.name_to_path_model(word)) || self.in_build_path_model(word)
         call self.jump_model(option, word)
         return
-      elseif self.is_behavior(self.name_to_path_behavior(word))
+      elseif self.is_behavior(self.name_to_path_behavior(word)) || self.in_build_path_behavior(word)
         call self.jump_behavior(option, word)
         return
-      elseif self.is_component(self.name_to_path_component(word))
+      elseif self.is_component(self.name_to_path_component(word)) || self.in_build_path_component(word)
         call self.jump_component(option, word)
         return
       elseif self.is_controller(self.name_to_path_controller(cake#util#pluralize(word)))
@@ -1193,10 +1212,10 @@ function! cake#factory(path_app)
     if self.is_behavior(path)
 
       " Behavior -> Model or Behavior
-      if self.is_model(self.name_to_path_model(word))
+      if self.is_model(self.name_to_path_model(word)) || self.in_build_path_model(word)
         call self.jump_model(option, word)
         return
-      elseif self.is_behavior(self.name_to_path_behavior(word))
+      elseif self.is_behavior(self.name_to_path_behavior(word)) || self.in_build_path_behavior(word)
         call self.jump_behavior(option, word)
         return
       endif
@@ -1220,7 +1239,7 @@ function! cake#factory(path_app)
     if self.is_helper(path)
 
       " Helper -> Helper Controller
-      if self.is_helper(self.name_to_path_helper(word))
+      if self.is_helper(self.name_to_path_helper(word)) || self.in_build_path_helper(word)
         call self.jump_helper(option, word)
         return
       elseif self.is_controller(self.name_to_path_controller(cake#util#pluralize(word)))
@@ -1261,7 +1280,7 @@ function! cake#factory(path_app)
       if self.is_fixture(self.name_to_path_fixture(word))
         call self.jump_fixture(option, word)
         return
-      elseif self.is_model(self.name_to_path_model(word))
+      elseif self.is_model(self.name_to_path_model(word)) || self.in_build_path_model(word)
         call self.jump_model(option, word)
         return
       endif
@@ -1273,7 +1292,7 @@ function! cake#factory(path_app)
       if self.is_fixture(self.name_to_path_fixture(word))
         call self.jump_fixture(option, word)
         return
-      elseif self.is_behavior(self.name_to_path_behavior(word))
+      elseif self.is_behavior(self.name_to_path_behavior(word)) || self.in_build_path_behavior(word)
         call self.jump_behavior(option, word)
         return
       endif
@@ -1285,7 +1304,7 @@ function! cake#factory(path_app)
       if self.is_fixture(self.name_to_path_fixture(word))
         call self.jump_fixture(option, word)
         return
-      elseif self.is_component(self.name_to_path_component(word))
+      elseif self.is_component(self.name_to_path_component(word)) || self.in_build_path_component(word)
         call self.jump_component(option, word)
         return
       endif
@@ -1297,7 +1316,7 @@ function! cake#factory(path_app)
       if self.is_fixture(self.name_to_path_fixture(word))
         call self.jump_fixture(option, word)
         return
-      elseif self.is_helper(self.name_to_path_helper(word))
+      elseif self.is_helper(self.name_to_path_helper(word)) || self.in_build_path_helper(word)
         call self.jump_helper(option, word)
         return
       endif
@@ -1307,7 +1326,7 @@ function! cake#factory(path_app)
     if self.is_fixture(path)
 
       " Fixture -> Model
-      if self.is_model(self.name_to_path_model(word))
+      if self.is_model(self.name_to_path_model(word)) || self.in_build_path_model(word)
         call self.jump_model(option, word)
         return
       endif
@@ -1321,7 +1340,7 @@ function! cake#factory(path_app)
       if self.is_task(self.name_to_path_task(word))
         call self.jump_task(option, word)
         return
-      elseif self.is_model(self.name_to_path_model(word))
+      elseif self.is_model(self.name_to_path_model(word)) || self.in_build_path_model(word)
         call self.jump_model(option, word)
         return
       endif
@@ -1346,7 +1365,7 @@ function! cake#factory(path_app)
     if self.is_task(path)
 
       " Task -> Model
-      if self.is_model(self.name_to_path_model(word))
+      if self.is_model(self.name_to_path_model(word)) || self.in_build_path_model(word)
         call self.jump_model(option, word)
         return
       endif
@@ -1688,7 +1707,50 @@ function! cake#factory(path_app)
       exec "normal! \<C-w>gf"
     endif
   endfunction "}}}
+  " ============================================================
 
+  " Functions: in_build_path_xxx()
+  " ============================================================
+  function! self.in_build_path_model(name) "{{{
+    for build_path in self.get_build_paths('models')
+      for path in split(globpath(build_path, "*.php"), "\n")
+        if self.path_to_name_model(path) == a:name
+          return 1
+        endif
+      endfor
+    endfor
+    return 0
+  endfunction "}}}
+  function! self.in_build_path_behavior(name) "{{{
+    for build_path in self.get_build_paths('behaviors')
+      for path in split(globpath(build_path, "*.php"), "\n")
+        if self.path_to_name_behavior(path) == a:name
+          return 1
+        endif
+      endfor
+    endfor
+    return 0
+  endfunction "}}}
+  function! self.in_build_path_component(name) "{{{
+    for build_path in self.get_build_paths('components')
+      for path in split(globpath(build_path, "*.php"), "\n")
+        if self.path_to_name_component(path) == a:name
+          return 1
+        endif
+      endfor
+    endfor
+    return 0
+  endfunction "}}}
+  function! self.in_build_path_helper(name) "{{{
+    for build_path in self.get_build_paths('helpers')
+      for path in split(globpath(build_path, "*.php"), "\n")
+        if self.path_to_name_helper(path) == a:name
+          return 1
+        endif
+      endfor
+    endfor
+    return 0
+  endfunction "}}}
   " ============================================================
 
   " Functions: common functions
