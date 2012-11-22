@@ -14,15 +14,19 @@ let s:unite_source_controller = {
 
 function! s:unite_source_controller.gather_candidates(args, context)
   let candidates = []
-  for i in items(g:cake.get_controllers())
-    call add(candidates, {
-          \ 'word' : i[0],
-          \ 'kind' : 'file',
-          \ 'source' : 'cake_controller',
-          \ 'action__path' : i[1],
-          \ 'action__directory' : fnamemodify(i[1],":p:h"),
-          \ })
-  endfor
+
+  try
+    for i in items(g:cake.get_controllers())
+      call add(candidates, {
+            \ 'word' : i[0],
+            \ 'kind' : 'file',
+            \ 'source' : 'cake_controller',
+            \ 'action__path' : i[1],
+            \ 'action__directory' : fnamemodify(i[1],":p:h"),
+            \ })
+    endfor
+  catch
+  endtry
 
   return candidates
 endfunction
@@ -36,15 +40,19 @@ let s:unite_source_component = {
 
 function! s:unite_source_component.gather_candidates(args, context)
   let candidates = []
-  for i in items(g:cake.get_components())
-    call add(candidates, {
-          \ 'word' : i[0],
-          \ 'kind' : 'file',
-          \ 'source' : 'cake_component',
-          \ 'action__path' : i[1],
-          \ 'action__directory' : fnamemodify(i[1],":p:h"),
-          \ })
-  endfor
+
+  try
+    for i in items(g:cake.get_components())
+      call add(candidates, {
+            \ 'word' : i[0],
+            \ 'kind' : 'file',
+            \ 'source' : 'cake_component',
+            \ 'action__path' : i[1],
+            \ 'action__directory' : fnamemodify(i[1],":p:h"),
+            \ })
+    endfor
+  catch
+  endtry
 
   return candidates
 endfunction
@@ -58,15 +66,19 @@ let s:unite_source_model = {
 
 function! s:unite_source_model.gather_candidates(args, context)
   let candidates = []
-  for i in items(g:cake.get_models())
-    call add(candidates, {
-          \ 'word' : i[0],
-          \ 'kind' : 'file',
-          \ 'source' : 'cake_model',
-          \ 'action__path' : i[1],
-          \ 'action__directory' : fnamemodify(i[1],":p:h"),
-          \ })
-  endfor
+  
+  try
+    for i in items(g:cake.get_models())
+      call add(candidates, {
+            \ 'word' : i[0],
+            \ 'kind' : 'file',
+            \ 'source' : 'cake_model',
+            \ 'action__path' : i[1],
+            \ 'action__directory' : fnamemodify(i[1],":p:h"),
+            \ })
+    endfor
+  catch
+  endtry
 
   return candidates
 endfunction " }}}
@@ -79,15 +91,19 @@ let s:unite_source_behavior = {
 
 function! s:unite_source_behavior.gather_candidates(args, context)
   let candidates = []
-  for i in items(g:cake.get_behaviors())
-    call add(candidates, {
-          \ 'word' : i[0],
-          \ 'kind' : 'file',
-          \ 'source' : 'cake_behavior',
-          \ 'action__path' : i[1],
-          \ 'action__directory' : fnamemodify(i[1],":p:h"),
-          \ })
-  endfor
+
+  try
+    for i in items(g:cake.get_behaviors())
+      call add(candidates, {
+            \ 'word' : i[0],
+            \ 'kind' : 'file',
+            \ 'source' : 'cake_behavior',
+            \ 'action__path' : i[1],
+            \ 'action__directory' : fnamemodify(i[1],":p:h"),
+            \ })
+    endfor
+  catch
+  endtry
 
   return candidates
 endfunction
@@ -103,36 +119,39 @@ let s:unite_source_view = {
 function! s:unite_source_view.gather_candidates(args, context) "{{{
   let candidates = []
 
-  if len(a:context.source__controllers) == 0
-    call cake#util#echo_warning("No controller in current buffer. [Usage] :Unite cake_view:{controller-name},{controller-name}...")
-    return candidates
-  endif
+  try
+    if len(a:context.source__controllers) == 0
+      call cake#util#echo_warning("No controller in current buffer. [Usage] :Unite cake_view:{controller-name},{controller-name}...")
+      return candidates
+    endif
 
-  for i in a:context.source__controllers
-    " default
-    for path in split(globpath(g:cake.paths.views .i . "/", "*.ctp"), "\n")
-      call add(candidates, {
-            \ 'word' : '(No Theme) ' . fnamemodify(path, ":t:r"),
-            \ 'kind' : 'file',
-            \ 'source' : 'cake_view',
-            \ 'action__path' : path,
-            \ 'action__directory' : fnamemodify(path,":p:h"),
-            \ })
-    endfor
-
-    " every theme
-    for theme in items(g:cake.get_themes())
-      for path in split(globpath(theme[1] . i . "/", "*.ctp"), "\n")
+    for i in a:context.source__controllers
+      " default
+      for path in split(globpath(g:cake.paths.views .i . "/", "*.ctp"), "\n")
         call add(candidates, {
-              \ 'word' : '(' . theme[0] . ') ' . fnamemodify(path, ":t:r"),
+              \ 'word' : '(No Theme) ' . fnamemodify(path, ":t:r"),
               \ 'kind' : 'file',
               \ 'source' : 'cake_view',
               \ 'action__path' : path,
               \ 'action__directory' : fnamemodify(path,":p:h"),
               \ })
       endfor
+
+      " every theme
+      for theme in items(g:cake.get_themes())
+        for path in split(globpath(theme[1] . i . "/", "*.ctp"), "\n")
+          call add(candidates, {
+                \ 'word' : '(' . theme[0] . ') ' . fnamemodify(path, ":t:r"),
+                \ 'kind' : 'file',
+                \ 'source' : 'cake_view',
+                \ 'action__path' : path,
+                \ 'action__directory' : fnamemodify(path,":p:h"),
+                \ })
+        endfor
+      endfor
     endfor
-  endfor
+  catch
+  endtry
 
   return candidates
 endfunction "}}}
@@ -168,15 +187,19 @@ let s:unite_source_helper = {
 
 function! s:unite_source_helper.gather_candidates(args, context)
   let candidates = []
-  for i in items(g:cake.get_helpers())
-    call add(candidates, {
-          \ 'word' : i[0],
-          \ 'kind' : 'file',
-          \ 'source' : 'cake_helper',
-          \ 'action__path' : i[1],
-          \ 'action__directory' : fnamemodify(i[1],":p:h"),
-          \ })
-  endfor
+
+  try
+    for i in items(g:cake.get_helpers())
+      call add(candidates, {
+            \ 'word' : i[0],
+            \ 'kind' : 'file',
+            \ 'source' : 'cake_helper',
+            \ 'action__path' : i[1],
+            \ 'action__directory' : fnamemodify(i[1],":p:h"),
+            \ })
+    endfor
+  catch
+  endtry
 
   return candidates
 endfunction
@@ -190,15 +213,19 @@ let s:unite_source_config = {
 
 function! s:unite_source_config.gather_candidates(args, context)
   let candidates = []
-  for i in items(g:cake.get_configs())
-    call add(candidates, {
-          \ 'word' : i[0],
-          \ 'kind' : 'file',
-          \ 'source' : 'cake_config',
-          \ 'action__path' : i[1],
-          \ 'action__directory' : fnamemodify(i[1],":p:h"),
-          \ })
-  endfor
+
+  try
+    for i in items(g:cake.get_configs())
+      call add(candidates, {
+            \ 'word' : i[0],
+            \ 'kind' : 'file',
+            \ 'source' : 'cake_config',
+            \ 'action__path' : i[1],
+            \ 'action__directory' : fnamemodify(i[1],":p:h"),
+            \ })
+    endfor
+  catch
+  endtry
 
   return candidates
 endfunction
@@ -212,15 +239,19 @@ let s:unite_source_fixture = {
 
 function! s:unite_source_fixture.gather_candidates(args, context)
   let candidates = []
-  for i in items(g:cake.get_fixtures())
-    call add(candidates, {
-          \ 'word' : i[0],
-          \ 'kind' : 'file',
-          \ 'source' : 'cake_fixture',
-          \ 'action__path' : i[1],
-          \ 'action__directory' : fnamemodify(i[1],":p:h"),
-          \ })
-  endfor
+
+  try
+    for i in items(g:cake.get_fixtures())
+      call add(candidates, {
+            \ 'word' : i[0],
+            \ 'kind' : 'file',
+            \ 'source' : 'cake_fixture',
+            \ 'action__path' : i[1],
+            \ 'action__directory' : fnamemodify(i[1],":p:h"),
+            \ })
+    endfor
+  catch
+  endtry
 
   return candidates
 endfunction
@@ -235,15 +266,19 @@ let s:unite_source_shell = {
 
 function! s:unite_source_shell.gather_candidates(args, context)
   let candidates = []
-  for i in items(g:cake.get_shells())
-    call add(candidates, {
-          \ 'word' : i[0],
-          \ 'kind' : 'file',
-          \ 'source' : 'cake_shell',
-          \ 'action__path' : i[1],
-          \ 'action__directory' : fnamemodify(i[1],":p:h"),
-          \ })
-  endfor
+
+  try
+    for i in items(g:cake.get_shells())
+      call add(candidates, {
+            \ 'word' : i[0],
+            \ 'kind' : 'file',
+            \ 'source' : 'cake_shell',
+            \ 'action__path' : i[1],
+            \ 'action__directory' : fnamemodify(i[1],":p:h"),
+            \ })
+    endfor
+  catch
+  endtry
 
   return candidates
 endfunction
@@ -257,15 +292,19 @@ let s:unite_source_task = {
 
 function! s:unite_source_task.gather_candidates(args, context)
   let candidates = []
-  for i in items(g:cake.get_tasks())
-    call add(candidates, {
-          \ 'word' : i[0],
-          \ 'kind' : 'file',
-          \ 'source' : 'cake_task',
-          \ 'action__path' : i[1],
-          \ 'action__directory' : fnamemodify(i[1],":p:h"),
-          \ })
-  endfor
+
+  try
+    for i in items(g:cake.get_tasks())
+      call add(candidates, {
+            \ 'word' : i[0],
+            \ 'kind' : 'file',
+            \ 'source' : 'cake_task',
+            \ 'action__path' : i[1],
+            \ 'action__directory' : fnamemodify(i[1],":p:h"),
+            \ })
+    endfor
+  catch
+  endtry
 
   return candidates
 endfunction
