@@ -1,6 +1,6 @@
 *cake.txt*  Utility for CakePHP developpers.
 
-Version: 2.9.0
+Version: 2.9.1
 Author: Yuhei Kagaya <yuhei.kagaya@gmail.com>
 English Documentation Author: Takahiro Jinno <takahiro.jinno@gmail.com>
 Repository: https://github.com/violetyk/cake.vim
@@ -458,6 +458,9 @@ BUGS								*cake-bugs*
 
 ==============================================================================
 CHANGE LOG							*cake-changelog*
+
+2.9.1   2012-12-02
+     - Add a new vertical split in gs command like gf.
 
 2.9.0   2012-11-10
      - Add feature to jump to the build path configuration file written.

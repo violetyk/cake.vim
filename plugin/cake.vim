@@ -1,8 +1,8 @@
 " cake.vim - Utility for CakePHP developpers.
 " Maintainer:  Yuhei Kagaya <yuhei.kagaya@gmail.com>
 " License:     This file is placed in the public domain.
-" Last Change: 2012/11/22
-" Version:     2.9.0
+" Last Change: 2012/12/02
+" Version:     2.9.1
 
 if exists('g:loaded_cake_vim')
   finish
@@ -140,12 +140,16 @@ function! s:map_commands() "{{{
 
   nnoremap <buffer> <silent> <Plug>CakeJump       :<C-u>call <SID>smart_jump('n')<CR>
   nnoremap <buffer> <silent> <Plug>CakeSplitJump  :<C-u>call <SID>smart_jump('s')<CR>
+  nnoremap <buffer> <silent> <Plug>CakeVSplitJump  :<C-u>call <SID>smart_jump('v')<CR>
   nnoremap <buffer> <silent> <Plug>CakeTabJump    :<C-u>call <SID>smart_jump('t')<CR>
   if !hasmapto('<Plug>CakeJump')
     nmap <buffer> gf <Plug>CakeJump
   endif
   if !hasmapto('<Plug>CakeSplitJump')
     nmap <buffer> <C-w>f <Plug>CakeSplitJump
+  endif
+  if !hasmapto('<Plug>CakeVSplitJump')
+    nmap <buffer> gs <Plug>CakeVSplitJump
   endif
   if !hasmapto('<Plug>CakeTabJump')
     nmap <buffer> <C-w>gf <Plug>CakeTabJump
