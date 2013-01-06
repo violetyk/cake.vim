@@ -130,11 +130,15 @@ function! cake#cake20#factory(path_app)
   " }}}
   function! self.get_views(controller_name) "{{{
 
-    let views = []
+    " key = func_name, val = line_number
+    let views = {}
 
     " Extracting the function name.
-    let cmd = 'grep -E "^\s*public\s*function\s*\w+\s*\(" ' . self.name_to_path_controller(a:controller_name)
+    let cmd = 'grep -nE "^\s*public\s*function\s*\w+\s*\(" ' . self.name_to_path_controller(a:controller_name)
     for line in split(system(cmd), "\n")
+
+      " cast int
+      let line_number = matchstr(line, '^\d\+') + 0
 
       let s = matchend(line, "\s*function\s*.")
       let e = match(line, "(")
@@ -142,7 +146,7 @@ function! cake#cake20#factory(path_app)
 
       " Callback functions are not eligible.
       if func_name !~ "^_" && func_name !=? "beforeFilter" && func_name !=? "beforeRender" && func_name !=? "afterFilter"
-        let views = add(views , func_name)
+        let views[func_name] = line_number
       endif
     endfor
 

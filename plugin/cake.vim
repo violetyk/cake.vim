@@ -1,8 +1,8 @@
 " cake.vim - Utility for CakePHP developpers.
 " Maintainer:  Yuhei Kagaya <yuhei.kagaya@gmail.com>
 " License:     This file is placed in the public domain.
-" Last Change: 2012/12/02
-" Version:     2.9.1
+" Last Change: 2013/01/07
+" Version:     2.10
 
 if exists('g:loaded_cake_vim')
   finish
@@ -195,15 +195,26 @@ function! s:get_complelist_view(ArgLead, CmdLine, CursorPos) "{{{
     let args = split(a:CmdLine, '\W\+')
     let view_name = get(args, 1)
     let theme_name = get(args, 2)
-    let themes = g:cake.get_themes()
 
     if !g:cake.is_controller(expand("%:p"))
       return []
-    elseif count(g:cake.get_views(g:cake.path_to_name_controller(expand("%:p"))), view_name) == 0
-      return filter(sort(g:cake.get_views(g:cake.path_to_name_controller(expand("%:p")))), 'v:val =~ "^'. fnameescape(a:ArgLead) . '"')
-    elseif !has_key(themes, theme_name)
-      return filter(sort(keys(themes)), 'v:val =~ "^'. fnameescape(a:ArgLead) . '"')
+    else
+      let controller_name = g:cake.path_to_name_controller(expand('%:p'))
+      let views = keys(g:cake.get_views(controller_name))
+
+      " get list of View name.
+      if count(views, view_name) == 0
+        return filter(sort(views), 'v:val =~ "^'. fnameescape(a:ArgLead) . '"')
+      else
+        " View name is ok. Next, get list of Theme name.
+        let themes = g:cake.get_themes()
+        if !has_key(themes, theme_name)
+          return filter(sort(keys(themes)), 'v:val =~ "^'. fnameescape(a:ArgLead) . '"')
+        endif
+      endif
+
     endif
+
   catch
     call cake#util#echo_warning("[cake.vim] An application directory is not set. Please :Cakephp {app}.")
   endtry
@@ -221,11 +232,11 @@ function! s:get_complelist_controllerview(ArgLead, CmdLine, CursorPos) "{{{
       " Completion of the first argument.
       " Returns a list of the controller name.
       return s:get_complelist_controller(a:ArgLead, a:CmdLine, a:CursorPos)
-    elseif count(g:cake.get_views(controller_name), view_name) == 0
+    elseif count(keys(g:cake.get_views(controller_name)), view_name) == 0
       " Completion of the second argument.
       " Returns a list of view names.
       " The view corresponds to the first argument specified in the controller.
-      return filter(sort(g:cake.get_views(controller_name)), 'v:val =~ "^'. fnameescape(a:ArgLead) . '"')
+      return filter(sort(keys(g:cake.get_views(controller_name))), 'v:val =~ "^'. fnameescape(a:ArgLead) . '"')
     elseif !has_key(themes, theme_name)
       " Completion of the third argument.
       " Returns a list of theme names.
@@ -387,10 +398,11 @@ command! -n=* -complete=customlist,s:get_complelist_model Cmodeltab call g:cake.
 
 " Controller -> View
 " Argument is View (,Theme).
-command! -n=+ -complete=customlist,s:get_complelist_view Cview call g:cake.jump_view('n', <f-args>)
-command! -n=+ -complete=customlist,s:get_complelist_view Cviewsp call g:cake.jump_view('s', <f-args>)
-command! -n=+ -complete=customlist,s:get_complelist_view Cviewvsp call g:cake.jump_view('v', <f-args>)
-command! -n=+ -complete=customlist,s:get_complelist_view Cviewtab call g:cake.jump_view('t', <f-args>)
+" When the Controller is open, if no arguments are inferred from the currently line.
+command! -n=* -complete=customlist,s:get_complelist_view Cview call g:cake.jump_view('n', <f-args>)
+command! -n=* -complete=customlist,s:get_complelist_view Cviewsp call g:cake.jump_view('s', <f-args>)
+command! -n=* -complete=customlist,s:get_complelist_view Cviewvsp call g:cake.jump_view('v', <f-args>)
+command! -n=* -complete=customlist,s:get_complelist_view Cviewtab call g:cake.jump_view('t', <f-args>)
 
 " * -> View
 " Argument is Controller, View (,Theme).

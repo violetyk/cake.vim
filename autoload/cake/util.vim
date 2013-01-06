@@ -260,6 +260,27 @@ function! cake#util#eval_json_file(path)
 endfunction
 "}}}
 
+" Function: cake#util#is_list(expr) {{{
+function! cake#util#is_list(expr)
+  return type(a:expr) == type([])
+endfunction " }}}
+" Function: cake#util#is_dict(expr) {{{
+function! cake#util#is_dict(expr)
+  return type(a:expr) == type({})
+endfunction " }}}
+
+" Function: cake#util#nsort(list) {{{
+function! cake#util#nsort(list)
+  return sort(copy(a:list), 'cake#util#compare')
+endfunction " }}}
+" Function: cake#util#nrsort(list) {{{
+function! cake#util#nrsort(list)
+  return reverse(sort(copy(a:list), 'cake#util#compare'))
+endfunction " }}}
+" Function: cake#util#compare(lhs, rhs) {{{
+function! cake#util#compare(lhs, rhs)
+    return a:lhs - a:rhs
+endfunction " }}}
 
 let &cpo = s:save_cpo
 unlet s:save_cpo

@@ -388,6 +388,7 @@ function! cake#factory(path_app)
 
   endfunction "}}}
   function! self.jump_view(...) " {{{
+    let views = []
 
     if !self.is_controller(expand("%:p"))
       call cake#util#echo_warning("No Controller in current buffer.")
@@ -395,27 +396,89 @@ function! cake#factory(path_app)
     endif
 
     let split_option = a:1
-    let view_name = a:2
+    let controller_name = self.path_to_name_controller(expand('%:p'))
 
-    if a:0 >= 3
-      let theme = a:3
+    " determine view
+    if exists('a:2')
+      let view_name = a:2
+      if match(view_name, '/') > 0
+        let view_name = view_name[strridx(view_name, '/')+1:]
+      endif
     else
-      let theme = (exists("g:cakephp_use_theme") && g:cakephp_use_theme != '')? g:cakephp_use_theme : ''
+      let neighbor_line = 0
+      let func_line = self.get_views(controller_name)
+      let current_line = line(".")
+      for l in cake#util#nrsort(values(func_line))
+        if l <= current_line
+          let neighbor_line = l
+          break
+        endif
+      endfor
+
+      if neighbor_line == 0
+        return
+      endif
+
+      for [f, l] in items(func_line)
+        if l == neighbor_line
+          let view_name = f
+          break
+        endif
+      endfor
+
     endif
 
-    let controller_name = self.path_to_name_controller(expand("%:p"))
-    let view_path = self.name_to_path_view(controller_name, view_name, theme)
+    " create theme list
+    if exists('a:3')
+      let theme = a:3
+      let themes = [theme]
+    elseif exists("g:cakephp_use_theme") && strlen(g:cakephp_use_theme) > 0
+      let theme = g:cakephp_use_theme
+      let themes = [theme]
+    else
+      let theme = '' "no theme
+      let themes = keys(self.get_themes())
+      let themes = insert(themes, theme)
+    endif
 
-    " If the file does not exist, ask whether to create a new file.
-    if !filewritable(view_path)
-      if !cake#util#confirm_create_file(view_path)
-        call cake#util#echo_warning(view_path . " is not found.")
+    " find paths of view.
+    for theme_name in themes
+      let view_dir = self.name_to_path_viewdir(controller_name, view_name, theme_name)
+      for view_path in split(globpath(view_dir, '**/' . view_name . '.ctp'), "\n")
+        if filereadable(view_path)
+          call add(views, view_path)
+        endif
+      endfor
+    endfor
+
+    let i = len(views)
+    if i == 0
+      " If the file does not exist, ask whether to create a new file.
+      let target_view_path = self.name_to_path_view(controller_name, view_name, theme)
+      if !cake#util#confirm_create_file(target_view_path)
+        call cake#util#echo_warning(target_view_path . " is not found.")
         return
+      endif
+    elseif i == 1
+      let target_view_path = views[0]
+    elseif i > 1
+      " Choice view
+      let n = 1
+      let tmp_choices = []
+      for str in views
+        let str = n . ": " . self.abbreviate(str)
+        call add(tmp_choices, str)
+        let n = n + 1
+      endfor
+      let choices = join(tmp_choices,"\n")
+      let c = confirm('Which file do you jump to?', choices, 0)
+      if c > 0
+        let index = c - 1
+        let target_view_path = views[index]
       endif
     endif
 
-    let line = 0
-    call cake#util#open_file(view_path, split_option, line)
+    call cake#util#open_file(target_view_path, split_option, 0)
 
   endfunction "}}}
   function! self.jump_controllerview(...) " {{{
@@ -1006,13 +1069,13 @@ function! cake#factory(path_app)
       " Controller / function xxx() -> View
       let view_name = matchstr(line, '\(function\s\+\)\zs\w\+\ze\(\s*(\)')
       if strlen(view_name) > 0
-        call self.smart_jump_view(controller_name, view_name, option)
+        call self.jump_view(option, view_name)
         return
       endif
       " Controller / $this->render('xxx') -> View
       let view_name = matchstr(line, '\(\$this->render(\s*["'']\)\zs[0-9A-Za-z/_.-]\+\ze\(["'']\s*)\)')
       if strlen(view_name) > 0
-        call self.smart_jump_view(controller_name, view_name, option)
+        call self.jump_view(option, view_name)
         return
       endif
 
@@ -1645,52 +1708,6 @@ function! cake#factory(path_app)
       if c > 0
         let index = c - 1
         call cake#util#open_file(layouts[index], a:option, 0)
-        return
-      endif
-    endif
-
-    " Default action
-    call self.gf(option)
-  endfunction "}}}
-  function! self.smart_jump_view(controller_name, view_name, option) "{{{
-    let views = []
-
-    if match(a:view_name, '/') > 0
-      let view_name = a:view_name[strridx(a:view_name, '/')+1:]
-    else
-      let view_name = a:view_name
-    endif
-
-    let themes = keys(self.get_themes())
-    let themes = insert(themes, '') "no theme
-
-    for theme_name in themes
-      for view_path in split(globpath(self.name_to_path_viewdir(a:controller_name, a:view_name, theme_name), "**/" . view_name . ".ctp"), "\n")
-        if filereadable(view_path)
-          call add(views, view_path)
-        endif
-      endfor
-    endfor
-
-    let i = len(views)
-    if i == 0
-      return
-    elseif i == 1
-      call cake#util#open_file(views[0], a:option, 0)
-      return
-    elseif i > 1
-      let n = 1
-      let tmp_choices = []
-      for str in views
-        let str = n . ": " . self.abbreviate(str)
-        call add(tmp_choices, str)
-        let n = n + 1
-      endfor
-      let choices = join(tmp_choices,"\n")
-      let c = confirm('Which file do you jump to?', choices, 0)
-      if c > 0
-        let index = c - 1
-        call cake#util#open_file(views[index], a:option, 0)
         return
       endif
     endif
