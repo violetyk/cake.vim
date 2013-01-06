@@ -1061,6 +1061,10 @@ function! cake#factory(path_app)
     let l_word = expand('<cWORD>')
     let libs = {}
 
+    if strlen(word) == 0
+      return
+    endif
+
     " in Controller "{{{
     if self.is_controller(path)
       let controller_name = self.path_to_name_controller(path)
