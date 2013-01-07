@@ -5,6 +5,297 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
+let s:cache_last_app_path = ''
+
+function! cake#initialize(path) " {{{
+
+  let a:path_app = ''
+
+  " set app directory of the project.
+  if a:path != ''
+    let a:path_app = fnamemodify(a:path, ":p")
+  elseif exists("g:cakephp_app") && g:cakephp_app != ''
+    let a:path_app = g:cakephp_app
+  endif
+
+  " call factory method
+  if cake#is_cake20(a:path_app)
+    let g:cake = cake#cake20#factory(a:path_app)
+    let g:is_initialized = 1
+    call cake#map_commands()
+  elseif cake#is_cake13(a:path_app)
+    let g:cake = cake#cake13#factory(a:path_app)
+    let g:is_initialized = 1
+    call cake#map_commands()
+  else
+    call cake#util#echo_warning("[cake.vim] Please set an application directory of CakePHP.")
+    let g:is_initialized = 0
+    return
+  endif
+
+  call g:cake.set_log(g:cakephp_log)
+
+endfunction " }}}
+function! cake#autoset_app() "{{{
+  " find Config/core.php
+  let app_config_path  = finddir('Config', escape(expand("%:p:h"), ' \') . ';')
+  if app_config_path != '' && filereadable(app_config_path . '/core.php')
+    let app_path = fnamemodify(app_config_path, ":h")
+    call cake#initialize(app_path)
+    let s:cache_last_app_path = app_path
+    return
+  endif
+
+  " find config/core.php
+  let app_config_path  = finddir('config', escape(expand("%:p:h"), ' \') . ';')
+  if app_config_path != '' && filereadable(app_config_path . '/core.php')
+    let app_path = fnamemodify(app_config_path, ":h")
+    call cake#initialize(app_path)
+    let s:cache_last_app_path = app_path
+    return
+  endif
+
+  " retry
+  if s:cache_last_app_path != '' && isdirectory(s:cache_last_app_path)
+    calcake#initialize(s:cache_last_app_path)
+  endif
+endfunction "}}}
+function! cake#map_commands() "{{{
+  if g:is_initialized == 0
+    return
+  endif
+
+  nnoremap <buffer> <silent> <Plug>CakeJump       :<C-u>call cake#smart_jump('n')<CR>
+  nnoremap <buffer> <silent> <Plug>CakeSplitJump  :<C-u>call cake#smart_jump('s')<CR>
+  nnoremap <buffer> <silent> <Plug>CakeVSplitJump :<C-u>call cake#smart_jump('v')<CR>
+  nnoremap <buffer> <silent> <Plug>CakeTabJump    :<C-u>call cake#smart_jump('t')<CR>
+  if !hasmapto('<Plug>CakeJump')
+    nmap <buffer> gf <Plug>CakeJump
+  endif
+  if !hasmapto('<Plug>CakeSplitJump')
+    nmap <buffer> <C-w>f <Plug>CakeSplitJump
+  endif
+  if !hasmapto('<Plug>CakeVSplitJump')
+    nmap <buffer> gs <Plug>CakeVSplitJump
+  endif
+  if !hasmapto('<Plug>CakeTabJump')
+    nmap <buffer> <C-w>gf <Plug>CakeTabJump
+  endif
+
+endfunction "}}}
+function! cake#smart_jump(option) "{{{
+  call g:cake.smart_jump(a:option)
+endfunction "}}}
+
+function! cake#is_cake13(path) "{{{
+  let l:path = fnamemodify(a:path, ":p")
+  if isdirectory(l:path. 'controllers') && isdirectory(l:path . 'models') && isdirectory(l:path . 'views')
+    return 1
+  endif
+  return 0
+endfunction " }}}
+function! cake#is_cake20(path) " {{{
+  let l:path = fnamemodify(a:path, ":p")
+  if isdirectory(l:path. 'Controller') && isdirectory(l:path . 'Model') && isdirectory(l:path . 'View')
+    return 1
+  endif
+  return 0
+endfunction " }}}
+
+
+" Functions: get_complelist_xxx()
+" ============================================================
+function! cake#get_complelist(dict,ArgLead) "{{{
+  let list = sort(keys(a:dict))
+  return filter(list, 'v:val =~ "^'. fnameescape(a:ArgLead) . '"')
+endfunction "}}}
+function! cake#get_complelist_lib(ArgLead, CmdLine, CursorPos) "{{{
+  try
+    let list = cake#get_complelist(g:cake.get_libs(), a:ArgLead)
+    return list
+  catch
+    call cake#util#echo_warning("[cake.vim] An application directory is not set. Please :Cakephp {app}.")
+  endtry
+endfunction " }}}
+function! cake#get_complelist_controller(ArgLead, CmdLine, CursorPos) "{{{
+  try
+    let list = cake#get_complelist(g:cake.get_controllers(), a:ArgLead)
+    return list
+  catch
+    call cake#util#echo_warning("[cake.vim] An application directory is not set. Please :Cakephp {app}.")
+  endtry
+endfunction " }}}
+function! cake#get_complelist_model(ArgLead, CmdLine, CursorPos) " {{{
+  try
+    let list = cake#get_complelist(g:cake.get_models(), a:ArgLead)
+    return list
+  catch
+    call cake#util#echo_warning("[cake.vim] An application directory is not set. Please :Cakephp {app}.")
+  endtry
+endfunction " }}}
+function! cake#get_complelist_view(ArgLead, CmdLine, CursorPos) "{{{
+  try
+    let args = split(a:CmdLine, '\W\+')
+    let view_name = get(args, 1)
+    let theme_name = get(args, 2)
+
+    if !g:cake.is_controller(expand("%:p"))
+      return []
+    else
+      let controller_name = g:cake.path_to_name_controller(expand('%:p'))
+      let views = keys(g:cake.get_views(controller_name))
+
+      " get list of View name.
+      if count(views, view_name) == 0
+        return filter(sort(views), 'v:val =~ "^'. fnameescape(a:ArgLead) . '"')
+      else
+        " View name is ok. Next, get list of Theme name.
+        let themes = g:cake.get_themes()
+        if !has_key(themes, theme_name)
+          return filter(sort(keys(themes)), 'v:val =~ "^'. fnameescape(a:ArgLead) . '"')
+        endif
+      endif
+
+    endif
+
+  catch
+    call cake#util#echo_warning("[cake.vim] An application directory is not set. Please :Cakephp {app}.")
+  endtry
+endfunction " }}}
+function! cake#get_complelist_controllerview(ArgLead, CmdLine, CursorPos) "{{{
+  try
+    let args = split(a:CmdLine, '\W\+')
+    let controller_name = cake#util#camelize(get(args, 1))
+    let view_name = get(args, 2)
+    let theme_name = get(args, 3)
+    let controllers = g:cake.get_controllers()
+    let themes = g:cake.get_themes()
+
+    if !has_key(controllers, controller_name)
+      " Completion of the first argument.
+      " Returns a list of the controller name.
+      return cake#get_complelist_controller(a:ArgLead, a:CmdLine, a:CursorPos)
+    elseif count(keys(g:cake.get_views(controller_name)), view_name) == 0
+      " Completion of the second argument.
+      " Returns a list of view names.
+      " The view corresponds to the first argument specified in the controller.
+      return filter(sort(keys(g:cake.get_views(controller_name))), 'v:val =~ "^'. fnameescape(a:ArgLead) . '"')
+    elseif !has_key(themes, theme_name)
+      " Completion of the third argument.
+      " Returns a list of theme names.
+      return filter(sort(keys(themes)), 'v:val =~ "^'. fnameescape(a:ArgLead) . '"')
+    endif
+  catch
+    call cake#util#echo_warning("[cake.vim] An application directory is not set. Please :Cakephp {app}.")
+  endtry
+endfunction " }}}
+function! cake#get_complelist_config(ArgLead, CmdLine, CursorPos) " {{{
+  try
+    let list = cake#get_complelist(g:cake.get_configs(), a:ArgLead)
+    return list
+  catch
+    call cake#util#echo_warning("[cake.vim] An application directory is not set. Please :Cakephp {app}.")
+  endtry
+endfunction " }}}
+function! cake#get_complelist_component(ArgLead, CmdLine, CursorPos) " {{{
+  try
+    let list = cake#get_complelist(g:cake.get_components(), a:ArgLead)
+    return list
+  catch
+    call cake#util#echo_warning("[cake.vim] An application directory is not set. Please :Cakephp {app}.")
+  endtry
+endfunction " }}}
+function! cake#get_complelist_shell(ArgLead, CmdLine, CursorPos) " {{{
+  try
+    let list = cake#get_complelist(g:cake.get_shells(), a:ArgLead)
+    return list
+  catch
+    call cake#util#echo_warning("[cake.vim] An application directory is not set. Please :Cakephp {app}.")
+  endtry
+endfunction " }}}
+function! cake#get_complelist_task(ArgLead, CmdLine, CursorPos) " {{{
+  try
+    let list = cake#get_complelist(g:cake.get_tasks(), a:ArgLead)
+    return list
+  catch
+    call cake#util#echo_warning("[cake.vim] An application directory is not set. Please :Cakephp {app}.")
+  endtry
+endfunction " }}}
+function! cake#get_complelist_behavior(ArgLead, CmdLine, CursorPos) " {{{
+  try
+    let list = cake#get_complelist(g:cake.get_behaviors(), a:ArgLead)
+    return list
+  catch
+    call cake#util#echo_warning("[cake.vim] An application directory is not set. Please :Cakephp {app}.")
+  endtry
+endfunction " }}}
+function! cake#get_complelist_helper(ArgLead, CmdLine, CursorPos) " {{{
+  try
+    let list = cake#get_complelist(g:cake.get_helpers(), a:ArgLead)
+    return list
+  catch
+    call cake#util#echo_warning("[cake.vim] An application directory is not set. Please :Cakephp {app}.")
+  endtry
+endfunction " }}}
+function! cake#get_complelist_testmodel(ArgLead, CmdLine, CursorPos) " {{{
+  try
+    let list = cake#get_complelist(g:cake.get_testmodels(), a:ArgLead)
+    return list
+  catch
+    call cake#util#echo_warning("[cake.vim] An application directory is not set. Please :Cakephp {app}.")
+  endtry
+endfunction " }}}
+function! cake#get_complelist_testbehavior(ArgLead, CmdLine, CursorPos) " {{{
+  try
+    let list = cake#get_complelist(g:cake.get_testbehaviors(), a:ArgLead)
+    return list
+  catch
+    call cake#util#echo_warning("[cake.vim] An application directory is not set. Please :Cakephp {app}.")
+  endtry
+endfunction " }}}
+function! cake#get_complelist_testcomponent(ArgLead, CmdLine, CursorPos) " {{{
+  try
+    let list = cake#get_complelist(g:cake.get_testcomponents(), a:ArgLead)
+    return list
+  catch
+    call cake#util#echo_warning("[cake.vim] An application directory is not set. Please :Cakephp {app}.")
+  endtry
+endfunction " }}}
+function! cake#get_complelist_testcontroller(ArgLead, CmdLine, CursorPos) " {{{
+  try
+    let list = cake#get_complelist(g:cake.get_testcontrollers(), a:ArgLead)
+    return list
+  catch
+    call cake#util#echo_warning("[cake.vim] An application directory is not set. Please :Cakephp {app}.")
+  endtry
+endfunction " }}}
+function! cake#get_complelist_testhelper(ArgLead, CmdLine, CursorPos) " {{{
+  try
+    let list = cake#get_complelist(g:cake.get_testhelpers(), a:ArgLead)
+    return list
+  catch
+    call cake#util#echo_warning("[cake.vim] An application directory is not set. Please :Cakephp {app}.")
+  endtry
+endfunction " }}}
+function! cake#get_complelist_fixture(ArgLead, CmdLine, CursorPos) "{{{
+  try
+    let list = cake#get_complelist(g:cake.get_fixtures(), a:ArgLead)
+    return list
+  catch
+    call cake#util#echo_warning("[cake.vim] An application directory is not set. Please :Cakephp {app}.")
+  endtry
+endfunction " }}}
+function! cake#get_complelist_log(ArgLead, CmdLine, CursorPos) " {{{
+  try
+    let list = sort(keys(g:cakephp_log))
+    return filter(sort(list), 'v:val =~ "^'. fnameescape(a:ArgLead) . '"')
+  catch
+    call cake#util#echo_warning("[cake.vim] An application directory is not set. Please :Cakephp {app}.")
+  endtry
+endfunction " }}}
+" ============================================================
+
+
 function! cake#factory(path_app)
 
   let self = {}
@@ -1900,10 +2191,10 @@ function! cake#factory(path_app)
   endfunction "}}}
   " ============================================================
 
-
   return self
 endfunction
 " ============================================================
+
 
 
 let &cpo = s:save_cpo
