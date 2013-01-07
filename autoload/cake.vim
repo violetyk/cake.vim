@@ -82,7 +82,7 @@ function! cake#map_commands() "{{{
     nmap <buffer> <C-w>f <Plug>CakeSplitJump
   endif
   if !hasmapto('<Plug>CakeVSplitJump')
-    nmap <buffer> gs <Plug>CakeVSplitJump
+    exe 'nmap <buffer> ' . g:cakephp_keybind_vsplit_gf . ' <Plug>CakeVSplitJump'
   endif
   if !hasmapto('<Plug>CakeTabJump')
     nmap <buffer> <C-w>gf <Plug>CakeTabJump

@@ -32,17 +32,18 @@ set cpo&vim
 " let g:cakephp_core_path       = "/path/to/cakephp_core/"
 
 " fix setting of the app.
-let g:cakephp_enable_fix_mode  = get(g:, 'cakephp_enable_fix_mode', 0)
-let g:cakephp_app              = get(g:, 'cakephp_app', '')
-let g:cakephp_use_theme        = get(g:, 'cakephp_use_theme', '')
-let g:cakephp_core_path        = get(g:, 'cakephp_core_path', '')
+let g:cakephp_enable_fix_mode   = get(g:, 'cakephp_enable_fix_mode', 0)
+let g:cakephp_app               = get(g:, 'cakephp_app', '')
+let g:cakephp_use_theme         = get(g:, 'cakephp_use_theme', '')
+let g:cakephp_core_path         = get(g:, 'cakephp_core_path', '')
 " automatically look for app and set it
-let g:cakephp_enable_auto_mode = get(g:, 'cakephp_enable_auto_mode', (g:cakephp_enable_fix_mode)? 0 : 1)
-let g:cakephp_log_window_size  = get(g:, 'cakephp_log_window_size', 15)
-let g:cakephp_db_type          = get(g:, 'cakephp_db_type', 'MySQL')
-let g:cakephp_db_port          = get(g:, 'cakephp_db_port', 3306)
-let g:cakephp_db_buffer_lines  = get(g:, 'cakephp_db_buffer_lines', 20)
-let g:cakephp_app_config_file  = get(g:, 'cakephp_app_config_file', '.cake')
+let g:cakephp_enable_auto_mode  = get(g:, 'cakephp_enable_auto_mode', (g:cakephp_enable_fix_mode)? 0 : 1)
+let g:cakephp_log_window_size   = get(g:, 'cakephp_log_window_size', 15)
+let g:cakephp_db_type           = get(g:, 'cakephp_db_type', 'MySQL')
+let g:cakephp_db_port           = get(g:, 'cakephp_db_port', 3306)
+let g:cakephp_db_buffer_lines   = get(g:, 'cakephp_db_buffer_lines', 20)
+let g:cakephp_app_config_file   = get(g:, 'cakephp_app_config_file', '.cake')
+let g:cakephp_keybind_vsplit_gf = get(g:, 'cakephp_keybind_vsplit_gf', 'gs')
 if !exists('g:cakephp_log')
   let g:cakephp_log = {
         \ 'debug' : '',
