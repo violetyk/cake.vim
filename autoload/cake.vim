@@ -5,7 +5,12 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
+
+" SECTION: Script Variables {{{
+" ============================================================
 let s:cache_last_app_path = ''
+let s:is_initialized = 0
+" }}}
 
 function! cake#initialize(path) " {{{
 
@@ -21,15 +26,15 @@ function! cake#initialize(path) " {{{
   " call factory method
   if cake#is_cake20(a:path_app)
     let g:cake = cake#cake20#factory(a:path_app)
-    let g:is_initialized = 1
+    let s:is_initialized = 1
     call cake#map_commands()
   elseif cake#is_cake13(a:path_app)
     let g:cake = cake#cake13#factory(a:path_app)
-    let g:is_initialized = 1
+    let s:is_initialized = 1
     call cake#map_commands()
   else
     call cake#util#echo_warning("[cake.vim] Please set an application directory of CakePHP.")
-    let g:is_initialized = 0
+    let s:is_initialized = 0
     return
   endif
 
@@ -37,6 +42,7 @@ function! cake#initialize(path) " {{{
 
 endfunction " }}}
 function! cake#autoset_app() "{{{
+
   " find Config/core.php
   let app_config_path  = finddir('Config', escape(expand("%:p:h"), ' \') . ';')
   if app_config_path != '' && filereadable(app_config_path . '/core.php')
@@ -61,7 +67,7 @@ function! cake#autoset_app() "{{{
   endif
 endfunction "}}}
 function! cake#map_commands() "{{{
-  if g:is_initialized == 0
+  if s:is_initialized == 0
     return
   endif
 
