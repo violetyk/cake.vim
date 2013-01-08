@@ -76,7 +76,7 @@ augroup END
 " SECTION: Commands {{{
 " ============================================================
 " Initialized. If you have an argument, given that initializes the app path.
-command! -n=? -complete=dir Cakephp :call s:initialize(<f-args>)
+command! -n=? -complete=dir Cakephp :call cake#initialize(<f-args>)
 
 " * -> Controller
 " Argument is Controller.
