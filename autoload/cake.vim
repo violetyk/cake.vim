@@ -63,7 +63,7 @@ function! cake#autoset_app() "{{{
 
   " retry
   if s:cache_last_app_path != '' && isdirectory(s:cache_last_app_path)
-    calcake#initialize(s:cache_last_app_path)
+    call cake#initialize(s:cache_last_app_path)
   endif
 endfunction "}}}
 function! cake#map_commands() "{{{
