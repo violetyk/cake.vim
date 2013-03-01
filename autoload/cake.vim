@@ -1396,7 +1396,6 @@ function! cake#factory(path_app)
       " Controller / class HogesController extends AppController -> AppController
       let controller_name = matchstr(line, '\(class\s\+\w\+Controller\s\+extends\s\+\)\zs\w\+\ze\(Controller\)' )
       if strlen(controller_name) > 0
-        let controller_name = cake#util#decamelize(controller_name)
         if self.is_controller(self.name_to_path_controller(controller_name))
           call self.jump_controller(option, controller_name)
           return
@@ -1699,6 +1698,15 @@ function! cake#factory(path_app)
     "}}}
     " in Shell "{{{
     if self.is_shell(path)
+
+      " Shell/ class HogeShell extends AppShell -> AppShell
+      let shell_name = matchstr(line, '\(class\s\+\w\+Shell\s\+extends\s\+\)\zs\w\+\ze\(Shell\)' )
+      if strlen(shell_name) > 0
+        if self.is_shell(self.name_to_path_shell(shell_name))
+          call self.jump_shell(option, shell_name)
+          return
+        endif
+      endif
 
       " Shell -> Task, Model
       if self.is_task(self.name_to_path_task(word))
