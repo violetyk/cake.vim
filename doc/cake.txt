@@ -1,6 +1,6 @@
 *cake.txt*  Utility for CakePHP developpers.
 
-Version: 2.10
+Version: 2.10.1
 Author: Yuhei Kagaya <yuhei.kagaya@gmail.com>
 English Documentation Author: Takahiro Jinno <takahiro.jinno@gmail.com>
 Repository: https://github.com/violetyk/cake.vim
@@ -90,6 +90,7 @@ Commands		|cake-commands|
     Cut to Element	|:Celement|
     Describe Table	|:Cdesc|
 
+Build Path		|cake-buildpath|
 Bugs			|cake-bugs|
 Changelog		|cake-changelog|
 
@@ -97,11 +98,12 @@ Changelog		|cake-changelog|
 ==============================================================================
 INTRODUCTION							*cake-introduction*
 
-*cake* is for easy jumping between Controller, Model and View files when developing in CakePHP.
+cake.vim is for easy jumping between Controller, Model and View files 
+when developing in CakePHP.
 
 Requirements:
 - Vim ver.7.3 or heigher
-- CakePHP ver.1.3.x or ver.2.0
+- CakePHP ver.1.3.x or ver.2.x
 
 
 ==============================================================================
@@ -452,12 +454,74 @@ Describe Table
 ==============================================================================
 BUGS								*cake-bugs*
 
-    Currently there is no known issue.
+    I want to register the issue on github.
+    Repository: https://github.com/violetyk/cake.vim
+
     Welcome your feedback.
+
+==============================================================================
+BUILD PATH							*cake-buildpath*
+
+Create a file named ".cake" directly under the application directory, if you
+add the build path in JSON format, as follows:
+You can also jump to the class to which it is added.
+>
+  {
+    "build_path": {
+      "models": [
+        "/full/path/to/models/",
+        "/next/full/path/to/models/"
+      ],
+      "components": [
+        "/full/path/to/components/",
+        "/next/full/path/to/components/"
+      ],
+      "helpers": [
+        "/full/path/to/helpers/",
+        "/next/full/path/to/helpers/"
+      ]
+    },
+  }
+<
+
+
+If there is a CakePHP core directory to a different location for each your application,
+it is useful without the g:cakephp_core_path, and I write on ".cake" as follows.
+>
+  {
+    "build_path": {
+      "models": [
+        "/full/path/to/models/",
+        "/next/full/path/to/models/"
+      ],
+      "components": [
+        "/full/path/to/components/",
+        "/next/full/path/to/components/"
+      ],
+      "helpers": [
+        "/full/path/to/helpers/",
+        "/next/full/path/to/helpers/"
+      ]
+    },
+    "cake" : "/path/to/another_cakephp_core/"
+  }
+<
+
+
+
+Please set if you want to change the ".cake" is the default name of the configuration file,
+such as the following. Vimrc.
+>
+  let g:cakephp_app_config_file = '.project'
+<
 
 
 ==============================================================================
 CHANGE LOG							*cake-changelog*
+
+2.10.1 2013-03-06
+     - Add to the configuration file : core
+     - Fix a few bugs.
 
 2.10   2013-01-08
      - |:Cview|, To guess the name of the view from the current position if the

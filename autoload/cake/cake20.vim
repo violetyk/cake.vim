@@ -39,7 +39,12 @@ function! cake#cake20#factory(path_app)
   if exists("g:cakephp_core_path") && isdirectory(g:cakephp_core_path)
     let path_core = g:cakephp_core_path
   else
-    let path_core = cake#util#dirname(self.paths.app) . '/lib/'
+    let app_config = cake#util#eval_json_file(self.paths.app . g:cakephp_app_config_file)
+    if has_key(app_config, 'cake')
+      let path_core = app_config.cake
+    else
+      let path_core = cake#util#dirname(self.paths.app) . '/lib/'
+    endif
   endif
 
   let cores = {
