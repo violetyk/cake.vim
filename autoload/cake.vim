@@ -1358,6 +1358,10 @@ function! cake#factory(path_app)
     let l_word = expand('<cWORD>')
     let libs = {}
 
+    if cake#util#in_array('-', split(&iskeyword, ','))
+      let word = substitute(word, "-*$", "", "")
+    endif
+
     if strlen(word) == 0
       return
     endif

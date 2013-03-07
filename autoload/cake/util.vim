@@ -282,6 +282,10 @@ function! cake#util#compare(lhs, rhs)
     return a:lhs - a:rhs
 endfunction " }}}
 
+" Function: cake#util#in_array(expr, list) {{{
+function! cake#util#in_array(expr, list)
+    return index(a:list, a:expr) != -1
+endfunction " }}}
 let &cpo = s:save_cpo
 unlet s:save_cpo
 " vim:set fenc=utf-8 ff=unix ft=vim fdm=marker:
