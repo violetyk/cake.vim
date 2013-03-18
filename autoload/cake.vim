@@ -696,9 +696,12 @@ function! cake#factory(path_app)
     let controller_name = self.path_to_name_controller(expand('%:p'))
 
     " determine view
+    let has_path = 0
     if exists('a:2')
       let view_name = a:2
       if match(view_name, '/') > 0
+        let has_path = 1
+        let origin_view_name = view_name
         let view_name = view_name[strridx(view_name, '/')+1:]
       endif
     else
@@ -747,6 +750,11 @@ function! cake#factory(path_app)
         endif
       endfor
     endfor
+
+    if has_path
+      call filter(views, 'v:val =~# "' . origin_view_name . '"')
+    endif
+
 
     let i = len(views)
     if i == 0
