@@ -751,7 +751,7 @@ function! cake#factory(path_app)
       endfor
     endfor
 
-    if has_path
+    if has_path == 1
       call filter(views, 'v:val =~# "' . origin_view_name . '"')
     endif
 
@@ -1818,7 +1818,10 @@ function! cake#factory(path_app)
   function! self.smart_jump_script(script_name, option) "{{{
     let scripts = []
 
+    let has_path = 0
     if match(a:script_name, '/') > 0
+      let has_path = 1
+      let origin_script_name = a:script_name
       let script_dir = 'webroot/js/' . a:script_name[:strridx(a:script_name, '/')]
       let script_name = a:script_name[strridx(a:script_name, '/')+1:]
     else
@@ -1844,6 +1847,9 @@ function! cake#factory(path_app)
       endfor
     endfor
 
+    if has_path == 1
+      call filter(scripts, 'v:val =~# "' . origin_script_name . '"')
+    endif
 
     let i = len(scripts)
     if i == 0
@@ -1874,7 +1880,10 @@ function! cake#factory(path_app)
   function! self.smart_jump_stylesheet(stylesheet_name, option) "{{{
     let stylesheets = []
 
+    let has_path = 0
     if match(a:stylesheet_name, '/') > 0
+      let has_path = 1
+      let origin_stylesheet_name = a:stylesheet_name
       let stylesheet_dir = 'webroot/css/' . a:stylesheet_name[:strridx(a:stylesheet_name, '/')]
       let stylesheet_name = a:stylesheet_name[strridx(a:stylesheet_name, '/')+1:]
     else
@@ -1899,6 +1908,10 @@ function! cake#factory(path_app)
         endif
       endfor
     endfor
+
+    if has_path == 1
+      call filter(stylesheets, 'v:val =~# "' . origin_stylesheet_name . '"')
+    endif
 
     let i = len(stylesheets)
     if i == 0
@@ -1929,7 +1942,10 @@ function! cake#factory(path_app)
   function! self.smart_jump_element(element_name, option) "{{{
     let elements = []
 
+    let has_path = 0
     if match(a:element_name, '/') > 0
+      let has_path = 1
+      let origin_element_name = a:element_name
       let element_dir = self.vars.element_dir . a:element_name[:strridx(a:element_name, '/')]
       let element_name = a:element_name[strridx(a:element_name, '/')+1:]
     else
@@ -1955,6 +1971,9 @@ function! cake#factory(path_app)
       endfor
     endfor
 
+    if has_path == 1
+      call filter(elements, 'v:val =~# "' . origin_element_name . '"')
+    endif
 
     let i = len(elements)
     if i == 0
