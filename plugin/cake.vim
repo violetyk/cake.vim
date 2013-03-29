@@ -211,6 +211,8 @@ command! -n=* -complete=customlist,cake#get_complelist_lib Clibtab call g:cake.j
 
 " Describe Table.
 command! -n=? -complete=customlist,cake#get_complelist_model Cdesc call g:cake.describe_table(<f-args>)
+
+command! -n=0 -range Cquickrun :<line1>,<line2>call g:cake.quickrun()
 " }}}
 
 
