@@ -2089,6 +2089,7 @@ function! cake#factory(path_app)
 
   " Functions: quickrun interface
   " ============================================================
+  " Currentry, only CakePHP1.3
   function! self.quickrun() range "{{{
     let range = a:firstline . ',' . a:lastline
     let tmp = @@
@@ -2096,40 +2097,47 @@ function! cake#factory(path_app)
     let src = @@
     let @@ = tmp
 
-    " let models  = self.get_models()
-    " let helpers = self.get_helpers()
-    " let components  = self.get_components()
-    " let behaviors  = self.get_behaviors()
+    let models  = self.get_models()
+    let helpers = self.get_helpers()
+    let libs    = self.get_libs()
 
-    " let _src = ''
-    " " replace $this
-    " for line in split(src, "\n")
-      " let this = matchstr(line, '\$this->')
-      " if strlen(this)
-        " let path = expand("%:p")
-        " if self.is_controller(path)
-          " " Model?
-          " let object = self.path_to_name_controller(path)
-          " echo object
-          " if has_key(models, object)
-            " let this = 'ClassRegistry::init("' . models[object] . '")->'
-          " " Component?
-          " elseif has_key(components, object)
+    let _pre = ''
+    let _src = ''
+    " replace $this
+    for line in split(src, "\n")
+      let new_object = ''
+      let path = expand("%:p")
+      " in Controller
+      if self.is_controller(path)
+        let object = matchstr(line, '\(\$this->\)\zs\u\a\+\ze')
+        if strlen(object)
+          " Model?
+          if has_key(models, object)
+            " replace
+            let line = substitute(line, '$this->' . object, 'ClassRegistry::init("' . object . '")', "")
+          endif
+        endif
+      " in Model
+      elseif self.is_model(path)
+        let object = self.path_to_name_model(path)
+        let line = substitute(line, '$this', 'ClassRegistry::init("' . object . '")', "")
+      " in View
+      elseif self.is_view(path)
+        let object = matchstr(line, '\(\$this->\)\zs\u\a\+\ze')
+        if strlen(object)
+          " Helper?
+          if has_key(helpers, object . 'Helper') || has_key(libs, object . 'Helper')
+            let _pre = _pre . 'App::import("Helper", "' . object . '"); $' . object . ' = new ' . object . 'Helper(); '
+            " replace
+            let line = substitute(line, '$this->' . object, '$' . object, "")
+          endif
+        endif
+      endif
 
-          " endif
-        " elseif self.is_model(path)
-        " elseif self.is_view(path)
-        " endif
+      let _src = _src . line
+    endfor
 
-        " " replace
-        " let line = substitute(line, '\$this->', this, "")
-      " endif
-
-      " let _src = _src . line
-    " endfor
-
-    " let src = _src
-    " echo src
+    let src = _pre . _src
 
     let php_code = '<?php'
     let php_code = php_code . ' $_GET["url"] = "favicon.ico";'
@@ -2137,6 +2145,7 @@ function! cake#factory(path_app)
     let php_code = php_code . ' ' . src
     let php_code = php_code . ' ?>'
 
+    " echo php_code
     call quickrun#run({'type' : 'php', 'src' : php_code})
     " call quickrun#run({'type' : 'php', 'runner' : 'vimproc', 'src' : php_code})
   endfunction "}}}
