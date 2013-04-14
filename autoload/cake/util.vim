@@ -60,7 +60,6 @@ endfunction "}}}
 " Function: cake#util#singularize(word) {{{
 " rails.vim(http://www.vim.org/scripts/script.php?script_id=1567)
 " rails#singularize
-" ============================================================
 function! cake#util#singularize(word)
 
   let word = a:word
@@ -83,7 +82,6 @@ endfunction
 " Function: cake#util#pluralize(word) {{{
 " rails.vim(http://www.vim.org/scripts/script.php?script_id=1567)
 " rails#pluralize
-" ============================================================
 function! cake#util#pluralize(word)
 
   let word = a:word
@@ -102,13 +100,17 @@ function! cake#util#pluralize(word)
 endfunction
 " }}}
 
-" Function: cake#util#echo_warning(message) {{{
-function! cake#util#echo_warning(message)
+" Function: cake#util#warning(message) {{{
+function! cake#util#warning(message)
   echohl WarningMsg | redraw | echo  a:message | echohl None
+endfunction " }}}
+" Function: cake#util#error(message) {{{
+function! cake#util#error(message)
+  echohl ErrorMsg | redraw | echo  a:message | echohl None
+  let v:errmsg = a:message
 endfunction " }}}
 
 " Function: cake#util#open_file(path, option, line) {{{
-" ============================================================
 function! cake#util#open_file(path, option, line)
 
   if !bufexists(a:path)
@@ -151,7 +153,7 @@ function! cake#util#confirm_create_file(path)
     let result1 = system("mkdir -p " . fnamemodify(a:path, ":p:h"))
     let result2 = system("touch " . a:path)
     if strlen(result1) != 0 && strlen(result2) != 0
-      call cake#util#echo_warning(result2)
+      call cake#util#warning(result2)
       return 0
     else
       return 1
@@ -168,7 +170,7 @@ let s:log_buffers = {}
 function! cake#util#open_tail_log_window(path,window_size)
 
   if !filereadable(a:path)
-    call cake#util#echo_warning(a:path . " is not readable.")
+    call cake#util#warning(a:path . " is not readable.")
     return
   endif
 

@@ -8,6 +8,7 @@ set cpo&vim
 function! cake#cake20#factory(path_app)
   " like class extends.
   let self = cake#factory(a:path_app)
+  " self.base is parent class.
   let self.base = deepcopy(self)
 
   let self.paths = {
@@ -163,34 +164,91 @@ function! cake#cake20#factory(path_app)
 
   " Functions: self.path_to_name_xxx()
   " ============================================================
-  function! self.path_to_name_controller(path) "{{{
-    return substitute(fnamemodify(a:path, ":t:r"), "Controller$", "", "")
+  function! self.path_to_name_controller(...) "{{{
+    if a:0 == 0
+      return ''
+    endif
+    let path = a:1
+    if (exists('a:2') && a:2 > 0)
+      return fnamemodify(path, ":t:r")
+    else
+      return substitute(fnamemodify(path, ":t:r"), "Controller$", "", "")
+    endif
   endfunction "}}}
-  function! self.path_to_name_model(path) "{{{
-    let name = fnamemodify(a:path, ":t:r")
+  function! self.path_to_name_model(...) "{{{
+    let path = a:1
+    let name = fnamemodify(path, ":t:r")
     if name ==# 'AppModel'
       return 'App'
     else
       return name
     endif
   endfunction "}}}
-  function! self.path_to_name_fixture(path) "{{{
-    return cake#util#camelize(substitute(fnamemodify(a:path, ":t:r"), "Fixture$", "", ""))
+  function! self.path_to_name_fixture(...) "{{{
+    if a:0 == 0
+      return ''
+    endif
+    let path = a:1
+    if (exists('a:2') && a:2 > 0)
+      return fnamemodify(path, ":t:r")
+    else
+      return cake#util#camelize(substitute(fnamemodify(path, ":t:r"), "Fixture$", "", ""))
+    endif
   endfunction "}}}
-  function! self.path_to_name_component(path) "{{{
-    return substitute(fnamemodify(a:path, ":t:r"), "Component$", "", "")
+  function! self.path_to_name_component(...) "{{{
+    if a:0 == 0
+      return ''
+    endif
+    let path = a:1
+    if (exists('a:2') && a:2 > 0)
+      return fnamemodify(path, ":t:r")
+    else
+      return substitute(fnamemodify(path, ":t:r"), "Component$", "", "")
+    endif
   endfunction "}}}
-  function! self.path_to_name_shell(path) "{{{
-    return substitute(fnamemodify(a:path, ":t:r"), "Shell$", "", "")
+  function! self.path_to_name_shell(...) "{{{
+    if a:0 == 0
+      return ''
+    endif
+    let path = a:1
+    if (exists('a:2') && a:2 > 0)
+      return fnamemodify(path, ":t:r")
+    else
+      return substitute(fnamemodify(path, ":t:r"), "Shell$", "", "")
+    endif
   endfunction "}}}
-  function! self.path_to_name_task(path) "{{{
-    return substitute(fnamemodify(a:path, ":t:r"), "Task$", "", "")
+  function! self.path_to_name_task(...) "{{{
+    if a:0 == 0
+      return ''
+    endif
+    let path = a:1
+    if (exists('a:2') && a:2 > 0)
+      return fnamemodify(path, ":t:r")
+    else
+      return substitute(fnamemodify(path, ":t:r"), "Task$", "", "")
+    endif
   endfunction "}}}
-  function! self.path_to_name_behavior(path) "{{{
-    return substitute(fnamemodify(a:path, ":t:r"), "Behavior$", "", "")
+  function! self.path_to_name_behavior(...) "{{{
+    if a:0 == 0
+      return ''
+    endif
+    let path = a:1
+    if (exists('a:2') && a:2 > 0)
+      return fnamemodify(path, ":t:r")
+    else
+      return substitute(fnamemodify(path, ":t:r"), "Behavior$", "", "")
+    endif
   endfunction "}}}
-  function! self.path_to_name_helper(path) "{{{
-    return substitute(fnamemodify(a:path, ":t:r"), "Helper$", "", "")
+  function! self.path_to_name_helper(...) "{{{
+    if a:0 == 0
+      return ''
+    endif
+    let path = a:1
+    if (exists('a:2') && a:2 > 0)
+      return fnamemodify(path, ":t:r")
+    else
+      return substitute(fnamemodify(path, ":t:r"), "Helper$", "", "")
+    endif
   endfunction "}}}
   function! self.path_to_name_testcontroller(path) "{{{
     return substitute(fnamemodify(a:path, ":t:r"), "ControllerTest$", "", "")

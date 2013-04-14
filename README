@@ -3,7 +3,7 @@ cake.vim is for easy jumping between Controller, Model and View files when devel
 
 Requirements:
 - Vim ver.7.3 or heigher
-- CakePHP ver.1.3.x or ver.2.0.x
+- CakePHP ver.1.3.x or ver.2.x
 
 Easy to use:
 
