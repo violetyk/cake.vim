@@ -689,7 +689,6 @@ function! cake#factory(path_app)
         else
           let pattern = '\(' . self.paths.views . '\)\zs\w\+\ze'
         endif
-        echo pattern
 
         let target = matchstr(path, pattern)
         call add(targets, target)
@@ -2296,7 +2295,8 @@ function! cake#factory(path_app)
     let line = 0
 
     if a:action_name != ''
-      let cmd = 'grep -n -E "^\s*function\s*' . a:action_name . '\s*\(" ' . self.name_to_path_controller(a:controller_name) . ' | cut -f 1'
+
+      let cmd = 'grep -n -E "^\s*(public)?\s*function\s*' . a:action_name . '\s*\(" ' . self.name_to_path_controller(a:controller_name) . ' | cut -f 1'
       " Extract line number from grep result.
       let n = matchstr(system(cmd), '\(^\d\+\)')
       if strlen(n) > 0
