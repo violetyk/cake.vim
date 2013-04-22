@@ -2294,8 +2294,7 @@ function! cake#factory(path_app)
   function! self.get_line_in_controller(controller_name, action_name) "{{{
     let line = 0
 
-    if a:action_name != ''
-
+    if executable('grep') && a:action_name != ''
       let cmd = 'grep -n -E "^\s*(public)?\s*function\s*' . a:action_name . '\s*\(" ' . self.name_to_path_controller(a:controller_name) . ' | cut -f 1'
       " Extract line number from grep result.
       let n = matchstr(system(cmd), '\(^\d\+\)')
