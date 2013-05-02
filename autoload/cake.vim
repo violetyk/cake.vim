@@ -1664,12 +1664,12 @@ function! cake#factory(path_app)
     " }}}
     " in TestModel "{{{
     if self.is_testmodel(path)
-      " TestModel -> Fixture or Model
-      if self.is_fixture(self.name_to_path_fixture(word))
-        call self.jump_fixture(option, word)
-        return
-      elseif self.is_model(self.name_to_path_model(word)) || self.in_build_path_model(word)
+      " TestModel -> Model or Fixture
+      if self.is_model(self.name_to_path_model(word)) || self.in_build_path_model(word)
         call self.jump_model(option, word)
+        return
+      elseif self.is_fixture(self.name_to_path_fixture(word))
+        call self.jump_fixture(option, word)
         return
       endif
     endif
