@@ -5,6 +5,8 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
+let s:is_fullname = 1
+
 " UniteSource: cake_controller "{{{
 " ============================================================
 let s:unite_source_controller = {
@@ -16,7 +18,7 @@ function! s:unite_source_controller.gather_candidates(args, context)
   let candidates = []
 
   try
-    for i in items(g:cake.get_controllers())
+    for i in items(g:cake.get_controllers(s:is_fullname))
       call add(candidates, {
             \ 'word' : i[0],
             \ 'kind' : 'file',
@@ -42,7 +44,7 @@ function! s:unite_source_component.gather_candidates(args, context)
   let candidates = []
 
   try
-    for i in items(g:cake.get_components())
+    for i in items(g:cake.get_components(s:is_fullname))
       call add(candidates, {
             \ 'word' : i[0],
             \ 'kind' : 'file',
@@ -93,7 +95,7 @@ function! s:unite_source_behavior.gather_candidates(args, context)
   let candidates = []
 
   try
-    for i in items(g:cake.get_behaviors())
+    for i in items(g:cake.get_behaviors(s:is_fullname))
       call add(candidates, {
             \ 'word' : i[0],
             \ 'kind' : 'file',
@@ -189,7 +191,7 @@ function! s:unite_source_helper.gather_candidates(args, context)
   let candidates = []
 
   try
-    for i in items(g:cake.get_helpers())
+    for i in items(g:cake.get_helpers(s:is_fullname))
       call add(candidates, {
             \ 'word' : i[0],
             \ 'kind' : 'file',
@@ -241,7 +243,7 @@ function! s:unite_source_fixture.gather_candidates(args, context)
   let candidates = []
 
   try
-    for i in items(g:cake.get_fixtures())
+    for i in items(g:cake.get_fixtures(s:is_fullname))
       call add(candidates, {
             \ 'word' : i[0],
             \ 'kind' : 'file',
@@ -268,7 +270,7 @@ function! s:unite_source_shell.gather_candidates(args, context)
   let candidates = []
 
   try
-    for i in items(g:cake.get_shells())
+    for i in items(g:cake.get_shells(s:is_fullname))
       call add(candidates, {
             \ 'word' : i[0],
             \ 'kind' : 'file',
@@ -294,11 +296,37 @@ function! s:unite_source_task.gather_candidates(args, context)
   let candidates = []
 
   try
-    for i in items(g:cake.get_tasks())
+    for i in items(g:cake.get_tasks(s:is_fullname))
       call add(candidates, {
             \ 'word' : i[0],
             \ 'kind' : 'file',
             \ 'source' : 'cake_task',
+            \ 'action__path' : i[1],
+            \ 'action__directory' : fnamemodify(i[1],":p:h"),
+            \ })
+    endfor
+  catch
+  endtry
+
+  return candidates
+endfunction
+" }}}
+" UniteSource: cake_lib "{{{
+" ============================================================
+let s:unite_source_lib = {
+      \ 'name' : 'cake_lib',
+      \ 'description' : 'CakePHP Libs',
+      \ }
+
+function! s:unite_source_lib.gather_candidates(args, context)
+  let candidates = []
+
+  try
+    for i in items(g:cake.get_libs())
+      call add(candidates, {
+            \ 'word' : i[0],
+            \ 'kind' : 'file',
+            \ 'source' : 'cake_lib',
             \ 'action__path' : i[1],
             \ 'action__directory' : fnamemodify(i[1],":p:h"),
             \ })
@@ -321,7 +349,8 @@ function! unite#sources#cake#define() "{{{
         \ s:unite_source_config,
         \ s:unite_source_fixture,
         \ s:unite_source_shell,
-        \ s:unite_source_task
+        \ s:unite_source_task,
+        \ s:unite_source_lib
         \ ]
 
   return sources

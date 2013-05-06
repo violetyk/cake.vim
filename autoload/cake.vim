@@ -499,17 +499,18 @@ function! cake#factory(path_app)
   " Functions: get_dictionary()
   " [object_name : path]
   " ============================================================
-  function! self.get_behaviors() "{{{
+  function! self.get_behaviors(...) "{{{
     let behaviors = {}
+    let is_fullname = (exists('a:1') && (a:1 > 0))? 1 : 0
 
     for path in split(globpath(self.paths.behaviors, "*.php"), "\n")
-      let name = self.path_to_name_behavior(path)
+      let name = self.path_to_name_behavior(path, is_fullname)
       let behaviors[name] = path
     endfor
 
     for build_path in self.get_build_paths('behaviors')
       for path in split(globpath(build_path, "*.php"), "\n")
-        let name = self.path_to_name_behavior(path)
+        let name = self.path_to_name_behavior(path, is_fullname)
         if !has_key(behaviors, name)
           let behaviors[name] = path
         endif
@@ -519,17 +520,18 @@ function! cake#factory(path_app)
 
     return behaviors
   endfunction " }}}
-  function! self.get_components() "{{{
+  function! self.get_components(...) "{{{
     let components = {}
+    let is_fullname = (exists('a:1') && (a:1 > 0))? 1 : 0
 
     for path in split(globpath(self.paths.components, "*.php"), "\n")
-      let name = self.path_to_name_component(path)
+      let name = self.path_to_name_component(path, is_fullname)
       let components[name] = path
     endfor
 
     for build_path in self.get_build_paths('components')
       for path in split(globpath(build_path, "*.php"), "\n")
-        let name = self.path_to_name_component(path)
+        let name = self.path_to_name_component(path, is_fullname)
         if !has_key(components, name)
           let components[name] = path
         endif
@@ -538,17 +540,18 @@ function! cake#factory(path_app)
 
     return components
   endfunction "}}}
-  function! self.get_helpers() "{{{
+  function! self.get_helpers(...) "{{{
     let helpers = {}
+    let is_fullname = (exists('a:1') && (a:1 > 0))? 1 : 0
 
     for path in split(globpath(self.paths.helpers, "*.php"), "\n")
-      let name = self.path_to_name_helper(path)
+      let name = self.path_to_name_helper(path, is_fullname)
       let helpers[name] = path
     endfor
 
     for build_path in self.get_build_paths('helpers')
       for path in split(globpath(build_path, "*.php"), "\n")
-        let name = self.path_to_name_helper(path)
+        let name = self.path_to_name_helper(path, is_fullname)
         if !has_key(helpers, name)
           let helpsers[name] = path
         endif
@@ -557,31 +560,34 @@ function! cake#factory(path_app)
 
     return helpers
   endfunction " }}}
-  function! self.get_shells() "{{{
+  function! self.get_shells(...) "{{{
     let shells = {}
+    let is_fullname = exists('a:1' && a:1 >0) ? 1 : 0
 
     for path in split(globpath(self.paths.shells, "*.php"), "\n")
-      let name = self.path_to_name_shell(path)
+      let name = self.path_to_name_shell(path, is_fullname)
       let shells[name] = path
     endfor
 
     return shells
   endfunction " }}}
-    function! self.get_tasks() "{{{
+    function! self.get_tasks(...) "{{{
       let tasks = {}
+      let is_fullname = (exists('a:1') && (a:1 > 0))? 1 : 0
 
       for path in split(globpath(self.paths.tasks, "*.php"), "\n")
-        let name = self.path_to_name_task(path)
+        let name = self.path_to_name_task(path, is_fullname)
         let tasks[name] = path
       endfor
 
       return tasks
     endfunction " }}}
-  function! self.get_fixtures() "{{{
+  function! self.get_fixtures(...) "{{{
     let fixtures = {}
+    let is_fullname = (exists('a:1') && (a:1 > 0))? 1 : 0
 
     for path in split(globpath(self.paths.fixtures, "*.php"), "\n")
-      let name = self.path_to_name_fixture(path)
+      let name = self.path_to_name_fixture(path, is_fullname)
       let fixtures[name] = path
     endfor
 

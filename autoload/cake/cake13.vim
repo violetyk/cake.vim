@@ -149,11 +149,12 @@ function! cake#cake13#factory(path_app)
 
     return libs
   endfunction "}}}
-  function! self.get_controllers() "{{{
+  function! self.get_controllers(...) "{{{
     let controllers = {}
+    let is_fullname = (exists('a:1') && (a:1 > 0))? 1 : 0
 
     for path in split(globpath(self.paths.app, "**/*_controller\.php"), "\n")
-      let name = self.path_to_name_controller(path)
+      let name = self.path_to_name_controller(path, is_fullname)
       let controllers[name] = path
     endfor
 
@@ -184,21 +185,22 @@ function! cake#cake13#factory(path_app)
 
   endfunction
   " }}}
-  function! self.get_helpers() "{{{
+  function! self.get_helpers(...) "{{{
     let helpers = {}
+    let is_fullname = (exists('a:1') && (a:1 > 0))? 1 : 0
 
     for path in split(globpath(self.paths.helpers, "*.php"), "\n")
-      let name = self.path_to_name_helper(path)
+      let name = self.path_to_name_helper(path, is_fullname)
       let helpers[name] = path
     endfor
 
     for path in split(globpath(self.paths.app, "*_helper.php"), "\n")
-      let helpers[self.path_to_name_helper(path)] = path
+      let helpers[self.path_to_name_helper(path, is_fullname)] = path
     endfor
 
     for build_path in self.get_build_paths('helpers')
       for path in split(globpath(build_path, "*.php"), "\n")
-        let name = self.path_to_name_helper(path)
+        let name = self.path_to_name_helper(path, is_fullname)
         if !has_key(helpers, name)
           let helpsers[name] = path
         endif

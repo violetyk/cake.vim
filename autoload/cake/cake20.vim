@@ -103,11 +103,12 @@ function! cake#cake20#factory(path_app)
     return libs
   endfunction "}}}
 
-  function! self.get_controllers() "{{{
+  function! self.get_controllers(...) "{{{
     let controllers = {}
+    let is_fullname = (exists('a:1') && (a:1 > 0))? 1 : 0
 
     for path in split(globpath(self.paths.controllers, "**/*Controller\.php"), "\n")
-      let name = self.path_to_name_controller(path)
+      let name = self.path_to_name_controller(path, is_fullname)
       let controllers[name] = path
     endfor
 
