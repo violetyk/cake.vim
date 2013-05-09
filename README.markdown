@@ -53,7 +53,7 @@ No arguments : If you do not specify arguments, guess depending on the type of t
 | Task |`:Ctask {task-name}` | ok ||
 | Cake Core Library |`:CLib {lib-name}` | ok ||
 | Log File (like `tail -f`)|`:Clog {log-name}`  (See `g:cakephp_log`)|||
-| Fixture |`:Fixture {task-name}` | ok | Model|
+| Fixture |`:CFixture {task-name}` | ok | Model|
 | TestController |`:Ctestcontroller {controller-name}`| ok | Controller |
 | TestModel |`:Ctestmodel {model-name}`| ok | Model |
 | TestComponent |`:Ctestcomponent {component-name}`| ok | Component |
