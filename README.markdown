@@ -51,8 +51,9 @@ No arguments : If you do not specify arguments, guess depending on the type of t
 | Helper |`:Chelper {helper-name}` | ok | HelperTestCase |
 | Shell |`:Cshell {shell-name}` | ok ||
 | Task |`:Ctask {task-name}` | ok ||
-| Cake Core |`:CLib {lib-name}` | ok ||
+| Cake Core Library |`:CLib {lib-name}` | ok ||
 | Log File (like `tail -f`)|`:Clog {log-name}`  (See `g:cakephp_log`)|||
+| Fixture |`:Fixture {task-name}` | ok | Model|
 | TestController |`:Ctestcontroller {controller-name}`| ok | Controller |
 | TestModel |`:Ctestmodel {model-name}`| ok | Model |
 | TestComponent |`:Ctestcomponent {component-name}`| ok | Component |
@@ -60,8 +61,82 @@ No arguments : If you do not specify arguments, guess depending on the type of t
 | TestHelper |`:Ctesthelper {helper-name}`| ok | Helper |
 | Test (Any) |`:Ctest`|  | Controller / Model / Component / Behavior / Helper / Fixture |
 
+## gf
+- In Vim, you press the `gf` in normal mode, open the path it is written under the cursor, but, `gf` in a project in CakePHP to open the file of the object.
+- `<C-w>f` is horizontal split, `<C-w>gf` is open in a tab, and `gs` is vertical split. See `g:cakephp_keybind_vsplit_gf`.
 
+### Example
 
+```php
+// gf on AppController -> AppController
+class MyController extends AppController {
+  // gf with the following line -> layouts/2column.ctp
+  var $layout = '2column';
+  
+  // gf on Post -> PostHelper
+  var $helpers = array('Post');
 
+  // gf on Session -> SessionComponent (CakePHP Core)
+  var $components = array('Session');
 
-[Vundle]:http://github.com/gmarik/vundle
+  // gf with the following line -> index.ctp
+  function index() {
+
+    // gf with the following line -> layouts/default.ctp
+    $this->layout = 'default';
+    
+    // gf on Post -> PostModel
+    $this->Post->find('all')
+    
+    // gf on Set -> cake/libs/set.php
+    Set::extract('/Post', $posts);
+    
+    // gf with the following line -> views/{controller-name}/pc/index.ctp
+    $this->render('pc/index.ctp');
+  }
+}
+
+// gf with the following line -> config
+Configure::load('list');
+
+// gf with the following line -> views/elements/pager.ctp
+$this->element('pager');
+
+// gf with the following line -> views/elements/sidebar/menu.ctp
+$this->element('sidebar/menu');
+
+// gf with the following line -> css/style.css
+$html->css('style');
+
+// gf with the following line -> js/jquery.js
+$html->script('jquery');
+
+// gf with the following line -> HogeController::fuga()
+array('controller' => 'Hoge', 'action' => 'fuga')
+
+// gf with the following line -> HogeController::admin_fuga()
+array('controller' => 'Hoge', 'action' => 'fuga', 'admin' => true)
+
+```
+
+## Utility Command
+- If [dbext.vim](http://www.vim.org/scripts/script.php?script_id=356) is installed, you can see the table definition of the model, `:Cdesc {model-name}`. If you do not specify an argument, the word under the cursor can be specified.
+- `:Celement {element-name}` Cut out as an element the selected range. `:help :Celement`
+
+## unite-sources
+- cake.vim is compatible with [unite.vim](https://github.com/Shougo/unite.vim).
+
+| Target | Source |
+| --- | --- |
+|Controller|cake_controller|
+|Model|cake_model
+|View of the current controller|cake_view|
+|View of the specified controller|cake_view:{controller-name}|
+|Config|cake_config|
+|Component|cake_component|
+|Behavior|cake_behavior|
+|Helper|cake_helper|
+|Shell|cake_shell|
+|Task|cake_task|
+|Fixture|cake_fixture|
+|Cake Core Library |cake_lib|
