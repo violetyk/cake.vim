@@ -149,7 +149,6 @@ function! cake#util#confirm_create_file(path)
     " Was interrupted. Using Esc or Ctrl-C.
     return 0
   elseif choice == 1
-    " TODO: A copy of the skeleton might be good?
     let result1 = system("mkdir -p " . fnamemodify(a:path, ":p:h"))
     let result2 = system("touch " . a:path)
     if strlen(result1) != 0 && strlen(result2) != 0

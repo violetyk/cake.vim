@@ -519,6 +519,11 @@ such as the following. Vimrc.
 ==============================================================================
 CHANGE LOG							*cake-changelog*
 
+2.11   2013-05-09
+     - Add g:cakephp_enable_abbreviations
+     - Add unite-source cake_lib
+     - Fix a few bugs.
+
 2.10.1 2013-03-06
      - Add to the configuration file : core
      - Fix a few bugs.

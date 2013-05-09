@@ -1,7 +1,7 @@
 " cake.vim - Utility for CakePHP developpers.
 " Maintainer:  Yuhei Kagaya <yuhei.kagaya@gmail.com>
 " License:     This file is placed in the public domain.
-" Last Change: 2013/05/06
+" Last Change: 2013/05/09
 
 if exists('g:loaded_cake_vim')
   finish
@@ -35,27 +35,26 @@ set cpo&vim
 
 " SECTION: Global Variables {{{
 " fix setting of the app.
-let g:cakevim_version           = '2.11'
-let g:cakephp_enable_fix_mode   = get(g:, 'cakephp_enable_fix_mode', 0)
-let g:cakephp_app               = get(g:, 'cakephp_app', '')
-let g:cakephp_use_theme         = get(g:, 'cakephp_use_theme', '')
-let g:cakephp_core_path         = get(g:, 'cakephp_core_path', '')
+let g:cakevim_version                   = '2.11'
+let g:cakephp_enable_fix_mode           = get(g:, 'cakephp_enable_fix_mode', 0)
+let g:cakephp_app                       = get(g:, 'cakephp_app', '')
+let g:cakephp_use_theme                 = get(g:, 'cakephp_use_theme', '')
+let g:cakephp_core_path                 = get(g:, 'cakephp_core_path', '')
 " automatically look for app and set it
-let g:cakephp_enable_auto_mode  = get(g:, 'cakephp_enable_auto_mode', (g:cakephp_enable_fix_mode)? 0 : 1)
-let g:cakephp_log_window_size   = get(g:, 'cakephp_log_window_size', 15)
-let g:cakephp_db_type           = get(g:, 'cakephp_db_type', 'MySQL')
-let g:cakephp_db_port           = get(g:, 'cakephp_db_port', 3306)
-let g:cakephp_db_buffer_lines   = get(g:, 'cakephp_db_buffer_lines', 20)
-let g:cakephp_app_config_file   = get(g:, 'cakephp_app_config_file', '.cake')
-let g:cakephp_keybind_vsplit_gf = get(g:, 'cakephp_keybind_vsplit_gf', 'gs')
-if !exists('g:cakephp_log')
-  let g:cakephp_log = {
-        \ 'debug' : '',
-        \ 'error' : '',
-        \ 'query' : '/var/log/mysql/query.log',
-        \ 'access': '/usr/local/apache2/logs/access_log'
-        \ }
-endif
+let g:cakephp_enable_auto_mode          = get(g:, 'cakephp_enable_auto_mode', (g:cakephp_enable_fix_mode)? 0 : 1)
+let g:cakephp_enable_abbreviations      = get(g:, 'cakephp_enable_abbreviations', 0)
+let g:cakephp_log_window_size           = get(g:, 'cakephp_log_window_size', 15)
+let g:cakephp_db_type                   = get(g:, 'cakephp_db_type', 'MySQL')
+let g:cakephp_db_port                   = get(g:, 'cakephp_db_port', 3306)
+let g:cakephp_db_buffer_lines           = get(g:, 'cakephp_db_buffer_lines', 20)
+let g:cakephp_app_config_file           = get(g:, 'cakephp_app_config_file', '.cake')
+let g:cakephp_keybind_vsplit_gf         = get(g:, 'cakephp_keybind_vsplit_gf', 'gs')
+let g:cakephp_log                       = get(g:, 'cakephp_log', {
+                                              \ 'debug' : '',
+                                              \ 'error' : '',
+                                              \ 'query' : '/var/log/mysql/query.log',
+                                              \ 'access': '/usr/local/apache2/logs/access_log'
+                                              \ })
 
 let g:cake = {}
 " }}}

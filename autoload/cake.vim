@@ -95,7 +95,9 @@ function! cake#is_cake20(path) " {{{
 endfunction " }}}
 function! cake#init_buffer() "{{{
   call cake#map_commands()
-  call cake#set_abbreviations()
+  if g:cakephp_enable_abbreviations
+    call cake#set_abbreviations()
+  endif
   " Cut an element partially. Argument is element name(,theme name).
   command! -n=1 -bang -buffer -bar -range Celement :<line1>,<line2>call g:cake.clip_element(<bang>0,<f-args>)
 endfunction "}}}
@@ -381,15 +383,15 @@ function! cake#factory(path_app)
   endfunction
   function! self.path_to_name_fixture(...)
   endfunction
-  function! self.path_to_name_testcontroller(path)
+  function! self.path_to_name_testcontroller(...)
   endfunction
-  function! self.path_to_name_testmodel(path)
+  function! self.path_to_name_testmodel(...)
   endfunction
-  function! self.path_to_name_testcomponent(path)
+  function! self.path_to_name_testcomponent(...)
   endfunction
-  function! self.path_to_name_testbehavior(path)
+  function! self.path_to_name_testbehavior(...)
   endfunction
-  function! self.path_to_name_testhelper(path)
+  function! self.path_to_name_testhelper(...)
   endfunction
   function! self.path_to_name_theme(path)
   endfunction
@@ -451,6 +453,7 @@ function! cake#factory(path_app)
   endfunction
   function! self.is_task(path)
   endfunction
+
   " }}}
   function! self.name_to_path_config(name) "{{{
     return self.paths.configs . a:name . ".php"
@@ -562,7 +565,7 @@ function! cake#factory(path_app)
   endfunction " }}}
   function! self.get_shells(...) "{{{
     let shells = {}
-    let is_fullname = exists('a:1' && a:1 >0) ? 1 : 0
+    let is_fullname = (exists('a:1') && (a:1 > 0))? 1 : 0
 
     for path in split(globpath(self.paths.shells, "*.php"), "\n")
       let name = self.path_to_name_shell(path, is_fullname)
@@ -715,7 +718,7 @@ function! cake#factory(path_app)
       if !has_key(controllers, target)
 
         " If the file does not exist, ask whether to create a new file.
-        if cake#util#confirm_create_file(self.name_to_path_controller(target))
+        if self.bake('controller', target, {}, 0) || cake#util#confirm_create_file(self.name_to_path_controller(target))
           let controllers[target] = self.name_to_path_controller(target)
         else
           call cake#util#warning(target . "Controller is not found.")
@@ -763,7 +766,7 @@ function! cake#factory(path_app)
       if !has_key(models, target)
 
         " If the file does not exist, ask whether to create a new file.
-        if cake#util#confirm_create_file(self.name_to_path_model(target))
+        if self.bake('model', target, {}, 0) || cake#util#confirm_create_file(self.name_to_path_model(target))
           let models[target] = self.name_to_path_model(target)
         else
           call cake#util#warning(target . "Model is not found.")
@@ -1116,7 +1119,7 @@ function! cake#factory(path_app)
 
       if !has_key(testmodels, target)
         " If the file does not exist, ask whether to create a new file.
-        if cake#util#confirm_create_file(self.name_to_path_testmodel(target))
+        if self.bake('testmodel', target, {}, 0) || cake#util#confirm_create_file(self.name_to_path_testmodel(target))
           let testmodels[target] = self.name_to_path_testmodel(target)
         else
           call cake#util#warning(target . " is not found.")
@@ -1154,7 +1157,7 @@ function! cake#factory(path_app)
 
       if !has_key(testbehaviors, target)
         " If the file does not exist, ask whether to create a new file.
-        if cake#util#confirm_create_file(self.name_to_path_testbehavior(target))
+        if self.bake('testbehavior', target, {}, 0) || cake#util#confirm_create_file(self.name_to_path_testbehavior(target))
           let testbehaviors[target] = self.name_to_path_testbehavior(target)
         else
           call cake#util#warning(target . " is not found.")
@@ -1192,7 +1195,7 @@ function! cake#factory(path_app)
 
       if !has_key(testcomponents, target)
         " If the file does not exist, ask whether to create a new file.
-        if cake#util#confirm_create_file(self.name_to_path_testcomponent(target))
+        if self.bake('testcomponent', target, {}, 0) || cake#util#confirm_create_file(self.name_to_path_testcomponent(target))
           let testcomponents[target] = self.name_to_path_testcomponent(target)
         else
           call cake#util#warning(target . " is not found.")
@@ -1230,7 +1233,7 @@ function! cake#factory(path_app)
 
       if !has_key(testcontrollers, target)
         " If the file does not exist, ask whether to create a new file.
-        if cake#util#confirm_create_file(self.name_to_path_testcontroller(target))
+        if self.bake('testcontroller', target, {}, 0) || cake#util#confirm_create_file(self.name_to_path_testcontroller(target))
           let testcontrollers[target] = self.name_to_path_testcontroller(target)
         else
           call cake#util#warning(target . " is not found.")
@@ -1268,7 +1271,7 @@ function! cake#factory(path_app)
 
       if !has_key(testhelpers, target)
         " If the file does not exist, ask whether to create a new file.
-        if cake#util#confirm_create_file(self.name_to_path_testhelper(target))
+        if self.bake('testhelper', target, {}, 0) || cake#util#confirm_create_file(self.name_to_path_testhelper(target))
           let testhelpers[target] = self.name_to_path_testhelper(target)
         else
           call cake#util#warning(target . " is not found.")
@@ -1346,8 +1349,9 @@ function! cake#factory(path_app)
       let target = cake#util#camelize(target)
 
       if !has_key(fixtures, target)
-        " If the file does not exist, ask whether to create a new file.
-        if cake#util#confirm_create_file(self.name_to_path_fixture(target))
+        if self.bake('fixture', target, {}, 0)
+          let fixtures[target] = self.name_to_path_fixture(target)
+        elseif cake#util#confirm_create_file(self.name_to_path_fixture(target))
           let fixtures[target] = self.name_to_path_fixture(target)
         else
           call cake#util#warning(target . " is not found.")
@@ -2404,6 +2408,52 @@ function! cake#factory(path_app)
 
     echo 'Save Element: '. output_file
 
+  endfunction "}}}
+  function! self.bake(type, name, option, force) "{{{
+    if empty(a:type) || empty(a:name)
+      return 0
+    endif
+
+    let path = call(get(g:cake, 'name_to_path_' . a:type), [a:name], g:cake)
+    let full_name = call(get(g:cake, 'path_to_name_' . a:type), [path, 1], g:cake)
+
+    if !a:force
+      let choice = confirm("Bake " . full_name . " ?", "&Yes\n&No", 1)
+      if choice != 1
+        return 0
+      endif
+    endif
+
+    if filereadable(path)
+      let ftime_before = getftime(path)
+    else
+      let ftime_before = -1
+    endif
+    let option = ''
+    if isdirectory(a:option)
+      for v in items(a:option)
+        let option .= v[0] . ' ' . v[1]
+      endfor
+    elseif strlen(a:option) > 0
+      let option = a:option
+    endif
+
+    if matchstr(a:type, '^test') == 'test'
+      let type_main = 'test'
+      let type_sub = a:type[len('test'):]
+    else
+      let type_main = a:type
+      let type_sub = ''
+    endif
+
+    let cmd  = printf('%scake bake %s %s %s %s -app %s', self.paths.cores.console, type_main, type_sub, a:name, option, self.paths.app)
+    execute ':!' .cmd
+
+    if ftime_before == getftime(path)
+      return 0
+    else
+      return 1
+    endif
   endfunction "}}}
   " ============================================================
 

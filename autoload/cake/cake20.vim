@@ -56,6 +56,7 @@ function! cake#cake20#factory(path_app)
         \ 'models'      : path_core . 'Cake/Model/',
         \ 'behaviors'   : path_core . 'Cake/Model/Behavior/',
         \ 'helpers'     : path_core . 'Cake/View/Helper/',
+        \ 'console'     : path_core . 'Cake/Console/',
         \ 'shells'      : path_core . 'Cake/Console/Command/',
         \ 'tasks'       : path_core . 'Cake/Console/Command/Task/',
         \}
@@ -251,26 +252,66 @@ function! cake#cake20#factory(path_app)
       return substitute(fnamemodify(path, ":t:r"), "Helper$", "", "")
     endif
   endfunction "}}}
-  function! self.path_to_name_testcontroller(path) "{{{
-    return substitute(fnamemodify(a:path, ":t:r"), "ControllerTest$", "", "")
-  endfunction "}}}
-  function! self.path_to_name_testmodel(path) "{{{
-    let name = fnamemodify(a:path, ":t:r")
-    if name ==# 'AppModel'
-      return 'App'
+  function! self.path_to_name_testcontroller(...) "{{{
+    if a:0 == 0
+      return ''
+    endif
+    let path = a:1
+    if (exists('a:2') && a:2 > 0)
+      return fnamemodify(path, ":t:r")
     else
-      return substitute(name, "Test$", "", "")
-      return name
+      return substitute(fnamemodify(path, ":t:r"), "ControllerTest$", "", "")
     endif
   endfunction "}}}
-  function! self.path_to_name_testcomponent(path) "{{{
-    return substitute(fnamemodify(a:path, ":t:r"), "ComponentTest$", "", "")
+  function! self.path_to_name_testmodel(...) "{{{
+    if a:0 == 0
+      return ''
+    endif
+    let path = a:1
+
+    let name = fnamemodify(a:path, ":t:r")
+    if (exists('a:2') && a:2 > 0)
+      return name
+    else
+      if name ==# 'AppModel'
+        return 'App'
+      else
+        return substitute(name, "Test$", "", "")
+      endif
+    endif
   endfunction "}}}
-  function! self.path_to_name_testbehavior(path) "{{{
-    return substitute(fnamemodify(a:path, ":t:r"), "BehaviorTest$", "", "")
+  function! self.path_to_name_testcomponent(...) "{{{
+    if a:0 == 0
+      return ''
+    endif
+    let path = a:1
+    if (exists('a:2') && a:2 > 0)
+      return fnamemodify(path, ":t:r")
+    else
+      return substitute(fnamemodify(path, ":t:r"), "ComponentTest$", "", "")
+    endif
   endfunction "}}}
-  function! self.path_to_name_testhelper(path) "{{{
-    return substitute(fnamemodify(a:path, ":t:r"), "HelperTest$", "", "")
+  function! self.path_to_name_testbehavior(...) "{{{
+    if a:0 == 0
+      return ''
+    endif
+    let path = a:1
+    if (exists('a:2') && a:2 > 0)
+      return fnamemodify(path, ":t:r")
+    else
+      return substitute(fnamemodify(path, ":t:r"), "BehaviorTest$", "", "")
+    endif
+  endfunction "}}}
+  function! self.path_to_name_testhelper(...) "{{{
+    if a:0 == 0
+      return ''
+    endif
+    let path = a:1
+    if (exists('a:2') && a:2 > 0)
+      return fnamemodify(path, ":t:r")
+    else
+      return substitute(fnamemodify(path, ":t:r"), "HelperTest$", "", "")
+    endif
   endfunction "}}}
   function! self.path_to_name_theme(path) "{{{
       return fnamemodify(a:path, ":p:h:t")

@@ -56,6 +56,7 @@ function! cake#cake13#factory(path_app)
         \ 'models'      : path_core . 'libs/model/',
         \ 'behaviors'   : path_core . 'libs/model/behaviors/',
         \ 'helpers'     : path_core . 'libs/view/helpers/',
+        \ 'console'     : path_core . 'console/',
         \ 'shells'      : path_core . 'console/libs/',
         \ 'tasks'       : path_core . 'console/libs/tasks/',
         \}
@@ -301,20 +302,45 @@ function! cake#cake13#factory(path_app)
     let suffix = (exists('a:2') && a:2 > 0)?  'Helper' : ''
     return cake#util#camelize(substitute(fnamemodify(path, ":t:r"), "_helper$", "", "")) . suffix
   endfunction "}}}
-  function! self.path_to_name_testcontroller(path) "{{{
-    return cake#util#camelize(substitute(fnamemodify(a:path, ":t:r"), "_controller.test$", "", ""))
+  function! self.path_to_name_testcontroller(...) "{{{
+    if a:0 == 0
+      return ''
+    endif
+    let path = a:1
+    let suffix = (exists('a:2') && a:2 > 0)?  'ControllerTestCase' : ''
+    return cake#util#camelize(substitute(fnamemodify(path, ":t:r"), "_controller.test$", "", "")) . suffix
   endfunction "}}}
-  function! self.path_to_name_testmodel(path) "{{{
-    return cake#util#camelize(substitute(fnamemodify(a:path, ":t:r"), ".test$", "", ""))
+  function! self.path_to_name_testmodel(...) "{{
+    if a:0 == 0
+      return ''
+    endif
+    let path = a:1
+    let suffix = (exists('a:2') && a:2 > 0)?  'ControllerTestCase' : ''
+    return cake#util#camelize(substitute(fnamemodify(path, ":t:r"), ".test$", "", "")) . suffix
   endfunction "}}}
-  function! self.path_to_name_testcomponent(path) "{{{
-    return cake#util#camelize(substitute(fnamemodify(a:path, ":t:r"), ".test$", "", ""))
+  function! self.path_to_name_testcomponent(...) "{{{
+    if a:0 == 0
+      return ''
+    endif
+    let path = a:1
+    let suffix = (exists('a:2') && a:2 > 0)?  'ComponentTestCase' : ''
+    return cake#util#camelize(substitute(fnamemodify(path, ":t:r"), ".test$", "", "")) . suffix
   endfunction "}}}
-  function! self.path_to_name_testbehavior(path) "{{{
-    return cake#util#camelize(substitute(fnamemodify(a:path, ":t:r"), ".test$", "", ""))
+  function! self.path_to_name_testbehavior(...) "{{{
+    if a:0 == 0
+      return ''
+    endif
+    let path = a:1
+    let suffix = (exists('a:2') && a:2 > 0)?  'BahaviorTestCase' : ''
+    return cake#util#camelize(substitute(fnamemodify(a:path, ":t:r"), ".test$", "", "")) . suffix
   endfunction "}}}
-  function! self.path_to_name_testhelper(path) "{{{
-    return cake#util#camelize(substitute(fnamemodify(a:path, ":t:r"), ".test$", "", ""))
+  function! self.path_to_name_testhelper(...) "{{{
+    if a:0 == 0
+      return ''
+    endif
+    let path = a:1
+    let suffix = (exists('a:2') && a:2 > 0)?  'HelperTestCase' : ''
+    return cake#util#camelize(substitute(fnamemodify(path, ":t:r"), ".test$", "", "")) . suffix
   endfunction "}}}
   function! self.path_to_name_theme(path) "{{{
       return fnamemodify(a:path, ":p:h:t")
