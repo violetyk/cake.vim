@@ -347,6 +347,24 @@ function! cake#get_complelist_log(ArgLead, CmdLine, CursorPos) " {{{
     call cake#util#warning("[cake.vim] An application directory is not set. Please :Cakephp {app}.")
   endtry
 endfunction " }}}
+function! cake#get_complelist_bake(ArgLead, CmdLine, CursorPos) "{{{
+  try
+    let args = split(a:CmdLine, '\W\+')
+
+    let bake_list      = ['fixture', 'test', 'model', 'controller']
+    let bake_list_test = ['model', 'controller', 'component', 'behavior', 'helper']
+
+    let arg1 = get(args, 1)
+
+    if !cake#util#in_array(arg1, bake_list)
+      return filter(sort(bake_list), 'v:val =~ "^'. fnameescape(a:ArgLead) . '"')
+    elseif arg1 ==? 'test'
+      return filter(sort(bake_list_test), 'v:val =~ "^'. fnameescape(a:ArgLead) . '"')
+    endif
+  catch
+    call cake#util#warning("[cake.vim] An application directory is not set. Please :Cakephp {app}.")
+  endtry
+endfunction " }}}
 " ============================================================
 
 
@@ -2454,6 +2472,10 @@ function! cake#factory(path_app)
     else
       return 1
     endif
+  endfunction "}}}
+  function! self.bake_interactive(...) "{{{
+    let cmd  = printf('%scake bake %s -app %s', self.paths.cores.console, join(a:000, ' '), self.paths.app)
+    execute ':!' .cmd
   endfunction "}}}
   " ============================================================
 

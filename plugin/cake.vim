@@ -1,7 +1,7 @@
 " cake.vim - Utility for CakePHP developpers.
 " Maintainer:  Yuhei Kagaya <yuhei.kagaya@gmail.com>
 " License:     This file is placed in the public domain.
-" Last Change: 2013/05/09
+" Last Change: 2013/05/10
 
 if exists('g:loaded_cake_vim')
   finish
@@ -209,6 +209,9 @@ command! -n=* -complete=customlist,cake#get_complelist_lib Clibtab call g:cake.j
 command! -n=? -complete=customlist,cake#get_complelist_model Cdesc call g:cake.describe_table(<f-args>)
 
 command! -n=0 -range Cquickrun :<line1>,<line2>call g:cake.quickrun()
+
+" Bake
+command! -n=* -complete=customlist,cake#get_complelist_bake Cbake call g:cake.bake_interactive(<f-args>)
 " }}}
 
 

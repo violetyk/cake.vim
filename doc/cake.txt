@@ -1,6 +1,6 @@
 *cake.txt*  Utility for CakePHP developpers.
 
-Version: 2.10.1
+Version: 2.11
 Author: Yuhei Kagaya <yuhei.kagaya@gmail.com>
 English Documentation Author: Takahiro Jinno <takahiro.jinno@gmail.com>
 Repository: https://github.com/violetyk/cake.vim
@@ -89,6 +89,7 @@ Commands		|cake-commands|
     Open the Log	|:CLog|
     Cut to Element	|:Celement|
     Describe Table	|:Cdesc|
+    Run bake command	|:Cbake|
 
 Build Path		|cake-buildpath|
 Bugs			|cake-bugs|
@@ -233,10 +234,10 @@ Jump to View
 Jump to Config
 --------------
 
-:Cconfig [{config-name}]					*:Cconfig*
-:Cconfigsp [{config-name}]					*:Cconfigsp*
-:Cconfigvsp [{config-name}]					*:Cconfigvsp*
-:Cconfigtab [{config-name}]					*:Cconfigtab*
+:Cconfig {config-name}						*:Cconfig*
+:Cconfigsp {config-name}					*:Cconfigsp*
+:Cconfigvsp {config-name}					*:Cconfigvsp*
+:Cconfigtab {config-name}					*:Cconfigtab*
 		Edit the specified config file.
 		Also you can make a new file if there is no file.
 		You can split editing using |:Cconfigsp|.
@@ -288,10 +289,10 @@ Jump to Helper
 Jump to Shell
 -------------
 
-:Cshell [{shell-name}]						*:Cshell*
-:Cshellsp [{shell-name}]					*:Cshellsp*
-:Cshellvsp [{shell-name}]					*:Cshellvsp*
-:Cshelltab [{shell-name}]					*:Cshelltab*
+:Cshell {shell-name}						*:Cshell*
+:Cshellsp {shell-name}						*:Cshellsp*
+:Cshellvsp {shell-name}						*:Cshellvsp*
+:Cshelltab {shell-name}						*:Cshelltab*
 		Edit the specified shell file.
 		Also you can make a new file if there is no file.
 		You can split editing using |:Cshellsp|.
@@ -302,10 +303,10 @@ Jump to Shell
 Jump to Task
 ------------
 
-:Ctask [{task-name}]						*:Ctask*
-:Ctasksp [{task-name}]						*:Ctasksp*
-:Ctaskvsp [{task-name}]						*:Ctaskvsp*
-:Ctasktab [{task-name}]						*:Ctasktab*
+:Ctask {task-name}						*:Ctask*
+:Ctasksp {task-name}						*:Ctasksp*
+:Ctaskvsp {task-name}						*:Ctaskvsp*
+:Ctasktab {task-name}						*:Ctasktab*
 		Edit the specified task file.
 		Also you can make a new file if there is no file.
 		You can split editing using |:Ctasksp|.
@@ -384,7 +385,7 @@ Jump to Test
 		Supports Model, Behavior, Component, Controller, Helper.
 
 Jump to Fixture
-------------
+---------------
 
 :Cfixture [{fixture-name}]					*:Cfixture*
 :Cfixturesp [{fixture-name}]					*:Cfixturesp*
@@ -400,10 +401,10 @@ Jump to Fixture
 Jump to Lib
 ------------
 
-:Clib [{lib-name}]						*:Clib*
-:Clibsp [{lib-name}]						*:Clibsp*
-:Clibvsp [{lib-name}]						*:Clibvsp*
-:Clibtab [{lib-name}]						*:Clibtab*
+:Clib {lib-name}						*:Clib*
+:Clibsp {lib-name}						*:Clibsp*
+:Clibvsp {lib-name}						*:Clibvsp*
+:Clibtab {lib-name}						*:Clibtab*
 		Edit the CakePHP's Core Libraries.
 		You can split editing using |:Clibsp|.
 		You can split editing vertically using |:Clibvsp|.
@@ -430,7 +431,7 @@ Open the Log
 <
 
 Cut to Element
-------------
+-------------
 
 :[range]Celement[!] [{element-namee}] [{theme-name})]		*:Celement*
 		Begin to write a chosen range as a element file.
@@ -443,13 +444,18 @@ Cut to Element
 
 
 Describe Table
--------------
+--------------
 
 :Cdesc [{model-name}]						*:Cdesc*
 		If dbext.vim is installed, Describe table.
 		If you do not specify {model-name} deduced from <cword>.
 		PHP version 5 or more are necessary.
 
+Run bake command
+----------------
+
+:Cbake [{target}] [{test-target}]				*:Cbake*
+		Run bake command.
 
 ==============================================================================
 BUGS								*cake-bugs*
@@ -519,7 +525,8 @@ such as the following. Vimrc.
 ==============================================================================
 CHANGE LOG							*cake-changelog*
 
-2.11   2013-05-09
+2.11   2013-05-10
+     - Add |:Cbake|
      - Add g:cakephp_enable_abbreviations
      - Add unite-source cake_lib
      - Fix a few bugs.
