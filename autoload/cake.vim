@@ -2518,6 +2518,10 @@ function! cake#factory(path_app)
       let test_name = self.buffer(test_path).name
     endif
 
+    if !filereadable(test_path)
+      return 0
+    endif
+
     let test_command = ''
 
     " app case
@@ -2537,7 +2541,7 @@ function! cake#factory(path_app)
     endif
 
     if !strlen(test_command)
-      return
+      return 0
     endif
 
     let cmd  = printf('%scake %s -app %s', self.paths.cores.console, test_command, self.paths.app)
@@ -2565,6 +2569,8 @@ function! cake#factory(path_app)
       let res = system(cmd)
       echo res
     endif
+
+    return 1
 
   endfunction "}}}
   " ============================================================
