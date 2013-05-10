@@ -69,7 +69,7 @@ augroup END
 " }}}
 " SECTION: Commands {{{
 " ============================================================
-command! -n=0  Cakeversion call cake#version()
+command! -n=0  Cakeinfo call cake#info()
 
 " Initialized. If you have an argument, given that initializes the app path.
 command! -n=? -complete=dir Cakephp :call cake#init_app(<f-args>)
@@ -210,8 +210,11 @@ command! -n=? -complete=customlist,cake#get_complelist_model Cdesc call g:cake.d
 
 command! -n=0 -range Cquickrun :<line1>,<line2>call g:cake.quickrun()
 
-" Bake
+" Run Bake
 command! -n=* -complete=customlist,cake#get_complelist_bake Cbake call g:cake.bake_interactive(<f-args>)
+
+" Run Test
+command! -n=0  Ctestrun call g:cake.test(expand('%:p'))
 " }}}
 
 

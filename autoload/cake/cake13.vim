@@ -23,6 +23,8 @@ function! cake#cake13#factory(path_app)
         \ 'configs'         : a:path_app . 'config/',
         \ 'shells'          : a:path_app . 'vendors/shells/',
         \ 'tasks'           : a:path_app . 'vendors/shells/tasks/',
+        \ 'test'            : a:path_app . 'tests/',
+        \ 'testcases'       : a:path_app . 'tests/cases/',
         \ 'testcontrollers' : a:path_app . 'tests/cases/controllers/',
         \ 'testcomponents'  : a:path_app . 'tests/cases/components/',
         \ 'testmodels'      : a:path_app . 'tests/cases/models/',
@@ -310,7 +312,7 @@ function! cake#cake13#factory(path_app)
     let suffix = (exists('a:2') && a:2 > 0)?  'ControllerTestCase' : ''
     return cake#util#camelize(substitute(fnamemodify(path, ":t:r"), "_controller.test$", "", "")) . suffix
   endfunction "}}}
-  function! self.path_to_name_testmodel(...) "{{
+  function! self.path_to_name_testmodel(...) "{{{
     if a:0 == 0
       return ''
     endif
@@ -516,6 +518,7 @@ function! cake#cake13#factory(path_app)
     return 0
   endfunction "}}}
   " ============================================================
+
 
   return self
 endfunction

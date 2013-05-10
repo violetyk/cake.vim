@@ -123,6 +123,7 @@ array('controller' => 'Hoge', 'action' => 'fuga', 'admin' => true)
 - If [dbext.vim](http://www.vim.org/scripts/script.php?script_id=356) is installed, you can see the table definition of the model, `:Cdesc {model-name}`. If you do not specify an argument, the word under the cursor can be specified.
 - `:Celement {element-name}` Cut out as an element the selected range. `:help :Celement`
 - `:Cbake [{target}]` Run bake command interactively. `:help :Cbake`
+- `:Ctestrun` Run test case command, guess depending on the type of the current buffer.
 
 ## unite-sources
 - cake.vim is compatible with [unite.vim](https://github.com/Shougo/unite.vim).

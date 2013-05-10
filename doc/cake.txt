@@ -527,6 +527,7 @@ CHANGE LOG							*cake-changelog*
 
 2.11   2013-05-10
      - Add |:Cbake|
+     - Add |:Ctestrun|
      - Add g:cakephp_enable_abbreviations
      - Add unite-source cake_lib
      - Fix a few bugs.

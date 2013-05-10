@@ -23,6 +23,8 @@ function! cake#cake20#factory(path_app)
         \ 'configs'         : a:path_app . "Config/",
         \ 'shells'          : a:path_app . "Console/Command/",
         \ 'tasks'           : a:path_app . "Console/Command/Task/",
+        \ 'test'            : a:path_app . "Test/",
+        \ 'testcases'       : a:path_app . "Test/Case/",
         \ 'testcontrollers' : a:path_app . "Test/Case/Controller/",
         \ 'testcomponents'  : a:path_app . "Test/Case/Controller/Component/",
         \ 'testmodels'      : a:path_app . "Test/Case/Model/",
