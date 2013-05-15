@@ -5,6 +5,7 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
+let g:cake = {}
 
 " SECTION: Script Variables {{{
 " ============================================================
@@ -35,8 +36,7 @@ function! cake#version() "{{{
   try
     let php_code = 'echo trim(array_pop(file("' . g:cake.paths.cores.core . 'VERSION.txt")));'
     let cmd = 'php -r ''' . php_code . ''''
-    let cakephp_version = eval(system(cmd))
-    let cakephp_version = type(cakephp_version) == type(0) || type(cakephp_version) == type(0.0) ? cakephp_version : 'unknown'
+    let cakephp_version = system(cmd)
   catch
   endtry
   return cakephp_version
@@ -171,7 +171,7 @@ function! cake#expand_class_name(lhs) "{{{
   return class_name
 endfunction "}}}
 
-" Functions: get_complelist_xxx()
+" Functions: cake#get_complelist_xxx()
 " ============================================================
 function! cake#get_complelist(dict,ArgLead) "{{{
   let list = sort(keys(a:dict))
@@ -2508,7 +2508,7 @@ function! cake#factory(path_app)
     let buffer = self.buffer(a:path)
 
     let test_path = ''
-    if cake#util#in_array(buffer.type, ['model', 'controller', 'component', 'behavior', 'helper'])
+    if cake#util#in_array(buffer.type, ['model', 'fixture', 'controller', 'component', 'behavior', 'helper'])
       let Fn_get_path = get(self, 'name_to_path_test' . buffer.type)
       let test_path = call(Fn_get_path, [buffer.name], self)
       let Fn_get_name = get(self, 'path_to_name_test' . buffer.type)
