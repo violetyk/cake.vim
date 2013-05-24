@@ -264,7 +264,7 @@ function! cake#cake13#factory(path_app)
 
     return cake#util#camelize(substitute(fnamemodify(path, ":t:r"), "_fixture$", "", "")) . suffix
   endfunction "}}}
-  function! self.path_to_name_component(path) "{{{
+  function! self.path_to_name_component(...) "{{{
     if a:0 == 0
       return ''
     endif

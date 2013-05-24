@@ -1,6 +1,6 @@
 *cake.txt*  Utility for CakePHP developpers.
 
-Version: 2.11
+Version: 2.11.1
 Author: Yuhei Kagaya <yuhei.kagaya@gmail.com>
 English Documentation Author: Takahiro Jinno <takahiro.jinno@gmail.com>
 Repository: https://github.com/violetyk/cake.vim
@@ -524,6 +524,10 @@ such as the following. Vimrc.
 
 ==============================================================================
 CHANGE LOG							*cake-changelog*
+
+2.11.1 2013-05-24
+     - Avoid error when g:cake is not initialized.
+     - Fix bug.
 
 2.11   2013-05-10
      - Add |:Cbake|
