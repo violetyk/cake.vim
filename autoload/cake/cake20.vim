@@ -15,6 +15,7 @@ function! cake#cake20#factory(path_app)
         \ 'app'             : a:path_app,
         \ 'controllers'     : a:path_app . "Controller/",
         \ 'components'      : a:path_app . "Controller/Component/",
+        \ 'libs'            : a:path_app . 'Lib/',
         \ 'models'          : a:path_app . "Model/",
         \ 'behaviors'       : a:path_app . "Model/Behavior/",
         \ 'views'           : a:path_app . "View/",

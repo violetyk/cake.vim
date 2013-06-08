@@ -185,6 +185,14 @@ function! cake#get_complelist_core(ArgLead, CmdLine, CursorPos) "{{{
     call cake#util#warning("[cake.vim] An application directory is not set. Please :Cakephp {app}.")
   endtry
 endfunction " }}}
+function! cake#get_complelist_lib(ArgLead, CmdLine, CursorPos) "{{{
+  try
+    let list = cake#get_complelist(g:cake.get_libs(), a:ArgLead)
+    return list
+  catch
+    call cake#util#warning("[cake.vim] An application directory is not set. Please :Cakephp {app}.")
+  endtry
+endfunction " }}}
 function! cake#get_complelist_controller(ArgLead, CmdLine, CursorPos) "{{{
   try
     let list = cake#get_complelist(g:cake.get_controllers(), a:ArgLead)
@@ -544,7 +552,7 @@ function! cake#factory(path_app)
     return buffer
   endfunction "}}}
 
-  " Functions: get_dictionary()
+  " Functions: get_dict
   " [object_name : path]
   " ============================================================
   function! self.get_behaviors(...) "{{{
@@ -716,6 +724,19 @@ function! cake#factory(path_app)
     return configs
 
   endfunction "}}}
+  function! self.get_libs() "{{{
+    let libs = {}
+
+    if isdirectory(self.paths.libs)
+      for path in split(globpath(self.paths.libs, "**.php"), "\n")
+        let name = cake#util#camelize(fnamemodify(path, ':t:r'))
+        let libs[name] = path
+      endfor
+    endif
+
+    return libs
+  endfunction
+  " }}}
   " ============================================================
 
   " Functions: jump_xxx()
@@ -1426,6 +1447,22 @@ function! cake#factory(path_app)
     endfor
 
   endfunction "}}}
+  function! self.jump_lib(...) " {{{
+
+    let split_option = a:1
+    let targets = self.args_to_targets(a:000)
+    let libs = self.get_libs()
+
+    for target in targets
+      if !has_key(libs, target)
+        call cake#util#warning(target . " is not found.")
+      endif
+
+      let line = 0
+      call cake#util#open_file(libs[target], split_option, line)
+    endfor
+
+  endfunction "}}}
   function! self.smart_jump(...) "{{{
     let option = a:1
     let path = expand("%:p")
@@ -1846,8 +1883,13 @@ function! cake#factory(path_app)
       return
     endif
 
-    " jump to Core Libraries
     if strlen(word) > 0
+      " jump to 1st party Libraries
+      if has_key(self.get_libs(), word)
+        call self.jump_lib(option, word)
+        return
+      endif
+      " jump to Core Libraries
       if has_key(self.get_cores(), word)
         call self.jump_core(option, word)
         return
@@ -1855,10 +1897,8 @@ function! cake#factory(path_app)
     endif
     " }}}
 
-
-
     " Combination Pattern (I lowered priority most. Because it might conflict with other patterns.)
-    
+
     " array('controller' => 'Hoge', 'action' => 'fuga') ->  HogeController::fuga()
     " array('controller' => 'Hoge', 'action' => 'fuga', 'admin' => true) -> HogeController::admin_fuga()
     let controller_name = matchstr(line, '\(array(.*["'']controller["'']\s*=>\s*["'']\)\zs\w\+\ze\(["''].*)\)')
