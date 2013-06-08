@@ -1,7 +1,7 @@
 " cake.vim - Utility for CakePHP developpers.
 " Maintainer:  Yuhei Kagaya <yuhei.kagaya@gmail.com>
 " License:     This file is placed in the public domain.
-" Last Change: 2013/06/06
+" Last Change: 2013/06/08
 
 if exists('g:loaded_cake_vim')
   finish
@@ -96,7 +96,8 @@ let jump_resources = {
       \ 'testhelper'     : {'arg' : '*', 'complete_func' : 1},
       \ 'test'           : {'arg' : '0', 'complete_func' : 0},
       \ 'fixture'        : {'arg' : '*', 'complete_func' : 1},
-      \ 'lib'            : {'arg' : '*', 'complete_func' : 1}
+      \ 'lib'            : {'arg' : '*', 'complete_func' : 1},
+      \ 'core'           : {'arg' : '*', 'complete_func' : 1}
       \}
 
 for r in items(jump_resources)

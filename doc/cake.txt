@@ -398,17 +398,17 @@ Jump to Fixture
 		You can split editing vertically using |:Cfixturevsp|.
 		You can open new tab editing, using |:Cfixturetab|.
 
-Jump to Lib
-------------
+Jump to Core Libraries
+----------------------
 
-:Clib {lib-name}						*:Clib*
-:Clibsp {lib-name}						*:Clibsp*
-:Clibvsp {lib-name}						*:Clibvsp*
-:Clibtab {lib-name}						*:Clibtab*
-		Edit the CakePHP's Core Libraries.
-		You can split editing using |:Clibsp|.
-		You can split editing vertically using |:Clibvsp|.
-		You can open new tab editing, using |:Clibtab|.
+:Ccore {core-name}						*:Ccore*
+:Ccoresp {core-name}						*:Ccoresp*
+:Ccorevsp {core-name}						*:Ccorevsp*
+:Ccoretab {core-name}						*:Ccoretab*
+		Edit the CakePHP's Core coreraries.
+		You can split editing using |:Ccoresp|.
+		You can split editing vertically using |:Ccorevsp|.
+		You can open new tab editing, using |:Ccoretab|.
 
 		A default is a library in the directories same as app directory.
 		The cases that moved a library of CakePHP please set a path.
@@ -524,6 +524,10 @@ such as the following. Vimrc.
 
 ==============================================================================
 CHANGE LOG							*cake-changelog*
+
+2.12
+     - Change from Clib to Ccore the name of command
+     - Change from cake_lib to cake_core the name of unite source name
 
 2.11.1 2013-05-24
      - Avoid error when g:cake is not initialized.

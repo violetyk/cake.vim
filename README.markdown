@@ -51,7 +51,7 @@ No arguments : If you do not specify arguments, guess depending on the type of t
 | Helper |`:Chelper {helper-name}` | ok | HelperTestCase |
 | Shell |`:Cshell {shell-name}` | ok ||
 | Task |`:Ctask {task-name}` | ok ||
-| Cake Core Library |`:CLib {lib-name}` | ok ||
+| Cake Core Library |`:Ccore {core-name}` | ok ||
 | Log File (like `tail -f`)|`:Clog {log-name}`  (See `g:cakephp_log`)|||
 | Fixture |`:Cfixture {fixture-name}` | ok | Model|
 | TestController |`:Ctestcontroller {controller-name}`| ok | Controller |
@@ -141,4 +141,4 @@ array('controller' => 'Hoge', 'action' => 'fuga', 'admin' => true)
 |Shell|cake_shell|
 |Task|cake_task|
 |Fixture|cake_fixture|
-|Cake Core Library |cake_lib|
+|Cake Core Library |cake_core|

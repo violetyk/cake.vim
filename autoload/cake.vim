@@ -177,9 +177,9 @@ function! cake#get_complelist(dict,ArgLead) "{{{
   let list = sort(keys(a:dict))
   return filter(list, 'v:val =~ "^'. fnameescape(a:ArgLead) . '"')
 endfunction "}}}
-function! cake#get_complelist_lib(ArgLead, CmdLine, CursorPos) "{{{
+function! cake#get_complelist_core(ArgLead, CmdLine, CursorPos) "{{{
   try
-    let list = cake#get_complelist(g:cake.get_libs(), a:ArgLead)
+    let list = cake#get_complelist(g:cake.get_cores(), a:ArgLead)
     return list
   catch
     call cake#util#warning("[cake.vim] An application directory is not set. Please :Cakephp {app}.")
@@ -390,7 +390,7 @@ function! cake#factory(path_app)
 
   " Functions: abstract methods.(These implement it in a subclass.) {{{
   " ============================================================
-  function! self.get_libs()
+  function! self.get_cores()
   endfunction
   function! self.get_controllers()
   endfunction
@@ -1410,19 +1410,19 @@ function! cake#factory(path_app)
 
   endfunction
   "}}}
-  function! self.jump_lib(...) " {{{
+  function! self.jump_core(...) " {{{
 
     let split_option = a:1
     let targets = self.args_to_targets(a:000)
-    let libs = self.get_libs()
+    let cores = self.get_cores()
 
     for target in targets
-      if !has_key(libs, target)
+      if !has_key(cores, target)
         call cake#util#warning(target . " is not found.")
       endif
 
       let line = 0
-      call cake#util#open_file(libs[target], split_option, line)
+      call cake#util#open_file(cores[target], split_option, line)
     endfor
 
   endfunction "}}}
@@ -1432,7 +1432,7 @@ function! cake#factory(path_app)
     let line = getline('.')
     let word = expand('<cword>')
     let l_word = expand('<cWORD>')
-    let libs = {}
+    let cores = {}
 
     if cake#util#in_array('-', split(&iskeyword, ','))
       let word = substitute(word, "-*$", "", "")
@@ -1502,14 +1502,14 @@ function! cake#factory(path_app)
       endif
 
       " jump to Core Libraries
-      if len(libs) == 0
-        let libs = self.get_libs()
+      if len(cores) == 0
+        let cores = self.get_cores()
       endif
       let priority_order = ['', 'Behavior', 'Component', 'Helper']
       for suffix in priority_order
         let target = word . suffix
-        if has_key(libs, target)
-          call self.jump_lib(option, target)
+        if has_key(cores, target)
+          call self.jump_core(option, target)
           return
         endif
       endfor
@@ -1543,14 +1543,14 @@ function! cake#factory(path_app)
       endif
 
       " jump to Core Libraries
-      if len(libs) == 0
-        let libs = self.get_libs()
+      if len(cores) == 0
+        let cores = self.get_cores()
       endif
       let priority_order = ['', 'Behavior']
       for suffix in priority_order
         let target = word . suffix
-        if has_key(libs, target)
-          call self.jump_lib(option, target)
+        if has_key(cores, target)
+          call self.jump_core(option, target)
           return
         endif
       endfor
@@ -1604,14 +1604,14 @@ function! cake#factory(path_app)
       endif
 
       " jump to Core Libraries
-      if len(libs) == 0
-        let libs = self.get_libs()
+      if len(cores) == 0
+        let cores = self.get_cores()
       endif
       let priority_order = ['', 'Helper', 'Component', 'Behavior']
       for suffix in priority_order
         let target = word . suffix
-        if has_key(libs, target)
-          call self.jump_lib(option, target)
+        if has_key(cores, target)
+          call self.jump_core(option, target)
           return
         endif
       endfor
@@ -1637,14 +1637,14 @@ function! cake#factory(path_app)
       endif
 
       " jump to Core Libraries
-      if len(libs) == 0
-        let libs = self.get_libs()
+      if len(cores) == 0
+        let cores = self.get_cores()
       endif
       let priority_order = ['', 'Behavior', 'Component']
       for suffix in priority_order
         let target = word . suffix
-        if has_key(libs, target)
-          call self.jump_lib(option, target)
+        if has_key(cores, target)
+          call self.jump_core(option, target)
           return
         endif
       endfor
@@ -1664,14 +1664,14 @@ function! cake#factory(path_app)
       endif
 
       " jump to Core Libraries
-      if len(libs) == 0
-        let libs = self.get_libs()
+      if len(cores) == 0
+        let cores = self.get_cores()
       endif
       let priority_order = ['', 'Behavior']
       for suffix in priority_order
         let target = word . suffix
-        if has_key(libs, target)
-          call self.jump_lib(option, target)
+        if has_key(cores, target)
+          call self.jump_core(option, target)
           return
         endif
       endfor
@@ -1691,14 +1691,14 @@ function! cake#factory(path_app)
       endif
 
       " jump to Core Libraries
-      if len(libs) == 0
-        let libs = self.get_libs()
+      if len(cores) == 0
+        let cores = self.get_cores()
       endif
       let priority_order = ['', 'Helper']
       for suffix in priority_order
         let target = word . suffix
-        if has_key(libs, target)
-          call self.jump_lib(option, target)
+        if has_key(cores, target)
+          call self.jump_core(option, target)
           return
         endif
       endfor
@@ -1798,15 +1798,15 @@ function! cake#factory(path_app)
       endif
 
       " jump to Core Libraries
-      if len(libs) == 0
-        let libs = self.get_libs()
+      if len(cores) == 0
+        let cores = self.get_cores()
       endif
 
       let priority_order = ['Task', '', 'Behavior', 'Component', 'Helper']
       for suffix in priority_order
         let target = word . suffix
-        if has_key(libs, target)
-          call self.jump_lib(option, target)
+        if has_key(cores, target)
+          call self.jump_core(option, target)
           return
         endif
       endfor
@@ -1823,14 +1823,14 @@ function! cake#factory(path_app)
       endif
 
       " jump to Core Libraries
-      if len(libs) == 0
-        let libs = self.get_libs()
+      if len(cores) == 0
+        let cores = self.get_cores()
       endif
       let priority_order = ['', 'Behavior', 'Component', 'Helper']
       for suffix in priority_order
         let target = word . suffix
-        if has_key(libs, target)
-          call self.jump_lib(option, target)
+        if has_key(cores, target)
+          call self.jump_core(option, target)
           return
         endif
       endfor
@@ -1848,8 +1848,8 @@ function! cake#factory(path_app)
 
     " jump to Core Libraries
     if strlen(word) > 0
-      if has_key(self.get_libs(), word)
-        call self.jump_lib(option, word)
+      if has_key(self.get_cores(), word)
+        call self.jump_core(option, word)
         return
       endif
     endif
@@ -2240,7 +2240,7 @@ function! cake#factory(path_app)
 
     let models  = self.get_models()
     let helpers = self.get_helpers()
-    let libs    = self.get_libs()
+    let cores   = self.get_cores()
 
     let _pre = ''
     let _src = ''
@@ -2267,7 +2267,7 @@ function! cake#factory(path_app)
         let object = matchstr(line, '\(\$this->\)\zs\u\a\+\ze')
         if strlen(object)
           " Helper?
-          if has_key(helpers, object . 'Helper') || has_key(libs, object . 'Helper')
+          if has_key(helpers, object . 'Helper') || has_key(cores, object . 'Helper')
             let _pre = _pre . 'App::import("Helper", "' . object . '"); $' . object . ' = new ' . object . 'Helper(); '
             " replace
             let line = substitute(line, '$this->' . object, '$' . object, "")

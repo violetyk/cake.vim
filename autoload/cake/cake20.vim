@@ -69,8 +69,8 @@ function! cake#cake20#factory(path_app)
   " Functions: self.get_dictionary()
   " [object_name : path]
   " ============================================================
-  function! self.get_libs() "{{{
-    let libs = {}
+  function! self.get_cores() "{{{
+    let cores = {}
 
     let directories = [
           \ 'Cache',
@@ -90,7 +90,7 @@ function! cake#cake20#factory(path_app)
     for dir in directories
       for path in split(globpath(self.paths.cores.lib . dir,  "**/*\.php"), "\n")
         let name = fnamemodify(path, ":t:r")
-        let libs[name] = path
+        let cores[name] = path
       endfor
     endfor
 
@@ -100,10 +100,10 @@ function! cake#cake20#factory(path_app)
       if name ==# 'cake' || match(path, '/Console/Templates/') > 0
         continue
       endif
-      let libs[name] = path
+      let cores[name] = path
     endfor
 
-    return libs
+    return cores
   endfunction "}}}
 
   function! self.get_controllers(...) "{{{
