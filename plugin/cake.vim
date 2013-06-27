@@ -73,67 +73,71 @@ command! -n=0  Cakeinfo call cake#info()
 " Initialized. If you have an argument, given that initializes the app path.
 command! -n=? -complete=dir Cakephp :call cake#init_app(<f-args>)
 
-let jump_options = {
-      \ 'n' : '',
-      \ 's' : 'sp',
-      \ 'v' : 'vsp',
-      \ 't' : 'tab'
-      \}
-let jump_resources = {
-      \ 'controller'     : {'arg' : '*', 'complete_func' : 1},
-      \ 'model'          : {'arg' : '*', 'complete_func' : 1},
-      \ 'view'           : {'arg' : '+', 'complete_func' : 1},
-      \ 'controllerview' : {'arg' : '+', 'complete_func' : 1},
-      \ 'config'         : {'arg' : '+', 'complete_func' : 1},
-      \ 'component'      : {'arg' : '*', 'complete_func' : 1},
-      \ 'shell'          : {'arg' : '+', 'complete_func' : 1},
-      \ 'task'           : {'arg' : '+', 'complete_func' : 1},
-      \ 'behavior'       : {'arg' : '*', 'complete_func' : 1},
-      \ 'helper'         : {'arg' : '*', 'complete_func' : 1},
-      \ 'testmodel'      : {'arg' : '*', 'complete_func' : 1},
-      \ 'testbehavior'   : {'arg' : '*', 'complete_func' : 1},
-      \ 'testcomponent'  : {'arg' : '*', 'complete_func' : 1},
-      \ 'testcontroller' : {'arg' : '*', 'complete_func' : 1},
-      \ 'testhelper'     : {'arg' : '*', 'complete_func' : 1},
-      \ 'test'           : {'arg' : '0', 'complete_func' : 0},
-      \ 'fixture'        : {'arg' : '*', 'complete_func' : 1},
-      \ 'lib'            : {'arg' : '*', 'complete_func' : 1},
-      \ 'core'           : {'arg' : '*', 'complete_func' : 1}
-      \}
+function! s:register_commands() "{{{
+  let jump_options = {
+        \ 'n' : '',
+        \ 's' : 'sp',
+        \ 'v' : 'vsp',
+        \ 't' : 'tab'
+        \}
+  let jump_resources = {
+        \ 'controller'     : {'arg' : '*', 'complete_func' : 1},
+        \ 'model'          : {'arg' : '*', 'complete_func' : 1},
+        \ 'view'           : {'arg' : '+', 'complete_func' : 1},
+        \ 'controllerview' : {'arg' : '+', 'complete_func' : 1},
+        \ 'config'         : {'arg' : '+', 'complete_func' : 1},
+        \ 'component'      : {'arg' : '*', 'complete_func' : 1},
+        \ 'shell'          : {'arg' : '+', 'complete_func' : 1},
+        \ 'task'           : {'arg' : '+', 'complete_func' : 1},
+        \ 'behavior'       : {'arg' : '*', 'complete_func' : 1},
+        \ 'helper'         : {'arg' : '*', 'complete_func' : 1},
+        \ 'testmodel'      : {'arg' : '*', 'complete_func' : 1},
+        \ 'testbehavior'   : {'arg' : '*', 'complete_func' : 1},
+        \ 'testcomponent'  : {'arg' : '*', 'complete_func' : 1},
+        \ 'testcontroller' : {'arg' : '*', 'complete_func' : 1},
+        \ 'testhelper'     : {'arg' : '*', 'complete_func' : 1},
+        \ 'test'           : {'arg' : '0', 'complete_func' : 0},
+        \ 'fixture'        : {'arg' : '*', 'complete_func' : 1},
+        \ 'lib'            : {'arg' : '*', 'complete_func' : 1},
+        \ 'core'           : {'arg' : '*', 'complete_func' : 1}
+        \}
 
-for r in items(jump_resources)
-  let resource        = get(r, 0)
-  let resource_option = get(r, 1)
+  for r in items(jump_resources)
+    let resource        = get(r, 0)
+    let resource_option = get(r, 1)
 
-  for o in items(jump_options)
-    let split_option = get(o, 0)
-    let split_suffix = get(o, 1)
-    if resource_option.complete_func == 1
-      let cmd = printf(
-            \ ":command! -n=%s -complete=customlist,cake#get_complelist_%s C%s%s if exists('g:cake.jump_%s') | call g:cake.jump_%s('%s', <f-args>) | endif",
-            \ resource_option.arg,
-            \ resource,
-            \ resource,
-            \ split_suffix,
-            \ resource,
-            \ resource,
-            \ split_option
-            \ )
-    else
-      let cmd = printf(
-            \ ":command! -n=%s -complete=customlist, C%s%s if exists('g:cake.jump_%s') | call g:cake.jump_%s('%s', <f-args>) | endif",
-            \ resource_option.arg,
-            \ resource,
-            \ split_suffix,
-            \ resource,
-            \ resource,
-            \ split_option
-            \ )
-    endif
-    execute cmd
+    for o in items(jump_options)
+      let split_option = get(o, 0)
+      let split_suffix = get(o, 1)
+      if resource_option.complete_func == 1
+        let cmd = printf(
+              \ ":command! -n=%s -complete=customlist,cake#get_complelist_%s C%s%s if exists('g:cake.jump_%s') | call g:cake.jump_%s('%s', <f-args>) | endif",
+              \ resource_option.arg,
+              \ resource,
+              \ resource,
+              \ split_suffix,
+              \ resource,
+              \ resource,
+              \ split_option
+              \ )
+      else
+        let cmd = printf(
+              \ ":command! -n=%s -complete=customlist, C%s%s if exists('g:cake.jump_%s') | call g:cake.jump_%s('%s', <f-args>) | endif",
+              \ resource_option.arg,
+              \ resource,
+              \ split_suffix,
+              \ resource,
+              \ resource,
+              \ split_option
+              \ )
+      endif
+      execute cmd
+    endfor
+
   endfor
+endfunction "}}}
 
-endfor
+call s:register_commands()
 
 command! -n=1 -complete=customlist,cake#get_complelist_log Clog if exists('g:cake.tail_log') | call g:cake.tail_log(<f-args>) | endif
 command! -n=? -complete=customlist,cake#get_complelist_model Cdesc if exists('g:cake.describe_table') | call g:cake.describe_table(<f-args>) | endif
