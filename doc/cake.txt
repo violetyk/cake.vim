@@ -507,6 +507,52 @@ VARIABLES						*cake-variables*
   let g:cakephp_app_config_file = '.project'
 <
 
+g:cakephp_no_default_keymappings           *g:cakephp_no_default_keymappings*
+
+		This plugin will define the following key mappings in Normal
+		mode automatically. If you don't want these key mappings,
+		define |g:cakephp_no_default_keymappings| before this plugin
+		is loaded (e.g. in your |vimrc|).
+
+		{lhs}	{rhs}
+		------	---------------------------
+		gf	<Plug>CakeJump
+		gs	<Plug>CakeVSplitJump
+		<C-w>f	<Plug>CakeSplitJump
+		<C-w>gf	<Plug>CakeTabJump
+
+
+		If you want to customize the key mapping, please use the
+		|PluginCakephpInitializeAfter| event with autocmd statement.
+		For example, the following code assign |<Plug>CakeJump| to
+		"gf".
+
+>
+	function! s:init_cakephp()
+		nmap <buffer> gf <Plug>CakeJump
+	endfunction
+	autocmd my-vimrc User PluginCakephpInitializeAfter call s:init_cakephp()
+<
+
+g:cakephp_gf_fallback_n                    *g:cakephp_gf_fallback_n*
+
+		If there is no cakephp file when <Plug>CakeJump is called,
+		|g:cakephp_gf_fallback_n| will be executed by |execute|.
+		(Default: "normal! gf")
+
+g:cakephp_gf_fallback_s                    *g:cakephp_gf_fallback_s*
+
+		If there is no cakephp file when <Plug>CakeSplitJump is called,
+		|g:cakephp_gf_fallback_s| will be executed by |execute|.
+		(Default: "normal! \<C-w>f")
+
+g:cakephp_gf_fallback_t                    *g:cakephp_gf_fallback_t*
+
+		If there is no cakephp file when <Plug>CakeTabJump is called,
+		|g:cakephp_gf_fallback_t| will be executed by |execute|.
+		(Default: "normal! \<C-w>gf")
+
+
 ==============================================================================
 BUGS								*cake-bugs*
 

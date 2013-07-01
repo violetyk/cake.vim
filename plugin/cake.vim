@@ -55,7 +55,10 @@ let g:cakephp_log                       = get(g:, 'cakephp_log', {
                                               \ 'query' : '/var/log/mysql/query.log',
                                               \ 'access': '/usr/local/apache2/logs/access_log'
                                               \ })
-
+let g:cakephp_no_default_keymappings    = get(g:, 'cakephp_no_default_keymappings', 0)
+let g:cakephp_gf_fallback_n              = get(g:, 'cakephp_gf_fallback_n', "normal! gf")
+let g:cakephp_gf_fallback_s              = get(g:, 'cakephp_gf_fallback_s', "normal! \<C-w>f")
+let g:cakephp_gf_fallback_t              = get(g:, 'cakephp_gf_fallback_t', "normal! \<C-w>gf")
 " }}}
 " SECTION: Auto commands {{{
 augroup detect_cakephp_project

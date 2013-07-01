@@ -114,23 +114,27 @@ function! cake#init_buffer() "{{{
   endif
   " Cut an element partially. Argument is element name(,theme name).
   command! -n=1 -bang -buffer -bar -range Celement :<line1>,<line2>call g:cake.clip_element(<bang>0,<f-args>)
+
+  doautocmd User PluginCakephpInitializeAfter
 endfunction "}}}
 function! cake#map_commands() "{{{
   nnoremap <buffer> <silent> <Plug>CakeJump       :<C-u>call g:cake.smart_jump('n')<CR>
   nnoremap <buffer> <silent> <Plug>CakeSplitJump  :<C-u>call g:cake.smart_jump('s')<CR>
   nnoremap <buffer> <silent> <Plug>CakeVSplitJump :<C-u>call g:cake.smart_jump('v')<CR>
   nnoremap <buffer> <silent> <Plug>CakeTabJump    :<C-u>call g:cake.smart_jump('t')<CR>
-  if !hasmapto('<Plug>CakeJump')
-    nmap <buffer> gf <Plug>CakeJump
-  endif
-  if !hasmapto('<Plug>CakeSplitJump')
-    nmap <buffer> <C-w>f <Plug>CakeSplitJump
-  endif
-  if !hasmapto('<Plug>CakeVSplitJump')
-    exe 'nmap <buffer> ' . g:cakephp_keybind_vsplit_gf . ' <Plug>CakeVSplitJump'
-  endif
-  if !hasmapto('<Plug>CakeTabJump')
-    nmap <buffer> <C-w>gf <Plug>CakeTabJump
+  if !g:cakephp_no_default_keymappings
+    if !hasmapto('<Plug>CakeJump')
+      nmap <buffer> gf <Plug>CakeJump
+    endif
+    if !hasmapto('<Plug>CakeSplitJump')
+      nmap <buffer> <C-w>f <Plug>CakeSplitJump
+    endif
+    if !hasmapto('<Plug>CakeVSplitJump')
+      exe 'nmap <buffer> ' . g:cakephp_keybind_vsplit_gf . ' <Plug>CakeVSplitJump'
+    endif
+    if !hasmapto('<Plug>CakeTabJump')
+      nmap <buffer> <C-w>gf <Plug>CakeTabJump
+    endif
   endif
 endfunction "}}}
 function! cake#set_abbreviations() "{{{
@@ -2165,14 +2169,19 @@ function! cake#factory(path_app)
   endfunction "}}}
   function! self.gf(option) "{{{
     if a:option == 'n'
-      exec "normal! gf"
+      execute g:cakephp_gf_fallback_n
     elseif a:option == 's'
-      exec "normal! \<C-w>f"
+      execute g:cakephp_gf_fallback_s
     elseif a:option == 't'
-      exec "normal! \<C-w>gf"
+      execute g:cakephp_gf_fallback_t
     endif
   endfunction "}}}
   " ============================================================
+
+  function! self.normal(key) "{{{
+    let op = stridx(a:key, "\<Plug>") != -1 ? "normal" : "normal!"
+    execute op a:key
+  endfunction "}}}
 
   " Functions: dbext.vim interface
   " ============================================================
