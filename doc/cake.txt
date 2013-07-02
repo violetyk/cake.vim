@@ -571,6 +571,12 @@ CHANGE LOG							*cake-changelog*
      - Add the feature to jump to the 1st party libraries
        |:Clib|
        Unite cake_lib
+     - Improve mapping method, thanks to pekepeke.
+     - Add |g:cakephp_no_default_keymappings|
+     - Add autocmd event |PluginCakephpInitializeAfter|
+     - Add |g:cakephp_gf_fallback_n|
+     - Add |g:cakephp_gf_fallback_s|
+     - Add |g:cakephp_gf_fallback_t|
 
 2.11.1 2013-05-24
      - Avoid error when g:cake is not initialized.
