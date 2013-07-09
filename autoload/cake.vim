@@ -115,25 +115,28 @@ function! cake#init_buffer() "{{{
   " Cut an element partially. Argument is element name(,theme name).
   command! -n=1 -bang -buffer -bar -range Celement :<line1>,<line2>call g:cake.clip_element(<bang>0,<f-args>)
 
-  doautocmd User PluginCakephpInitializeAfter
+  silent doautocmd User PluginCakephpInitializeAfter
 endfunction "}}}
 function! cake#map_commands() "{{{
-  nnoremap <buffer> <silent> <Plug>CakeJump       :<C-u>call g:cake.smart_jump('n')<CR>
-  nnoremap <buffer> <silent> <Plug>CakeSplitJump  :<C-u>call g:cake.smart_jump('s')<CR>
-  nnoremap <buffer> <silent> <Plug>CakeVSplitJump :<C-u>call g:cake.smart_jump('v')<CR>
-  nnoremap <buffer> <silent> <Plug>CakeTabJump    :<C-u>call g:cake.smart_jump('t')<CR>
-  if !g:cakephp_no_default_keymappings
-    if !hasmapto('<Plug>CakeJump')
-      nmap <buffer> gf <Plug>CakeJump
-    endif
-    if !hasmapto('<Plug>CakeSplitJump')
-      nmap <buffer> <C-w>f <Plug>CakeSplitJump
-    endif
-    if !hasmapto('<Plug>CakeVSplitJump')
-      exe 'nmap <buffer> ' . g:cakephp_keybind_vsplit_gf . ' <Plug>CakeVSplitJump'
-    endif
-    if !hasmapto('<Plug>CakeTabJump')
-      nmap <buffer> <C-w>gf <Plug>CakeTabJump
+  if !empty(g:cake)
+    nnoremap <buffer> <silent> <Plug>CakeJump       :<C-u>call g:cake.smart_jump('n')<CR>
+    nnoremap <buffer> <silent> <Plug>CakeSplitJump  :<C-u>call g:cake.smart_jump('s')<CR>
+    nnoremap <buffer> <silent> <Plug>CakeVSplitJump :<C-u>call g:cake.smart_jump('v')<CR>
+    nnoremap <buffer> <silent> <Plug>CakeTabJump    :<C-u>call g:cake.smart_jump('t')<CR>
+
+    if !g:cakephp_no_default_keymappings
+      if !hasmapto('<Plug>CakeJump')
+        nmap <buffer> gf <Plug>CakeJump
+      endif
+      if !hasmapto('<Plug>CakeSplitJump')
+        nmap <buffer> <C-w>f <Plug>CakeSplitJump
+      endif
+      if !hasmapto('<Plug>CakeVSplitJump')
+        exe 'nmap <buffer> ' . g:cakephp_keybind_vsplit_gf . ' <Plug>CakeVSplitJump'
+      endif
+      if !hasmapto('<Plug>CakeTabJump')
+        nmap <buffer> <C-w>gf <Plug>CakeTabJump
+      endif
     endif
   endif
 endfunction "}}}
