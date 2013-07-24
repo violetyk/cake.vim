@@ -1,7 +1,7 @@
 " cake.vim - Utility for CakePHP developpers.
 " Maintainer:  Yuhei Kagaya <yuhei.kagaya@gmail.com>
 " License:     This file is placed in the public domain.
-" Last Change: 2013/07/02
+" Last Change: 2013/07/24
 
 if exists('g:loaded_cake_vim')
   finish
@@ -64,8 +64,7 @@ let g:cakephp_gf_fallback_t              = get(g:, 'cakephp_gf_fallback_t', "nor
 augroup detect_cakephp_project
   autocmd!
   autocmd VimEnter * if g:cakephp_enable_fix_mode | call cake#init_app('') | endif
-  autocmd BufEnter *.php,*.ctp,*.css,*.js if g:cakephp_enable_auto_mode | call cake#autoset_app() | endif
-  autocmd FileType php,ctp,htmlcake call cake#init_buffer()
+  autocmd BufEnter *.php,*.ctp,*.css,*.js if g:cakephp_enable_auto_mode | call cake#autoset_app() | endif | call cake#init_buffer()
 augroup END
 
 " }}}

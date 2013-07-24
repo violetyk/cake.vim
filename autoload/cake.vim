@@ -118,7 +118,7 @@ function! cake#init_buffer() "{{{
   silent doautocmd User PluginCakephpInitializeAfter
 endfunction "}}}
 function! cake#map_commands() "{{{
-  if !empty(g:cake)
+  if !empty(g:cake) && cake#util#in_array(&filetype, ['php', 'ctp', 'htmlcake'])
     nnoremap <buffer> <silent> <Plug>CakeJump       :<C-u>call g:cake.smart_jump('n')<CR>
     nnoremap <buffer> <silent> <Plug>CakeSplitJump  :<C-u>call g:cake.smart_jump('s')<CR>
     nnoremap <buffer> <silent> <Plug>CakeVSplitJump :<C-u>call g:cake.smart_jump('v')<CR>
