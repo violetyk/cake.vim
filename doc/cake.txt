@@ -577,6 +577,7 @@ CHANGE LOG							*cake-changelog*
      - Add |g:cakephp_gf_fallback_n|
      - Add |g:cakephp_gf_fallback_s|
      - Add |g:cakephp_gf_fallback_t|
+     - Fix bug.
 
 2.11.1 2013-05-24
      - Avoid error when g:cake is not initialized.

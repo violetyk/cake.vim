@@ -1412,7 +1412,7 @@ function! cake#factory(path_app)
       if self.is_model(path)
         call add(targets, self.path_to_name_model(path))
       elseif self.is_testmodel(path)
-        call add(targets, self.path_to_name_test(path))
+        call add(targets, self.path_to_name_testmodel(path))
       else
         return
       endif
