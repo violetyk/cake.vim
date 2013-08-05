@@ -1,7 +1,7 @@
 " cake.vim - Utility for CakePHP developpers.
 " Maintainer:  Yuhei Kagaya <yuhei.kagaya@gmail.com>
 " License:     This file is placed in the public domain.
-" Last Change: 2013/08/02
+" Last Change: 2013/08/05
 
 if exists('g:loaded_cake_vim')
   finish
@@ -85,7 +85,7 @@ function! s:register_commands() "{{{
   let jump_resources = {
         \ 'controller'     : {'arg' : '*', 'complete_func' : 1},
         \ 'model'          : {'arg' : '*', 'complete_func' : 1},
-        \ 'view'           : {'arg' : '+', 'complete_func' : 1},
+        \ 'view'           : {'arg' : '*', 'complete_func' : 1},
         \ 'controllerview' : {'arg' : '+', 'complete_func' : 1},
         \ 'config'         : {'arg' : '+', 'complete_func' : 1},
         \ 'component'      : {'arg' : '*', 'complete_func' : 1},
