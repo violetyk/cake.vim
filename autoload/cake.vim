@@ -1498,7 +1498,7 @@ function! cake#factory(path_app)
         return
       endif
       " Controller / $this->render('xxx') -> View
-      let view_name = matchstr(line, '\(\$this->render(\s*["'']\)\zs[0-9A-Za-z/_.-]\+\ze\(["'']\s*)\)')
+      let view_name = matchstr(line, '\(\$this->render(\s*["'']/\|\s*["'']\)\zs[0-9A-Za-z/_.-]\+\ze\(["'']\s*)\)')
       if strlen(view_name) > 0
         call self.jump_view(option, view_name)
         return
