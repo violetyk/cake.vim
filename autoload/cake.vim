@@ -34,9 +34,12 @@ endfunction "}}}
 function! cake#version() "{{{
   let cakephp_version = 'unknown'
   try
-    let php_code = 'echo trim(array_pop(file("' . g:cake.paths.cores.core . 'VERSION.txt")));'
-    let cmd = 'php -r ''' . php_code . ''''
-    let cakephp_version = system(cmd)
+    let path = findfile('VERSION.txt', g:cake.paths.cores.core . '/**1',)
+    if strlen(path) > 0
+      let php_code = 'echo trim(array_pop(file("' . path . '")));'
+      let cmd = 'php -r ''' . php_code . ''''
+      let cakephp_version = system(cmd)
+    endif
   catch
   endtry
   return cakephp_version
