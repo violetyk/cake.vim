@@ -18,7 +18,7 @@ function! cake#info() "{{{
     let app     = g:cake.paths.app
     let core    = g:cake.paths.cores.core
     let cakephp = cake#version()
-    let buffer  = g:cake.buffer().type
+    let buffer  = string(g:cake.buffer())
     else
     let app     = ''
     let core    = ''
@@ -518,47 +518,61 @@ function! cake#factory(path_app)
     if self.is_controller(path)
       let buffer.type = 'controller'
       let buffer.name = self.path_to_name_controller(path)
+      let buffer.full_name = self.path_to_name_controller(path, 1)
     elseif self.is_model(path)
       let buffer.type = 'model'
       let buffer.name = self.path_to_name_model(path)
+      let buffer.full_name = self.path_to_name_model(path, 1)
     elseif self.is_view(path)
       let buffer.type = 'view'
     elseif self.is_component(path)
       let buffer.type = 'component'
       let buffer.name = self.path_to_name_component(path)
+      let buffer.full_name = self.path_to_name_component(path, 1)
     elseif self.is_behavior(path)
       let buffer.type = 'behavior'
       let buffer.name = self.path_to_name_behavior(path)
+      let buffer.full_name = self.path_to_name_behavior(path, 1)
     elseif self.is_helper(path)
       let buffer.type = 'helper'
       let buffer.name = self.path_to_name_helper(path)
+      let buffer.full_name = self.path_to_name_helper(path, 1)
     elseif self.is_testcontroller(path)
       let buffer.type = 'testcontroller'
-      let buffer.name = self.path_to_name_testhelper(path)
+      let buffer.name = self.path_to_name_testcontroller(path)
+      let buffer.full_name = self.path_to_name_testcontroller(path, 1)
     elseif self.is_testmodel(path)
       let buffer.type = 'testmodel'
       let buffer.name = self.path_to_name_testmodel(path)
+      let buffer.full_name = self.path_to_name_testmodel(path, 1)
     elseif self.is_testcomponent(path)
       let buffer.type = 'testcomponent'
       let buffer.name = self.path_to_name_testcomponent(path)
+      let buffer.full_name = self.path_to_name_testcomponent(path, 1)
     elseif self.is_testbehavior(path)
       let buffer.type = 'testbehavior'
       let buffer.name = self.path_to_name_testbehavior(path)
+      let buffer.full_name = self.path_to_name_testbehavior(path, 1)
     elseif self.is_testhelper(path)
       let buffer.type = 'testhelper'
       let buffer.name = self.path_to_name_testhelper(path)
+      let buffer.full_name = self.path_to_name_testhelper(path, 1)
     elseif self.is_fixture(path)
       let buffer.type = 'fixture'
       let buffer.name = self.path_to_name_fixture(path)
+      let buffer.full_name = self.path_to_name_fixture(path, 1)
     elseif self.is_shell(path)
       let buffer.type = 'shell'
       let buffer.name = self.path_to_name_shell(path)
+      let buffer.full_name = self.path_to_name_shell(path, 1)
     elseif self.is_task(path)
       let buffer.type = 'task'
       let buffer.name = self.path_to_name_task(path)
+      let buffer.full_name = self.path_to_name_task(path, 1)
     elseif self.is_lib(path)
       let buffer.type = 'lib'
       let buffer.name = cake#util#camelize(fnamemodify(path, ':t:r'))
+      let buffer.full_name = buffer.name
     else
       let buffer.type = ''
     endif
@@ -2578,47 +2592,14 @@ function! cake#factory(path_app)
     execute ':!' .cmd
   endfunction "}}}
   function! self.test(path) "{{{
-    let buffer = self.buffer(a:path)
+    let test_command = self.build_test_command(a:path)
 
-    let test_path = ''
-    if cake#util#in_array(buffer.type, ['model', 'fixture', 'controller', 'component', 'behavior', 'helper'])
-      let Fn_get_path = get(self, 'name_to_path_test' . buffer.type)
-      let test_path = call(Fn_get_path, [buffer.name], self)
-      let Fn_get_name = get(self, 'path_to_name_test' . buffer.type)
-      let test_name = call(Fn_get_name, [test_path], self)
-    else
-      let test_path = a:path
-      let test_name = self.buffer(test_path).name
-    endif
-
-    if !filereadable(test_path)
-      return 0
-    endif
-
-    let test_command = ''
-
-    " app case
-    if finddir(self.paths.testcases, escape(test_path, ' \') . ';') == self.paths.testcases
-
-      let dir = cake#util#get_topdir(substitute(test_path, self.paths.testcases, '', ''))
-
-      let cakephp_version = cake#version()
-      if cakephp_version < 1.4
-        let test_command = 'testsuite app case ' . dir . '/' . test_name
-      elseif cakephp_version < 2.1
-        let test_command = 'testsuite app ' . dir . '/' . test_name
-      elseif cakephp_version >= 2.1
-        let test_command = 'test app ' . dir . '/' . test_name
-      endif
-
-    endif
-
+    echo test_command
+    return
     if !strlen(test_command)
       return 0
     endif
 
-    let cmd  = printf('%scake %s -app %s', self.paths.cores.console, test_command, self.paths.app)
-    echo cmd
 
     if exists("g:loaded_vimproc")
       let sub = vimproc#popen2(cmd)

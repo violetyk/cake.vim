@@ -526,6 +526,41 @@ function! cake#cake13#factory(path_app)
   endfunction "}}}
   " ============================================================
 
+  function! self.build_test_command(path) " {{{
+    let cmd = ''
+
+    let buffer = self.buffer(a:path)
+
+    let test_path = ''
+    if cake#util#in_array(buffer.type, ['model', 'fixture', 'controller', 'component', 'behavior', 'helper'])
+      let Fnction = get(self, 'name_to_path_test' . buffer.type)
+      let test_path = call(Fnction, [buffer.name], self)
+      let Fnction = get(self, 'path_to_name_test' . buffer.type)
+      let test_name = call(Fnction, [test_path], self)
+    else
+      let test_path = a:path
+      let test_name = self.buffer(test_path).name
+    endif
+
+    if !filereadable(test_path)
+      call cake#util#warning(printf("[cake.vim] Not found : %s", test_path))
+      return ''
+    endif
+
+    let shell = ''
+    " app case
+    if finddir(self.paths.testcases, escape(test_path, ' \') . ';') == self.paths.testcases
+      let dir = cake#util#get_topdir(substitute(test_path, self.paths.testcases, '', ''))
+      let shell = 'testsuite app case ' . dir . '/' . test_name
+    endif
+
+    if !strlen(shell)
+      return ''
+    endif
+
+    let cmd = printf('%scake %s -app %s', self.paths.cores.console, shell, self.paths.app)
+    return cmd
+  endfunction " }}}
 
   return self
 endfunction

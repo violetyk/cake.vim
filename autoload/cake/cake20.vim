@@ -481,6 +481,59 @@ function! cake#cake20#factory(path_app)
   endfunction "}}}
   " ============================================================
 
+  function! self.build_test_command(path) "{{{
+    let cmd = ''
+    let buffer = self.buffer(a:path)
+
+    let test_path = ''
+    let test_name = ''
+    if buffer.type == 'fixture'
+      let test_path = self.name_to_path_testmodel(buffer.name)
+      let test_name = buffer.name
+    elseif cake#util#in_array(buffer.type, ['model', 'controller', 'component', 'behavior', 'helper'])
+      let Fnction = get(self, 'name_to_path_test' . buffer.type)
+      let test_path = call(Fnction, [buffer.name], self)
+      let test_name = buffer.full_name
+    elseif cake#util#in_array(buffer.type, ['testmodel', 'testcontroller', 'testcomponent', 'testbehavior', 'testhelper'])
+      let test_path = a:path
+      let Fnction = get(self, 'name_to_path_' . buffer.type[strlen('test'):])
+      let alt_path = call(Fnction, [buffer.name], self)
+      let Fnction = get(self, 'path_to_name_' . buffer.type[strlen('test'):])
+      let test_name = call(Fnction, [alt_path, 1], self)
+    endif
+
+    if !filereadable(test_path)
+      call cake#util#warning(printf("[cake.vim] Not found : %s", test_path))
+      return 0
+    endif
+
+    let shell = ''
+    " app case
+    if finddir(self.paths.testcases, escape(test_path, ' \') . ';') == self.paths.testcases
+
+      let dir = cake#util#get_topdir(substitute(test_path, self.paths.testcases, '', ''))
+
+      let cakephp_version = cake#version()
+      if stridx(cakephp_version, '.') > 0
+        let cakephp_version = matchstr(cakephp_version, '\d\+\.\d\+')
+      endif
+      let v = str2float(cakephp_version)
+      if v < 2.1
+        let shell = 'testsuite app ' . dir . '/' . test_name
+      elseif v >= 2.1
+        let shell = 'test app ' . dir . '/' . test_name
+      endif
+
+    endif
+
+    if !strlen(shell)
+      return ''
+    endif
+
+    let cmd = printf('%scake %s -app %s', self.paths.cores.console, shell, self.paths.app)
+    return cmd
+  endfunction "}}}
+
   return self
 endfunction
 
