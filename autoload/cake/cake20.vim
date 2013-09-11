@@ -473,6 +473,12 @@ function! cake#cake20#factory(path_app)
     endif
     return 0
   endfunction "}}}
+  function! self.is_lib(path) "{{{
+    if filereadable(a:path) && match(a:path, self.paths.libs) != -1 && fnamemodify(a:path, ":e") == "php"
+      return 1
+    endif
+    return 0
+  endfunction "}}}
   " ============================================================
 
   return self

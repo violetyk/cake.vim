@@ -503,6 +503,8 @@ function! cake#factory(path_app)
   endfunction
   function! self.is_task(path)
   endfunction
+  function! self.is_lib(path)
+  endfunction
 
   " }}}
   function! self.name_to_path_config(name) "{{{
@@ -554,6 +556,9 @@ function! cake#factory(path_app)
     elseif self.is_task(path)
       let buffer.type = 'task'
       let buffer.name = self.path_to_name_task(path)
+    elseif self.is_lib(path)
+      let buffer.type = 'lib'
+      let buffer.name = cake#util#camelize(fnamemodify(path, ':t:r'))
     else
       let buffer.type = ''
     endif
@@ -1884,6 +1889,19 @@ function! cake#factory(path_app)
 
     endif
     "}}}
+    " in Lib "{{{
+    if self.is_lib(path)
+
+      " Lib -> Model
+      if self.is_model(self.name_to_path_model(word)) || self.in_build_path_model(word)
+        call self.jump_model(option, word)
+        return
+      endif
+
+    endif
+    "}}}
+
+
 
     " Global {{{
     " Configure::load('xxx'); -> config
