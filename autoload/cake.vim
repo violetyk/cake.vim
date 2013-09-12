@@ -785,7 +785,7 @@ function! cake#factory(path_app)
     endif
 
     " Extracting the function name.
-    let cmd = 'grep -nE "^\s*function\s*test\w+\s*\(" ' . a:path
+    let cmd = 'grep -nE "^\s*(public)?\s*function\s*test\w+\s*\(" ' . a:path
     for line in split(system(cmd), "\n")
 
       " cast int
