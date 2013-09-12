@@ -481,9 +481,15 @@ function! cake#cake20#factory(path_app)
   endfunction "}}}
   " ============================================================
 
-  function! self.build_test_command(path) "{{{
-    let cmd = ''
-    let buffer = self.buffer(a:path)
+  function! self.build_test_command(...) "{{{
+    let path = a:1
+    let filter = ''
+    if a:0 >= 2
+      let filter = a:2
+    endif
+
+    let cmd = {}
+    let buffer = self.buffer(path)
 
     let test_path = ''
     let test_name = ''
@@ -495,7 +501,7 @@ function! cake#cake20#factory(path_app)
       let test_path = call(Fnction, [buffer.name], self)
       let test_name = buffer.full_name
     elseif cake#util#in_array(buffer.type, ['testmodel', 'testcontroller', 'testcomponent', 'testbehavior', 'testhelper'])
-      let test_path = a:path
+      let test_path = path
       let Fnction = get(self, 'name_to_path_' . buffer.type[strlen('test'):])
       let alt_path = call(Fnction, [buffer.name], self)
       let Fnction = get(self, 'path_to_name_' . buffer.type[strlen('test'):])
@@ -504,7 +510,7 @@ function! cake#cake20#factory(path_app)
 
     if !filereadable(test_path)
       call cake#util#warning(printf("[cake.vim] Not found : %s", test_path))
-      return 0
+      return cmd
     endif
 
     let shell = ''
@@ -527,10 +533,17 @@ function! cake#cake20#factory(path_app)
     endif
 
     if !strlen(shell)
-      return ''
+      return cmd
     endif
 
-    let cmd = printf('%scake %s -app %s', self.paths.cores.console, shell, self.paths.app)
+    if strlen(filter) > 0
+      let cmd.external = printf('%scake %s -app %s --filter %s', self.paths.cores.console, shell, self.paths.app, filter)
+    else
+      let cmd.external = printf('%scake %s -app %s', self.paths.cores.console, shell, self.paths.app)
+    endif
+
+    let cmd.async = cmd.external . ' --no-colors'
+
     return cmd
   endfunction "}}}
 

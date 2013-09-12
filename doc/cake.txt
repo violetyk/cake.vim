@@ -577,6 +577,8 @@ CHANGE LOG							*cake-changelog*
      - Add |g:cakephp_gf_fallback_n|
      - Add |g:cakephp_gf_fallback_s|
      - Add |g:cakephp_gf_fallback_t|
+     - Support Event, Test, TestSuite in cakephp2.x
+     - |Ctestrun| can run single test case in cakephp2.x
      - Fix bug.
 
 2.11.1 2013-05-24

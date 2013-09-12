@@ -1,7 +1,7 @@
 " cake.vim - Utility for CakePHP developpers.
 " Maintainer:  Yuhei Kagaya <yuhei.kagaya@gmail.com>
 " License:     This file is placed in the public domain.
-" Last Change: 2013/09/11
+" Last Change: 2013/09/12
 
 if exists('g:loaded_cake_vim')
   finish
@@ -56,9 +56,12 @@ let g:cakephp_log                       = get(g:, 'cakephp_log', {
                                               \ 'access': '/usr/local/apache2/logs/access_log'
                                               \ })
 let g:cakephp_no_default_keymappings    = get(g:, 'cakephp_no_default_keymappings', 0)
-let g:cakephp_gf_fallback_n              = get(g:, 'cakephp_gf_fallback_n', "normal! gf")
-let g:cakephp_gf_fallback_s              = get(g:, 'cakephp_gf_fallback_s', "normal! \<C-w>f")
-let g:cakephp_gf_fallback_t              = get(g:, 'cakephp_gf_fallback_t', "normal! \<C-w>gf")
+let g:cakephp_gf_fallback_n             = get(g:, 'cakephp_gf_fallback_n', "normal! gf")
+let g:cakephp_gf_fallback_s             = get(g:, 'cakephp_gf_fallback_s', "normal! \<C-w>f")
+let g:cakephp_gf_fallback_t             = get(g:, 'cakephp_gf_fallback_t', "normal! \<C-w>gf")
+let g:cakephp_test_window_vertical      = get(g:, 'cakephp_test_window_vertical', 0)
+let g:cakephp_test_window_height        = get(g:, 'cakephp_test_window_height', 15)
+let g:cakephp_test_window_width         = get(g:, 'cakephp_test_window_width', 70)
 " }}}
 " SECTION: Auto commands {{{
 augroup detect_cakephp_project
@@ -145,7 +148,7 @@ command! -n=1 -complete=customlist,cake#get_complelist_log Clog if exists('g:cak
 command! -n=? -complete=customlist,cake#get_complelist_model Cdesc if exists('g:cake.describe_table') | call g:cake.describe_table(<f-args>) | endif
 command! -n=0 -range Cquickrun if exists('g:cake.quickrun') | :<line1>,<line2>call g:cake.quickrun() | endif
 command! -n=* -complete=customlist,cake#get_complelist_bake Cbake if exists('g:cake.bake_interactive') | call g:cake.bake_interactive(<f-args>) | endif
-command! -n=0  Ctestrun if exists('g:cake.test') | call g:cake.test(expand('%:p')) | endif
+command! -n=? -complete=customlist,cake#get_complelist_testmethod Ctestrun if exists('g:cake.test') | call g:cake.test(expand('%:p'), <f-args>) | endif
 " }}}
 
 

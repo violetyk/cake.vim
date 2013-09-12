@@ -287,6 +287,67 @@ endfunction " }}}
 function! cake#util#in_array(expr, list)
     return index(a:list, a:expr) != -1
 endfunction " }}}
+
+" Function: cake#util#system_async(cmd, callback) {{{
+augroup vimproc-async-receive
+augroup END
+let s:system_async_result = ''
+let s:system_async_updatetime_save = &updatetime
+function! cake#util#system_async(cmd, callback)
+  let s:system_async_callback = a:callback
+
+  set updatetime=100
+  let vimproc = vimproc#pgroup_open(a:cmd)
+  call vimproc.stdin.close()
+  let s:vimproc = vimproc
+
+  augroup vimproc-async-receive
+    execute "autocmd! CursorHold,CursorHoldI * call s:system_async_result()"
+  augroup END
+endfunction
+function! s:system_async_result()
+  if !has_key(s:, "vimproc")
+    return
+  endif
+
+  let vimproc = s:vimproc
+
+  try
+    if !vimproc.stdout.eof
+      let s:system_async_result .= vimproc.stdout.read()
+    endif
+
+    if !vimproc.stderr.eof
+      let s:system_async_result .= vimproc.stderr.read()
+    endif
+
+    if !(vimproc.stdout.eof && vimproc.stderr.eof)
+      return 0
+    endif
+  catch
+    call cake#util#error(v:throwpoint)
+  endtry
+
+  try
+    let &updatetime = s:system_async_updatetime_save
+    call call(s:system_async_callback, [s:system_async_result])
+  catch
+    call cake#util#error(v:throwpoint)
+  endtry
+
+  augroup vimproc-async-receive
+    autocmd!
+  augroup END
+
+  call vimproc.stdout.close()
+  call vimproc.stderr.close()
+  call vimproc.waitpid()
+  unlet s:vimproc
+  unlet s:system_async_result
+  unlet s:system_async_callback
+endfunction
+" }}}
+
 let &cpo = s:save_cpo
 unlet s:save_cpo
 " vim:set fenc=utf-8 ff=unix ft=vim fdm=marker:

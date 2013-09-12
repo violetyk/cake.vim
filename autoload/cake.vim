@@ -7,7 +7,7 @@ set cpo&vim
 
 let g:cake = {}
 
-" SECTION: Script Variables {{{
+" SECTION: Script Local {{{
 " ============================================================
 let s:cache_last_app_path = ''
 let s:is_initialized = 0
@@ -397,6 +397,14 @@ function! cake#get_complelist_bake(ArgLead, CmdLine, CursorPos) "{{{
     call cake#util#warning("[cake.vim] An application directory is not set. Please :Cakephp {app}.")
   endtry
 endfunction " }}}
+function! cake#get_complelist_testmethod(ArgLead, CmdLine, CursorPos) "{{{
+  try
+    let list = cake#get_complelist(g:cake.get_testmethods(expand("%:p")), a:ArgLead)
+    return list
+  catch
+    call cake#util#warning("[cake.vim] An application directory is not set. Please :Cakephp {app}.")
+  endtry
+endfunction " }}}
 " ============================================================
 
 
@@ -766,6 +774,32 @@ function! cake#factory(path_app)
     return libs
   endfunction
   " }}}
+  function! self.get_testmethods(path) "{{{
+
+    " key = func_name, val = line_number
+    let testmethods = {}
+
+    if !filereadable(a:path)
+      return testmethods
+    endif
+
+    " Extracting the function name.
+    let cmd = 'grep -nE "^\s*function\s*test\w+\s*\(" ' . a:path
+    for line in split(system(cmd), "\n")
+
+      " cast int
+      let line_number = matchstr(line, '^\d\+') + 0
+
+      let s = matchend(line, "\s*function\s*.")
+      let e = match(line, "(")
+      let func_name = cake#util#strtrim(strpart(line, s, e-s))
+
+      let testmethods[func_name] = line_number
+    endfor
+
+    return testmethods
+
+  endfunction " }}}
   " ============================================================
 
   " Functions: jump_xxx()
@@ -2591,37 +2625,32 @@ function! cake#factory(path_app)
     let cmd  = printf('%scake bake %s -app %s', self.paths.cores.console, join(a:000, ' '), self.paths.app)
     execute ':!' .cmd
   endfunction "}}}
-  function! self.test(path) "{{{
-    let test_command = self.build_test_command(a:path)
+  function! self.test(...) "{{{
 
-    echo test_command
-    return
-    if !strlen(test_command)
+    let Fnction = get(self, 'build_test_command')
+    let test_command = call(Fnction, a:000, self)
+
+    let cmd = {}
+    if type(test_command) == type("")
+      let cmd.external = test_command
+      let cmd.async = test_command
+    elseif type(test_command) == type({})
+      let cmd.external = test_command.external
+      let cmd.async = test_command.async
+    endif
+
+    if !strlen(cmd.external) && !strlen(cmd.async)
       return 0
     endif
 
+    " async execute
+    if exists("g:loaded_vimproc") && strlen(cmd.async) > 0
 
-    if exists("g:loaded_vimproc")
-      let sub = vimproc#popen2(cmd)
-      let res = ''
-      while !sub.stdout.eof
-        let res .= sub.stdout.read()
-      endwhile
-      let [cond, status] = sub.waitpid()
-      new
-      silent resize  10
-      setlocal buftype=nofile
-      setlocal bufhidden=hide
-      setlocal noswapfile
-      setlocal noreadonly
-      nnoremap <buffer> <silent> q :bdelete<CR>
-      call append(0, split(res, '\r\n\|\r\|\n') + [string([cond, status])])
-      " let r = vimproc#system_bg(cmd)
-      " let r = vimproc#get_last_status()
-      echo 'Press "q" to close buffer.'
+      call cake#util#system_async(cmd.async, s:func_ref('open_test_result', s:__sid()))
+      echo '[cake.vim] Run in background : ' . cmd.async
+
     else
-      let res = system(cmd)
-      echo res
+      execute ':!' .cmd.external
     endif
 
     return 1
@@ -2633,6 +2662,32 @@ function! cake#factory(path_app)
 endfunction
 " ============================================================
 
+function! s:open_test_result(result) "{{{
+  if g:cakephp_test_window_vertical
+    vnew
+    exec 'silent vertical resize' . g:cakephp_test_window_width
+  else
+    new
+    exec 'silent resize ' . g:cakephp_test_window_height
+  endif
+
+  setlocal buftype=nofile
+  setlocal bufhidden=hide
+  setlocal noswapfile
+  setlocal noreadonly
+  setlocal noautoindent
+  nnoremap <buffer> <silent> q :bdelete<CR>
+  echo 'Press "q" to close buffer.'
+
+  call append(line('$'), split(a:result, '\r\n\|\r\|\n'))
+  call cursor(line('$'), 0)
+endfunction "}}}
+function! s:__sid() " {{{
+  return matchstr(expand('<sfile>'), '<SNR>\zs\d\+\ze___sid$')
+endfunction "}}}
+function! s:func_ref(function_name, sid) " {{{
+    return function(printf('<SNR>%d_%s', a:sid, a:function_name))
+endfunction "}}}
 
 
 let &cpo = s:save_cpo
