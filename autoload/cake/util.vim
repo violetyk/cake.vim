@@ -343,7 +343,7 @@ function! s:system_async_result()
   call vimproc.stderr.close()
   call vimproc.waitpid()
   unlet s:vimproc
-  unlet s:system_async_result
+  let s:system_async_result = ''
   unlet s:system_async_callback
 endfunction
 " }}}
