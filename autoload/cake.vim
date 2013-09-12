@@ -19,7 +19,7 @@ function! cake#info() "{{{
     let core    = g:cake.paths.cores.core
     let cakephp = cake#version()
     let buffer  = string(g:cake.buffer())
-    else
+  else
     let app     = ''
     let core    = ''
     let cakephp = ''
@@ -141,6 +141,7 @@ function! cake#map_commands() "{{{
         nmap <buffer> <C-w>gf <Plug>CakeTabJump
       endif
     endif
+
   endif
 endfunction "}}}
 function! cake#set_abbreviations() "{{{
@@ -2625,7 +2626,7 @@ function! cake#factory(path_app)
     let cmd  = printf('%scake bake %s -app %s', self.paths.cores.console, join(a:000, ' '), self.paths.app)
     execute ':!' .cmd
   endfunction "}}}
-  function! self.test(...) "{{{
+  function! self.run_test(...) "{{{
 
     let Fnction = get(self, 'build_test_command')
     let test_command = call(Fnction, a:000, self)
@@ -2656,6 +2657,38 @@ function! cake#factory(path_app)
     return 1
 
   endfunction "}}}
+  function! self.run_current_testmethod() " {{{
+    let buffer = self.buffer()
+
+    if matchstr(buffer.type, '^test') == ''
+      return
+    endif
+
+    let neighbor_line = 0
+    let func_line = self.get_testmethods(buffer.path)
+    let current_line = line(".")
+    for l in cake#util#nrsort(values(func_line))
+      if l <= current_line
+        let neighbor_line = l
+        break
+      endif
+    endfor
+
+    if neighbor_line == 0
+      return
+    endif
+
+    let testmethod = ''
+    for [f, l] in items(func_line)
+      if l == neighbor_line
+        let testmethod = f
+        break
+      endif
+    endfor
+
+    call self.run_test(buffer.path, testmethod)
+
+  endfunction " }}}
   " ============================================================
 
   return self

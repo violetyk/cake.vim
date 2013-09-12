@@ -148,7 +148,9 @@ command! -n=1 -complete=customlist,cake#get_complelist_log Clog if exists('g:cak
 command! -n=? -complete=customlist,cake#get_complelist_model Cdesc if exists('g:cake.describe_table') | call g:cake.describe_table(<f-args>) | endif
 command! -n=0 -range Cquickrun if exists('g:cake.quickrun') | :<line1>,<line2>call g:cake.quickrun() | endif
 command! -n=* -complete=customlist,cake#get_complelist_bake Cbake if exists('g:cake.bake_interactive') | call g:cake.bake_interactive(<f-args>) | endif
-command! -n=? -complete=customlist,cake#get_complelist_testmethod Ctestrun if exists('g:cake.test') | call g:cake.test(expand('%:p'), <f-args>) | endif
+command! -n=? -complete=customlist,cake#get_complelist_testmethod Ctestrun if exists('g:cake.run_test') | call g:cake.run_test(expand('%:p'), <f-args>) | endif
+command! -n=0 Ctestrunmethod if exists('g:cake.run_current_testmethod') | call g:cake.run_current_testmethod() | endif
+
 " }}}
 
 

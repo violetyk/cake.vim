@@ -1,6 +1,6 @@
 *cake.txt*  Utility for CakePHP developpers.
 
-Version: 2.11.1
+Version: 2.12
 Author: Yuhei Kagaya <yuhei.kagaya@gmail.com>
 Repository: https://github.com/violetyk/cake.vim
 License: This file is placed in the public domain.
@@ -445,9 +445,22 @@ RUN BAKE ~
 
 RUN TEST CASE ~
 							*cake-run-testcase*
-:Ctestrun						*:Ctestrun*
+:Ctestrun [{testmethod}]				*:Ctestrun*
 		Run test case command, guess depending on the type of the
-		current buffer.
+		current buffer.relation is as follows.
+
+		<current buffer> -> <run testcase>
+		controller or testcontroller	->	testcontroller
+		model or testmodel or fixture	->	testmodel
+		component or testcomponent	->	testcomponent
+		behavior or testbehavior	->	testbehavior
+		helper or testhelper		->	testhelper
+
+		In cakephp2, you can filter the test case.
+		Please specify {testmethod}.
+
+:Ctestrunmethod						*:Ctestrunmethod*
+		In cakephp2, run the test method of the current line.
 
 ------------------------------------------------------------------------------
 VARIABLES						*cake-variables*
@@ -552,6 +565,26 @@ g:cakephp_gf_fallback_t                    *g:cakephp_gf_fallback_t*
 		|g:cakephp_gf_fallback_t| will be executed by |execute|.
 		(Default: "normal! \<C-w>gf")
 
+g:cakephp_test_window_vertical			*g:cakephp_test_window_vertical*
+
+		If |vimproc| is installed, when you run |:Ctestrun| or
+		|:Ctestrunmethod|, the results of the test is displayed in a
+		window that is divided.
+		If you want to split vertical, please set 1.
+		default value is 0.
+
+g:cakephp_test_window_height			*g:cakephp_test_window_height*
+
+		The height of the splitter window for displaying the test
+		results. If |g:cakephp_test_window_vertical| is 0, enabled.
+		default value is 15.
+
+g:cakephp_test_window_width			*g:cakephp_test_window_width*
+
+		The width of the splitter window for displaying the test
+		results. If |g:cakephp_test_window_vertical| is 1, enabled.
+		default value is 15.
+
 
 ==============================================================================
 BUGS								*cake-bugs*
@@ -565,7 +598,7 @@ BUGS								*cake-bugs*
 ==============================================================================
 CHANGE LOG							*cake-changelog*
 
-2.12
+2.12   2013-09-12
      - Change from |:Clib| to |:Ccore| the name of command
      - Change from cake_lib to cake_core the name of unite source name
      - Add the feature to jump to the 1st party libraries
@@ -578,7 +611,12 @@ CHANGE LOG							*cake-changelog*
      - Add |g:cakephp_gf_fallback_s|
      - Add |g:cakephp_gf_fallback_t|
      - Support Event, Test, TestSuite in cakephp2.x
-     - |Ctestrun| can run single test case in cakephp2.x
+     - Improve |Ctestrun| that can run single test case in cakephp2.x
+     - Improve |Ctestrun| that can run asynchronously
+     - Add |:Ctestrunmethod|
+     - Add |g:cakephp_test_window_vertical|
+     - Add |g:cakephp_test_window_height|
+     - Add |g:cakephp_test_window_width|
      - Fix bug.
 
 2.11.1 2013-05-24
