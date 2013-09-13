@@ -275,7 +275,7 @@ function! cake#cake20#factory(path_app)
     endif
     let path = a:1
 
-    let name = fnamemodify(a:path, ":t:r")
+    let name = fnamemodify(path, ":t:r")
     if (exists('a:2') && a:2 > 0)
       return name
     else
@@ -438,7 +438,7 @@ function! cake#cake20#factory(path_app)
     return 0
   endfunction "}}}
   function! self.is_testmodel(path) "{{{
-    if filereadable(a:path) && match(a:path, self.paths.testmodels) != -1 && match(a:path, "ModelTest\.php$") != -1
+    if filereadable(a:path) && match(a:path, self.paths.testmodels) != -1 && match(a:path, "Test\.php$") != -1
       return 1
     endif
     return 0

@@ -598,6 +598,9 @@ BUGS								*cake-bugs*
 ==============================================================================
 CHANGE LOG							*cake-changelog*
 
+2.13
+     - Fix bug.
+
 2.12   2013-09-12
      - Change from |:Clib| to |:Ccore| the name of command
      - Change from cake_lib to cake_core the name of unite source name
