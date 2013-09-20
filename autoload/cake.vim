@@ -181,6 +181,9 @@ function! cake#expand_class_name(lhs) "{{{
   endtry
   return class_name
 endfunction "}}}
+function! cake#buffer(name) "{{{
+  return (exists('g:cake.buffer') && s:is_initialized) ? get(g:cake.buffer(), a:name, '') : ''
+endfunction "}}}
 
 " Functions: cake#get_complelist_xxx()
 " ============================================================
