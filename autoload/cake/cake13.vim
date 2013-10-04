@@ -279,7 +279,7 @@ function! cake#cake13#factory(path_app)
     endif
     let path = a:1
     let suffix = (exists('a:2') && a:2 > 0)?  'Shell' : ''
-    return cake#util#camelize(fnamemodify(a:path, ":t:r")) . suffix
+    return cake#util#camelize(fnamemodify(path, ":t:r")) . suffix
   endfunction "}}}
   function! self.path_to_name_task(...) "{{{
     if a:0 == 0
