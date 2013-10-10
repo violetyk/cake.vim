@@ -1694,6 +1694,28 @@ function! cake#factory(path_app)
         call self.smart_jump_script(script_name, option)
         return
       endif
+      " View / this->extend('/Common/view') -> view 
+      let parent_view_name = matchstr(line, '\(\$this->extend(\s*["'']\)\zs[0-9A-Za-z/_.-]\+\ze\(["'']\s*)\)')
+
+      if strlen(parent_view_name) > 0
+        if match(parent_view_name, '/') > -1
+          let controller_name = get(split(parent_view_name, '/'), 0)
+          let view_name = get(split(parent_view_name, '/'), -1)
+        else
+          " Controller name is inferred from the currently opened file.
+          let path = expand("%:p")
+          if self.in_theme(path)
+            let pattern = '\(' . self.paths.themes . self.get_viewtheme(path) . '/\)\zs\w\+\ze'
+          else
+            let pattern = '\(' . self.paths.views . '\)\zs\w\+\ze'
+          endif
+          let controller_name = matchstr(path, pattern)
+          let view_name = parent_view_name
+        endif
+
+        call self.jump_controllerview(option, controller_name, view_name)
+        return
+      endif
 
       " View -> Helper or Model or Controller
       if self.is_helper(self.name_to_path_helper(word)) || self.in_build_path_helper(word)

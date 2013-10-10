@@ -366,7 +366,7 @@ function! cake#cake20#factory(path_app)
     return self.paths.fixtures. a:name . "Fixture.php"
   endfunction "}}}
   function! self.name_to_path_view(controller_name, view_name, theme_name) "{{{
-    if a:theme_name == ''
+    if strlen(a:theme_name) == 0
       return self.paths.views . a:controller_name . "/" . a:view_name . ".ctp"
     else
       return self.paths.themes . a:theme_name . '/' . a:controller_name . "/" . a:view_name . ".ctp"

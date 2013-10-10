@@ -1,6 +1,6 @@
 *cake.txt*  Utility for CakePHP developpers.
 
-Version: 2.12
+Version: 2.13
 Author: Yuhei Kagaya <yuhei.kagaya@gmail.com>
 Repository: https://github.com/violetyk/cake.vim
 License: This file is placed in the public domain.
@@ -599,6 +599,7 @@ BUGS								*cake-bugs*
 CHANGE LOG							*cake-changelog*
 
 2.13
+     - Add New gf pattern. "$this->extend('/Common/view')" jump to the View file.
      - Fix bug.
 
 2.12   2013-09-12
