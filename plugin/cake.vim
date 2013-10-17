@@ -1,7 +1,7 @@
 " cake.vim - Utility for CakePHP developpers.
 " Maintainer:  Yuhei Kagaya <yuhei.kagaya@gmail.com>
 " License:     This file is placed in the public domain.
-" Last Change: 2013/10/10
+" Last Change: 2013/10/17
 
 if exists('g:loaded_cake_vim')
   finish
@@ -62,6 +62,15 @@ let g:cakephp_gf_fallback_t             = get(g:, 'cakephp_gf_fallback_t', "norm
 let g:cakephp_test_window_vertical      = get(g:, 'cakephp_test_window_vertical', 0)
 let g:cakephp_test_window_height        = get(g:, 'cakephp_test_window_height', 15)
 let g:cakephp_test_window_width         = get(g:, 'cakephp_test_window_width', 70)
+let g:cakephp_related_group             = get(g:, 'cakephp_related_group', [
+                                              \ 'testcontroller',
+                                              \ 'controller',
+                                              \ 'model',
+                                              \ 'testmodel',
+                                              \ 'fixture'
+                                              \ ])
+let g:cakephp_keybind_related_next      = get(g:, 'cakephp_keybind_related_next', ']f')
+let g:cakephp_keybind_related_prev      = get(g:, 'cakephp_keybind_related_prev', '[f')
 " }}}
 " SECTION: Auto commands {{{
 augroup detect_cakephp_project

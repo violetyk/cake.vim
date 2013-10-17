@@ -534,10 +534,10 @@ function! cake#cake13#factory(path_app)
 
     let test_path = ''
     if cake#util#in_array(buffer.type, ['model', 'fixture', 'controller', 'component', 'behavior', 'helper'])
-      let Fnction = get(self, 'name_to_path_test' . buffer.type)
-      let test_path = call(Fnction, [buffer.name], self)
-      let Fnction = get(self, 'path_to_name_test' . buffer.type)
-      let test_name = call(Fnction, [test_path], self)
+      let Fn = get(self, 'name_to_path_test' . buffer.type)
+      let test_path = call(Fn, [buffer.name], self)
+      let Fn = get(self, 'path_to_name_test' . buffer.type)
+      let test_name = call(Fn, [test_path], self)
     else
       let test_path = path
       let test_name = self.buffer(test_path).name

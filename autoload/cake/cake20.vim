@@ -497,15 +497,15 @@ function! cake#cake20#factory(path_app)
       let test_path = self.name_to_path_testmodel(buffer.name)
       let test_name = buffer.name
     elseif cake#util#in_array(buffer.type, ['model', 'controller', 'component', 'behavior', 'helper'])
-      let Fnction = get(self, 'name_to_path_test' . buffer.type)
-      let test_path = call(Fnction, [buffer.name], self)
+      let Fn = get(self, 'name_to_path_test' . buffer.type)
+      let test_path = call(Fn, [buffer.name], self)
       let test_name = buffer.full_name
     elseif cake#util#in_array(buffer.type, ['testmodel', 'testcontroller', 'testcomponent', 'testbehavior', 'testhelper'])
       let test_path = path
-      let Fnction = get(self, 'name_to_path_' . buffer.type[strlen('test'):])
-      let alt_path = call(Fnction, [buffer.name], self)
-      let Fnction = get(self, 'path_to_name_' . buffer.type[strlen('test'):])
-      let test_name = call(Fnction, [alt_path, 1], self)
+      let Fn = get(self, 'name_to_path_' . buffer.type[strlen('test'):])
+      let alt_path = call(Fn, [buffer.name], self)
+      let Fn = get(self, 'path_to_name_' . buffer.type[strlen('test'):])
+      let test_name = call(Fn, [alt_path, 1], self)
     endif
 
     if !filereadable(test_path)

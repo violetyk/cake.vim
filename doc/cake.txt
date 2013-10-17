@@ -598,7 +598,13 @@ BUGS								*cake-bugs*
 ==============================================================================
 CHANGE LOG							*cake-changelog*
 
-2.13
+2.14
+     - Add feature to jump within a related group
+     - Add |g:cakephp_related_group|
+     - Add |g:cakephp_keybind_related_next|
+     - Add |g:cakephp_keybind_related_prev|
+
+2.13   2013-10-10
      - Add New gf pattern. "$this->extend('/Common/view')" jump to the View file.
      - Fix bug.
 

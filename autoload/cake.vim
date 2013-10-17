@@ -122,23 +122,31 @@ function! cake#init_buffer() "{{{
 endfunction "}}}
 function! cake#map_commands() "{{{
   if !empty(g:cake) && cake#util#in_array(&filetype, ['php', 'ctp', 'htmlcake'])
-    nnoremap <buffer> <silent> <Plug>CakeJump       :<C-u>call g:cake.smart_jump('n')<CR>
-    nnoremap <buffer> <silent> <Plug>CakeSplitJump  :<C-u>call g:cake.smart_jump('s')<CR>
-    nnoremap <buffer> <silent> <Plug>CakeVSplitJump :<C-u>call g:cake.smart_jump('v')<CR>
-    nnoremap <buffer> <silent> <Plug>CakeTabJump    :<C-u>call g:cake.smart_jump('t')<CR>
+    nnoremap <buffer> <silent> <Plug>(cake-gf-n) :<C-u>call g:cake.smart_jump('n')<CR>
+    nnoremap <buffer> <silent> <Plug>(cake-gf-s) :<C-u>call g:cake.smart_jump('s')<CR>
+    nnoremap <buffer> <silent> <Plug>(cake-gf-v) :<C-u>call g:cake.smart_jump('v')<CR>
+    nnoremap <buffer> <silent> <Plug>(cake-gf-t) :<C-u>call g:cake.smart_jump('t')<CR>
+    nnoremap <buffer> <silent> <Plug>(cake-related-next) :<C-u>call g:cake.jump_related(1)<CR>
+    nnoremap <buffer> <silent> <Plug>(cake-related-prev) :<C-u>call g:cake.jump_related(-1)<CR>
 
     if !g:cakephp_no_default_keymappings
-      if !hasmapto('<Plug>CakeJump')
-        nmap <buffer> gf <Plug>CakeJump
+      if !hasmapto('<Plug>(cake-gf-n)')
+        nmap <buffer> gf <Plug>(cake-gf-n)
       endif
-      if !hasmapto('<Plug>CakeSplitJump')
-        nmap <buffer> <C-w>f <Plug>CakeSplitJump
+      if !hasmapto('<Plug>(cake-gf-s)')
+        nmap <buffer> <C-w>f <Plug>(cake-gf-s)
       endif
-      if !hasmapto('<Plug>CakeVSplitJump')
-        exe 'nmap <buffer> ' . g:cakephp_keybind_vsplit_gf . ' <Plug>CakeVSplitJump'
+      if !hasmapto('<Plug>(cake-gf-v)') && len(get(g:, 'cakephp_keybind_vsplit_gf', ''))
+        exe 'nmap <buffer> ' . g:cakephp_keybind_vsplit_gf . ' <Plug>(cake-gf-v)'
       endif
-      if !hasmapto('<Plug>CakeTabJump')
-        nmap <buffer> <C-w>gf <Plug>CakeTabJump
+      if !hasmapto('<Plug>(cake-gf-t)')
+        nmap <buffer> <C-w>gf <Plug>(cake-gf-t)
+      endif
+      if !hasmapto('<Plug>(cake-related-next)') && len(get(g:, 'cakephp_keybind_related_next', ''))
+        exe 'nmap <buffer> ' . g:cakephp_keybind_related_next . ' <Plug>(cake-related-next)'
+      endif
+      if !hasmapto('<Plug>(cake-related-prev)') && len(get(g:, 'cakephp_keybind_related_prev', ''))
+        exe 'nmap <buffer> ' . g:cakephp_keybind_related_prev . ' <Plug>(cake-related-prev)'
       endif
     endif
 
@@ -2265,6 +2273,36 @@ function! cake#factory(path_app)
     " Default action
     call self.gf(option)
   endfunction "}}}
+  function! self.jump_related(...) "{{{
+    let direction = a:1
+    let buffer = self.buffer()
+
+    let from = buffer.type
+    let i = index(g:cakephp_related_group, from)
+    if i != -1
+      let i = i + direction
+
+      let i_max = len(g:cakephp_related_group) - 1
+      if i < 0
+        let i = i_max
+      elseif i > i_max
+        let i = 0
+      endif
+      let to = get(g:cakephp_related_group, i)
+
+      if match(from, 'controller') >= 0 && match(to, 'controller') == -1
+        let target = cake#util#singularize(buffer.name)
+      elseif match(from, 'controller') == -1 && match(to, 'controller') >= 0
+        let target = cake#util#pluralize(buffer.name)
+      else
+        let target = buffer.name
+      endif
+
+      let Fn = get(self, printf('jump_%s', to))
+      return call(Fn, ['n', target], self)
+    endif
+
+  endfunction "}}}
   function! self.gf(option) "{{{
     if a:option == 'n'
       execute g:cakephp_gf_fallback_n
@@ -2653,8 +2691,8 @@ function! cake#factory(path_app)
   endfunction "}}}
   function! self.run_test(...) "{{{
 
-    let Fnction = get(self, 'build_test_command')
-    let test_command = call(Fnction, a:000, self)
+    let Fn = get(self, 'build_test_command')
+    let test_command = call(Fn, a:000, self)
 
     let cmd = {}
     if type(test_command) == type("")
