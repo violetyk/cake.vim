@@ -1,7 +1,7 @@
 " cake.vim - Utility for CakePHP developpers.
 " Maintainer:  Yuhei Kagaya <yuhei.kagaya@gmail.com>
 " License:     This file is placed in the public domain.
-" Last Change: 2013/10/17
+" Last Change: 2013/12/12
 
 if exists('g:loaded_cake_vim')
   finish
@@ -22,6 +22,8 @@ endif
 let s:save_cpo = &cpo
 set cpo&vim
 
+let g:cakevim_version = '2.13'
+
 " SECTION: Optional Settings
 " let g:cakephp_enable_fix_mode = 1
 " let g:cakephp_app             = "/path/to/cakephp_root/app/"
@@ -35,7 +37,6 @@ set cpo&vim
 
 " SECTION: Global Variables {{{
 " fix setting of the app.
-let g:cakevim_version                   = '2.13'
 let g:cakephp_enable_fix_mode           = get(g:, 'cakephp_enable_fix_mode', 0)
 let g:cakephp_app                       = get(g:, 'cakephp_app', '')
 let g:cakephp_use_theme                 = get(g:, 'cakephp_use_theme', '')

@@ -1635,7 +1635,6 @@ function! cake#factory(path_app)
       " Model / class Hoge extends AppModel  -> AppModel
       let model_name = matchstr(line, '\(class\s\w\+\sextends\s\)\zs\w\+\ze\(Model\)' )
       if strlen(model_name) > 0
-        let model_name = cake#util#decamelize(model_name)
         if self.is_model(self.name_to_path_model(model_name))
           call self.jump_model(option, model_name)
           return

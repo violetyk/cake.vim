@@ -330,7 +330,11 @@ function! cake#cake20#factory(path_app)
     return self.paths.controllers . a:name . "Controller.php"
   endfunction "}}}
   function! self.name_to_path_model(name) "{{{
-    return self.paths.models . a:name . ".php"
+    if filereadable(self.paths.models . a:name . "Model.php")
+      return self.paths.models . a:name . "Model.php"
+    else
+      return self.paths.models . a:name . ".php"
+    endif
   endfunction "}}}
   function! self.name_to_path_component(name) "{{{
     return self.paths.components. a:name . "Component.php"

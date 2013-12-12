@@ -603,6 +603,7 @@ CHANGE LOG							*cake-changelog*
      - Add |g:cakephp_related_group|
      - Add |g:cakephp_keybind_related_next|
      - Add |g:cakephp_keybind_related_prev|
+     - Fix bug.
 
 2.13   2013-10-10
      - Add New gf pattern. "$this->extend('/Common/view')" jump to the View file.
