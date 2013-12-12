@@ -2278,10 +2278,16 @@ function! cake#factory(path_app)
 
     let from = buffer.type
     let i = index(g:cakephp_related_group, from)
-    if i != -1
-      let i = i + direction
+    if i == -1
+      return
+    endif
 
-      let i_max = len(g:cakephp_related_group) - 1
+    let i_max = len(g:cakephp_related_group) - 1
+
+    let k = 0
+    while k < i_max
+
+      let i = i + direction
       if i < 0
         let i = i_max
       elseif i > i_max
@@ -2297,9 +2303,14 @@ function! cake#factory(path_app)
         let target = buffer.name
       endif
 
-      let Fn = get(self, printf('jump_%s', to))
-      return call(Fn, ['n', target], self)
-    endif
+      let Fn = get(self, printf('name_to_path_%s', to))
+      if filereadable(call(Fn, [target], self))
+        let Fn = get(self, printf('jump_%s', to))
+        return call(Fn, ['n', target], self)
+      endif
+
+      let k += 1
+    endwhile
 
   endfunction "}}}
   function! self.gf(option) "{{{
