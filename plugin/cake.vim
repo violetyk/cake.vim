@@ -56,6 +56,7 @@ let g:cakephp_log                       = get(g:, 'cakephp_log', {
                                               \ 'query' : '/var/log/mysql/query.log',
                                               \ 'access': '/usr/local/apache2/logs/access_log'
                                               \ })
+let g:cakephp_view_exts                 = get(g:, 'cakephp_view_exts', [".ctp"])
 let g:cakephp_no_default_keymappings    = get(g:, 'cakephp_no_default_keymappings', 0)
 let g:cakephp_gf_fallback_n             = get(g:, 'cakephp_gf_fallback_n', "normal! gf")
 let g:cakephp_gf_fallback_s             = get(g:, 'cakephp_gf_fallback_s', "normal! \<C-w>f")
@@ -78,6 +79,12 @@ augroup detect_cakephp_project
   autocmd!
   autocmd VimEnter * if g:cakephp_enable_fix_mode | call cake#init_app('') | endif
   autocmd BufEnter *.php,*.ctp,*.css,*.js if g:cakephp_enable_auto_mode | call cake#autoset_app() | endif | call cake#init_buffer()
+  function! s:initialize_view_event()
+    let types = join(map(copy(g:cakephp_view_exts), '"*".v:val'), ",")
+    execute 'autocmd BufEnter '
+      \ . types .' if g:cakephp_enable_auto_mode | call cake#autoset_app() | endif'
+  endfunction
+  call s:initialize_view_event()
 augroup END
 
 " }}}
