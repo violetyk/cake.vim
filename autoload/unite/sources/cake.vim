@@ -68,7 +68,7 @@ let s:unite_source_model = {
 
 function! s:unite_source_model.gather_candidates(args, context)
   let candidates = []
-  
+
   try
     for i in items(g:cake.get_models())
       call add(candidates, {
@@ -129,7 +129,8 @@ function! s:unite_source_view.gather_candidates(args, context) "{{{
 
     for i in a:context.source__controllers
       " default
-      for path in split(globpath(g:cake.paths.views .i . "/", "*.ctp"), "\n")
+      for path in split(
+        \ globpath(g:cake.paths.views .i . "/", cake#get_view_glob_pattern("*")), "\n")
         call add(candidates, {
               \ 'word' : '(No Theme) ' . fnamemodify(path, ":t:r"),
               \ 'kind' : 'file',
@@ -141,7 +142,8 @@ function! s:unite_source_view.gather_candidates(args, context) "{{{
 
       " every theme
       for theme in items(g:cake.get_themes())
-        for path in split(globpath(theme[1] . i . "/", "*.ctp"), "\n")
+        for path in split(
+          \ globpath(theme[1] . i . "/", cake#get_view_glob_pattern("*")), "\n")
           call add(candidates, {
                 \ 'word' : '(' . theme[0] . ') ' . fnamemodify(path, ":t:r"),
                 \ 'kind' : 'file',

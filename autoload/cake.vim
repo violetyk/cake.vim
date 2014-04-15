@@ -193,6 +193,9 @@ function! cake#buffer(name) "{{{
   return (exists('g:cake.buffer') && s:is_initialized) ? get(g:cake.buffer(), a:name, '') : ''
 endfunction "}}}
 
+function! cake#get_view_glob_pattern(base)
+  return a:base . '\(' . join(g:cakephp_view_exts, '\|') . '\)'
+endfunction
 " Functions: cake#get_complelist_xxx()
 " ============================================================
 function! cake#get_complelist(dict,ArgLead) "{{{
@@ -980,7 +983,7 @@ function! cake#factory(path_app)
     " find paths of view.
     for theme_name in themes
       let view_dir = self.name_to_path_viewdir(controller_name, view_name, theme_name)
-      for view_path in split(globpath(view_dir, '**/' . view_name . '.ctp'), "\n")
+      for view_path in split(globpath(view_dir, cake#get_view_glob_pattern('**/' . view_name)), "\n")
         if filereadable(view_path)
           call add(views, view_path)
         endif
@@ -2172,7 +2175,9 @@ function! cake#factory(path_app)
 
 
     " default
-    for element_path in split(globpath(self.paths.views . element_dir, "**/" . element_name . ".ctp"), "\n")
+    for element_path in split(
+          \ globpath(self.paths.views . element_dir,
+          \ cake#get_view_glob_pattern('**/' . element_name)), "\n")
       if filereadable(element_path)
         call add(elements, element_path)
       endif
@@ -2181,7 +2186,9 @@ function! cake#factory(path_app)
     " in themes
     let themes = keys(self.get_themes())
     for theme_name in themes
-      for element_path in split(globpath(self.paths.themes . theme_name . '/' . element_dir, "**/" . element_name . ".ctp"), "\n")
+      for element_path in split(
+            \ globpath(self.paths.themes . theme_name . '/' . element_dir,
+            \ cake#get_view_glob_pattern('**/' . element_name), "\n")
         if filereadable(element_path)
           call add(elements, element_path)
         endif
@@ -2230,7 +2237,9 @@ function! cake#factory(path_app)
     endif
 
     " in default
-    for layout_path in split(globpath(self.paths.views . layout_dir, "**/" . layout_name . ".ctp"), "\n")
+    for layout_path in split(
+          \ globpath(self.paths.views . layout_dir,
+          \ cake#get_view_glob_pattern('**/' . layout_name)), "\n")
       if filereadable(layout_path)
         call add(layouts, layout_path)
       endif
@@ -2239,7 +2248,9 @@ function! cake#factory(path_app)
     " in themes
     let themes = keys(self.get_themes())
     for theme_name in themes
-      for layout_path in split(globpath(self.paths.themes . theme_name . '/' . layout_dir, "**/" . layout_name . ".ctp"), "\n")
+      for layout_path in split(
+            \ globpath(self.paths.themes . theme_name . '/' . layout_dir,
+            \ cake#get_view_glob_pattern('**/' . layout_name)), "\n")
         if filereadable(layout_path)
           call add(layouts, layout_path)
         endif

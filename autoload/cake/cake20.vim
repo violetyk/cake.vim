@@ -370,11 +370,13 @@ function! cake#cake20#factory(path_app)
     return self.paths.fixtures. a:name . "Fixture.php"
   endfunction "}}}
   function! self.name_to_path_view(controller_name, view_name, theme_name) "{{{
-    if strlen(a:theme_name) == 0
-      return self.paths.views . a:controller_name . "/" . a:view_name . ".ctp"
-    else
-      return self.paths.themes . a:theme_name . '/' . a:controller_name . "/" . a:view_name . ".ctp"
+    let base = strlen(a:theme_name) == 0 ? self.paths.views : self.paths.themes
+    let base = base . a:controller_name . "/" . a:view_name
+    let candidates = filter(copy(g:cakephp_view_exts), 'filereadable(base . v:val)')
+    if len(candidates) > 0
+      return base . candidates[0]
     endif
+    return base . ".ctp"
   endfunction "}}}
   function! self.name_to_path_viewdir(controller_name, view_name, theme_name) "{{{
     if match(a:view_name, '/') > 0
@@ -394,7 +396,9 @@ function! cake#cake20#factory(path_app)
   " Functions: self.is_xxx()
   " ============================================================
   function! self.is_view(path) "{{{
-    if filereadable(a:path) && match(a:path, self.paths.views) != -1 && fnamemodify(a:path, ":e") == "ctp"
+    let ext = fnamemodify(a:path, ":e")
+    if filereadable(a:path) && match(a:path, self.paths.views) != -1
+      \ && len(filter(g:cakephp_view_exts, 'ext == "." . v:val')) > 0
       return 1
     endif
     return 0
