@@ -2734,6 +2734,8 @@ function! cake#factory(path_app)
       call cake#util#system_async(cmd.async, s:func_ref('open_test_result', s:__sid()))
       echo '[cake.vim] Run in background : ' . cmd.async
 
+    elseif exists("g:loaded_dispatch")
+      execute ':Dispatch ' .cmd.external
     else
       execute ':!' .cmd.external
     endif
