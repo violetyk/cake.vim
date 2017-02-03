@@ -44,7 +44,7 @@ No arguments : If you do not specify arguments, guess depending on the type of t
 | Model|`:Cmodel {model-name}`| ok | Controller / Fixture / ModelTestCase |
 | View of the current controller|`:Cview {view-name} ({theme-name})`  (`{theme-name}` is optional)| ||
 | View of action the current controller|`:Cview`|  ||
-| View of the specified controller|`:CControllerview {controller-name} {view-name} ({theme-name})`  (`{theme-name}` is optional)||
+| View of the specified controller|`:Ccontrollerview {controller-name} {view-name} ({theme-name})`  (`{theme-name}` is optional)||
 | Config (core.php, database.php etc)|`:Cconfig {config-name}` | ok | |
 | Component |`:Ccomponent {component-name}` | ok | ComponentTestCase |
 | Behavior |`:Cbehavior {behavior-name}` | ok | BehaviorTestCase |
